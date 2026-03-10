@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"from line_notify import send_to_line; send_to_line\\(''テスト送信です。SAEPINからLINEへの配信テスト！''\\)\")",
+      "Bash(python -c \"from line_notify import send_to_line; send_to_line\\(''SAEPINからのテスト送信です！''\\)\")",
+      "Bash(ping -n 1 google.com)",
+      "Bash(ping -n 1 notify-api.line.me)",
+      "Bash(ipconfig //flushdns)",
+      "Bash(nslookup notify-api.line.me 8.8.8.8)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\npino\\OneDrive\\デスクトップ\\Cloudcord"
+    ]
+  }
+}

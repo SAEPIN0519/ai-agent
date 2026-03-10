@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO/PREMIUM 歩き方ロードマップ — SHIFT AI</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 24px;
+    max-width: 860px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ヘッダー */
+  .header {
+    text-align: center;
+    padding: 40px 20px 32px;
+    margin-bottom: 32px;
+  }
+  .header .logo { font-size: 12px; letter-spacing: 4px; color: #818cf8; text-transform: uppercase; margin-bottom: 8px; }
+  .header h1 { font-size: 26px; color: #fff; margin-bottom: 8px; }
+  .header .sub { font-size: 14px; color: #94a3b8; }
+
+  /* プラン切替 */
+  .plan-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .plan-btn {
+    padding: 8px 24px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .plan-btn.active {
+    background: #818cf8;
+    color: #fff;
+    border-color: #818cf8;
+  }
+  .plan-btn:hover:not(.active) { border-color: #818cf8; color: #c7d2fe; }
+
+  /* タイムライン */
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #818cf8 0%, #6366f1 30%, #4f46e5 60%, #f59e0b 85%, #ef4444 100%);
+  }
+
+  /* フェーズ */
+  .phase {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .phase-dot {
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid #0f172a;
+    z-index: 1;
+  }
+  .phase-dot.purple { background: #818cf8; }
+  .phase-dot.blue { background: #3b82f6; }
+  .phase-dot.green { background: #10b981; }
+  .phase-dot.yellow { background: #f59e0b; }
+  .phase-dot.red { background: #ef4444; }
+
+  .phase-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #334155;
+    transition: border-color 0.2s;
+  }
+  .phase-card:hover { border-color: #475569; }
+
+  .phase-time {
+    font-size: 11px;
+    color: #818cf8;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .phase-title {
+    font-size: 18px;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .phase-goal {
+    font-size: 13px;
+    color: #a78bfa;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  /* ステップリスト */
+  .steps { list-style: none; }
+  .steps li {
+    padding: 8px 0;
+    border-bottom: 1px solid #1a2332;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps .icon { flex-shrink: 0; width: 20px; text-align: center; }
+  .steps .label { flex: 1; }
+  .steps .who {
+    font-size: 11px;
+    color: #64748b;
+    background: #0f172a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* タグ */
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .tag-must { background: #7c3aed33; color: #a78bfa; }
+  .tag-pro { background: #3b82f633; color: #60a5fa; }
+  .tag-premium { background: #f59e0b33; color: #fbbf24; }
+
+  /* PREMIUM差分 */
+  .premium-only {
+    display: none;
+    background: #1c1917;
+    border: 1px solid #f59e0b33;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+  }
+  .premium-only .premium-label {
+    font-size: 11px;
+    color: #fbbf24;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  body.show-premium .premium-only { display: block; }
+
+  /* KPI目安 */
+  .kpi-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .kpi-label { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+  .kpi-track {
+    flex: 1;
+    height: 6px;
+    background: #334155;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .kpi-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #818cf8, #6366f1);
+  }
+  .kpi-value { font-size: 12px; color: #c7d2fe; font-weight: 600; white-space: nowrap; }
+
+  /* 更新アクション */
+  .renewal-card {
+    background: linear-gradient(135deg, #1e293b, #172035);
+    border: 1px solid #f59e0b44;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 12px;
+  }
+  .exit-card {
+    background: linear-gradient(135deg, #1e293b, #251717);
+    border: 1px solid #ef444444;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 12px;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #475569;
+    margin-top: 40px;
+    padding: 20px;
+  }
+
+  /* 印刷 */
+  @media print {
+    body { background: #fff; color: #333; padding: 10mm; }
+    .phase-card { background: #f8fafc; border: 1px solid #e2e8f0; }
+    .phase-time { color: #6366f1; }
+    .phase-title { color: #1e293b; }
+    .timeline::before { background: #6366f1; }
+    .header h1 { color: #1e293b; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">SHIFT AI PRO / PREMIUM</div>
+  <h1>会員ロードマップ — 歩き方ガイド</h1>
+  <div class="sub">入会からサービス終了まで、あなたの成長ステップを一目で確認</div>
+</div>
+
+<div class="plan-toggle">
+  <button class="plan-btn active" onclick="showPlan('pro')">PRO プラン</button>
+  <button class="plan-btn" onclick="showPlan('premium')">PREMIUM プラン</button>
+</div>
+
+<div class="timeline">
+
+  <!-- ===== Phase 1: 入会 ===== -->
+  <div class="phase">
+    <div class="phase-dot purple"></div>
+    <div class="phase-card">
+      <div class="phase-time">Day 1 — 入会日</div>
+      <div class="phase-title">ようこそ！まずはこの5つ</div>
+      <div class="phase-goal">ゴール：SHIFT AIの基盤ツールに全部つながる</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">公式LINE に登録する <span class="tag tag-must">必須</span></span>
+          <span class="who">自動案内</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">Discord に参加する <span class="tag tag-must">必須</span></span>
+          <span class="who">自動案内</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">会員カレンダーを登録する <span class="tag tag-must">必須</span></span>
+          <span class="who">自動案内</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">マンツーマンAIキャリア面談を予約する</span>
+          <span class="who">Day 3まで</span>
+        </li>
+        <li>
+          <span class="icon">5</span>
+          <span class="label">入会理由・目標設定ワークを記入する <span class="tag tag-must">必須</span></span>
+          <span class="who">Day 5まで</span>
+        </li>
+      </ul>
+      <div class="premium-only">
+        <div class="premium-label">+ PREMIUM 限定</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">★</span>
+            <span class="label">専属コンシェルジュからウェルカムメッセージが届きます</span>
+            <span class="who">LINE</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 2: オンボーディング ===== -->
+  <div class="phase">
+    <div class="phase-dot purple"></div>
+    <div class="phase-card">
+      <div class="phase-time">Day 2〜7 — オンボーディング</div>
+      <div class="phase-title">学びの準備を整える</div>
+      <div class="phase-goal">ゴール：初回面談を終え、自分の現在地と目標がクリアになる</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">マイページに7日間ログインする（学習コンテンツ確認）</span>
+          <span class="who">毎日</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">キャリア診断Bot を受ける</span>
+          <span class="who">Day 5まで</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">マンツーマン面談を受ける</span>
+          <span class="who">Day 5まで</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">初回アンケートに回答する <span class="tag tag-must">必須</span></span>
+          <span class="who">Day 7</span>
+        </li>
+        <li>
+          <span class="icon">5</span>
+          <span class="label">PRO面談を受ける <span class="tag tag-must">必須</span></span>
+          <span class="who">Day 7</span>
+        </li>
+        <li>
+          <span class="icon">6</span>
+          <span class="label">歩き方動画を視聴 + Step Upシートを記入する</span>
+          <span class="who">Day 7</span>
+        </li>
+        <li>
+          <span class="icon">7</span>
+          <span class="label">Discord使い方動画を視聴する</span>
+          <span class="who">Day 7</span>
+        </li>
+        <li>
+          <span class="icon">8</span>
+          <span class="label">バンドルコースに登録する</span>
+          <span class="who">Day 7</span>
+        </li>
+      </ul>
+      <div class="premium-only">
+        <div class="premium-label">+ PREMIUM 限定</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">★</span>
+            <span class="label">初回Gap Analysis面談（Day 8）— 現在地と目標のギャップを数値化</span>
+            <span class="who">コンシェルジュ</span>
+          </li>
+          <li>
+            <span class="icon">★</span>
+            <span class="label">行動記録シートの記入スタート</span>
+            <span class="who">毎日</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 3: 実践スタート ===== -->
+  <div class="phase">
+    <div class="phase-dot blue"></div>
+    <div class="phase-card">
+      <div class="phase-time">Week 2〜4 — 実践スタート期</div>
+      <div class="phase-title">毎日のリズムをつくる</div>
+      <div class="phase-goal">ゴール：FB会・日報のルーティンが定着し、最初の案件に挑戦する</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">PROスタート質問会に参加する（毎月1日・15日）</span>
+          <span class="who">Day 8〜</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">実践FB会に参加し始める（月〜土 21:00-22:00）</span>
+          <span class="who">毎日</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">日報を書く習慣をつける</span>
+          <span class="who">毎日</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">週報を提出する</span>
+          <span class="who">毎週</span>
+        </li>
+        <li>
+          <span class="icon">5</span>
+          <span class="label">テスト案件・応募案件にチャレンジする</span>
+          <span class="who">木・金の会で相談</span>
+        </li>
+      </ul>
+      <div class="kpi-bar">
+        <span class="kpi-label">収益目安</span>
+        <div class="kpi-track"><div class="kpi-fill" style="width: 10%"></div></div>
+        <span class="kpi-value">Lv.1 〜10万円</span>
+      </div>
+      <div class="premium-only">
+        <div class="premium-label">+ PREMIUM 限定</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">★</span>
+            <span class="label">コンシェルジュが行動記録シートに毎日フィードバック</span>
+            <span class="who">毎日</span>
+          </li>
+          <li>
+            <span class="icon">★</span>
+            <span class="label">隔週マンツーマン進捗確認面談（第1回）</span>
+            <span class="who">Week 3</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 4: 成長期 ===== -->
+  <div class="phase">
+    <div class="phase-dot green"></div>
+    <div class="phase-card">
+      <div class="phase-time">Month 2〜3 — 成長期</div>
+      <div class="phase-title">案件を獲り、実績をつくる</div>
+      <div class="phase-goal">ゴール：初収益を達成し、得意分野が見えてくる</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">案件獲得実践会（月曜）で営業戦略を磨く</span>
+          <span class="who">毎週</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">登壇練習会（火曜）でプレゼン力を鍛える</span>
+          <span class="who">毎週</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">ケーススタディ会（水曜）で実践知を吸収する</span>
+          <span class="who">毎週</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">Lv.アップフォームで収益を報告する</span>
+          <span class="who">成果が出たら</span>
+        </li>
+        <li>
+          <span class="icon">5</span>
+          <span class="label">日曜特別会に参加する（月替わりテーマ 11:00-12:00）</span>
+          <span class="who">月1回〜</span>
+        </li>
+      </ul>
+      <div class="kpi-bar">
+        <span class="kpi-label">収益目安</span>
+        <div class="kpi-track"><div class="kpi-fill" style="width: 30%"></div></div>
+        <span class="kpi-value">Lv.2 10〜30万円</span>
+      </div>
+      <div class="premium-only">
+        <div class="premium-label">+ PREMIUM 限定</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">★</span>
+            <span class="label">隔週マンツーマン面談で軌道修正（計4〜6回）</span>
+            <span class="who">隔週</span>
+          </li>
+          <li>
+            <span class="icon">★</span>
+            <span class="label">KPI必達管理 — 週次で目標対比を確認</span>
+            <span class="who">コンシェルジュ</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 5: 加速期 ===== -->
+  <div class="phase">
+    <div class="phase-dot green"></div>
+    <div class="phase-card">
+      <div class="phase-time">Month 4〜6 — 加速期</div>
+      <div class="phase-title">収益を安定させ、次のステージへ</div>
+      <div class="phase-goal">ゴール：安定収益を確立し、自分の型（勝ちパターン）ができる</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">得意領域で継続案件・リピートを獲得する</span>
+          <span class="who">自走</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">振り返り会（土曜）で自分の成長を言語化する</span>
+          <span class="who">毎週</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">新メンバーへのアドバイス・メンター的活動</span>
+          <span class="who">FB会内</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">成果事例として共有（Discord・振り返り会）</span>
+          <span class="who">任意</span>
+        </li>
+      </ul>
+      <div class="kpi-bar">
+        <span class="kpi-label">収益目安</span>
+        <div class="kpi-track"><div class="kpi-fill" style="width: 60%"></div></div>
+        <span class="kpi-value">Lv.3〜4 30〜100万円</span>
+      </div>
+      <div class="premium-only">
+        <div class="premium-label">+ PREMIUM 限定（2ヶ月プランの場合）</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">★</span>
+            <span class="label">PREMIUM期間終了 → PROプランへ移行 or PREMIUM延長（6ヶ月）</span>
+            <span class="who">面談で相談</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 6: 自走期 ===== -->
+  <div class="phase">
+    <div class="phase-dot yellow"></div>
+    <div class="phase-card">
+      <div class="phase-time">Month 7〜12 — 自走期</div>
+      <div class="phase-title">自分のビジネスを確立する</div>
+      <div class="phase-goal">ゴール：SHIFT AI卒業後も自走できる力が身についている</div>
+      <ul class="steps">
+        <li>
+          <span class="icon">1</span>
+          <span class="label">独自の案件獲得チャネルを確立する</span>
+          <span class="who">自走</span>
+        </li>
+        <li>
+          <span class="icon">2</span>
+          <span class="label">FB会を「情報収集・ネットワーキング」として活用する</span>
+          <span class="who">選択参加</span>
+        </li>
+        <li>
+          <span class="icon">3</span>
+          <span class="label">PRO年間契約の更新時期を意識する（加入12ヶ月後）</span>
+          <span class="who">更新2ヶ月前に案内</span>
+        </li>
+        <li>
+          <span class="icon">4</span>
+          <span class="label">Lv.アップフォームで最新の実績を報告する</span>
+          <span class="who">随時</span>
+        </li>
+      </ul>
+      <div class="kpi-bar">
+        <span class="kpi-label">収益目安</span>
+        <div class="kpi-track"><div class="kpi-fill" style="width: 85%"></div></div>
+        <span class="kpi-value">Lv.4〜5 50万円〜</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase 7: 更新 or 卒業 ===== -->
+  <div class="phase">
+    <div class="phase-dot red"></div>
+    <div class="phase-card">
+      <div class="phase-time">契約満了時 — 更新 or 卒業</div>
+      <div class="phase-title">次の一歩を決める</div>
+
+      <div class="renewal-card">
+        <div style="font-size: 15px; font-weight: 700; color: #fbbf24; margin-bottom: 8px;">🔄 更新する場合</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">1</span>
+            <span class="label">更新面談でこれまでの振り返り + 次の目標設定</span>
+            <span class="who">更新1ヶ月前</span>
+          </li>
+          <li>
+            <span class="icon">2</span>
+            <span class="label">プラン見直し（PRO継続 / PREMIUM追加 / プラン変更）</span>
+            <span class="who">面談で相談</span>
+          </li>
+          <li>
+            <span class="icon">3</span>
+            <span class="label">更新手続き完了 → 新しい目標でリスタート</span>
+            <span class="who">自動案内</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="exit-card">
+        <div style="font-size: 15px; font-weight: 700; color: #f87171; margin-bottom: 8px;">👋 卒業する場合</div>
+        <ul class="steps">
+          <li>
+            <span class="icon">1</span>
+            <span class="label">卒業面談（任意）— 成果の振り返り・今後のアドバイス</span>
+            <span class="who">卒業1ヶ月前</span>
+          </li>
+          <li>
+            <span class="icon">2</span>
+            <span class="label">卒業申請フォームを提出する</span>
+            <span class="who">卒業月の前月末まで</span>
+          </li>
+          <li>
+            <span class="icon">3</span>
+            <span class="label">Discord・LINE等のアクセス終了</span>
+            <span class="who">卒業日</span>
+          </li>
+          <li>
+            <span class="icon">4</span>
+            <span class="label">SHIFT AI通常会員として継続も可能</span>
+            <span class="who">ダウングレード</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /timeline -->
+
+<!-- ===== 週間スケジュール早見表 ===== -->
+<div style="background: #1e293b; border-radius: 12px; padding: 20px 24px; margin-top: 36px; border: 1px solid #334155;">
+  <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px;">📅 PRO 週間スケジュール早見表</div>
+  <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #334155;">
+        <th style="text-align: left; padding: 6px 8px; color: #94a3b8; font-weight: 600;">曜日</th>
+        <th style="text-align: left; padding: 6px 8px; color: #94a3b8; font-weight: 600;">時間</th>
+        <th style="text-align: left; padding: 6px 8px; color: #94a3b8; font-weight: 600;">内容</th>
+        <th style="text-align: left; padding: 6px 8px; color: #94a3b8; font-weight: 600;">こんな人におすすめ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">月</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">案件獲得実践会</td>
+        <td style="padding: 8px; color: #94a3b8;">営業・提案に悩んでいる方</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">火</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">登壇練習会</td>
+        <td style="padding: 8px; color: #94a3b8;">人前で話す力を鍛えたい方</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">水</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">コンサル現場ケーススタディ会</td>
+        <td style="padding: 8px; color: #94a3b8;">実践ノウハウを学びたい方</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">木</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">案件応募・面談練習</td>
+        <td style="padding: 8px; color: #94a3b8;">面談に自信をつけたい方</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">金</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">テスト案件添削</td>
+        <td style="padding: 8px; color: #94a3b8;">案件の質を上げたい方</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a2332;">
+        <td style="padding: 8px;">土</td>
+        <td style="padding: 8px; color: #818cf8;">21:00-22:00</td>
+        <td style="padding: 8px;">週間振り返り会</td>
+        <td style="padding: 8px; color: #94a3b8;">全員（1週間の学びを整理）</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px;">日</td>
+        <td style="padding: 8px; color: #f59e0b;">11:00-12:00</td>
+        <td style="padding: 8px;">特別会（月替わり）</td>
+        <td style="padding: 8px; color: #94a3b8;">全員（ゲスト講師など）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  SHIFT AI PRO/PREMIUM ロードマップ ｜ 最終更新: <span id="last-updated"></span><br>
+  ※ 各ステップの詳細は担当コンシェルジュ・サブリーダーにお気軽にご相談ください
+</div>
+
+<script>
+  function showPlan(plan) {
+    const btns = document.querySelectorAll('.plan-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    if (plan === 'premium') {
+      document.body.classList.add('show-premium');
+    } else {
+      document.body.classList.remove('show-premium');
+    }
+  }
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('ja-JP');
+</script>
+</body>
+</html>

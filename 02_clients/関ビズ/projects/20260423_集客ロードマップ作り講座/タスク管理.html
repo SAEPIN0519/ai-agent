@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タスク管理 — 4/23 集客ロードマップ作り講座</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .header h1 { font-size: 20px; margin-bottom: 4px; }
+  .header .date { font-size: 14px; opacity: 0.85; }
+
+  /* 進捗バー */
+  .progress-bar-container {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .progress-track {
+    background: #e5e7eb;
+    border-radius: 8px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #3B82F6, #10B981);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.4s ease;
+  }
+
+  /* カテゴリ */
+  .category {
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .category-header:hover { background: #f9fafb; }
+  .category-header h2 {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .category-badge {
+    font-size: 11px;
+    background: #e5e7eb;
+    color: #6b7280;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .category-badge.done {
+    background: #d1fae5;
+    color: #059669;
+  }
+  .toggle-icon {
+    font-size: 12px;
+    color: #9ca3af;
+    transition: transform 0.2s;
+  }
+  .category.collapsed .toggle-icon { transform: rotate(-90deg); }
+  .category.collapsed .task-list { display: none; }
+
+  /* タスクリスト */
+  .task-list { padding: 4px 0; }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-item:hover { background: #fafbfc; }
+  .task-item.checked { opacity: 0.55; }
+  .task-item.checked .task-name { text-decoration: line-through; }
+
+  .task-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #3B82F6;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .task-content { flex: 1; }
+  .task-name { font-size: 14px; font-weight: 500; }
+  .task-detail {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* タグ */
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .tag-done { background: #d1fae5; color: #059669; }
+  .tag-wip  { background: #fef3c7; color: #d97706; }
+  .tag-todo { background: #fee2e2; color: #dc2626; }
+  .tag-deadline {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-left: 4px;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 20px;
+    padding: 12px;
+  }
+
+  @media print {
+    body { background: #fff; padding: 10mm; }
+    .category { box-shadow: none; border: 1px solid #ddd; }
+    .progress-bar-container { box-shadow: none; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>4/23 集客ロードマップ作り講座 — タスク管理</h1>
+  <div class="date">本町チャレンジBASE｜午前10:00〜 / 午後13:00〜｜9:30集合</div>
+</div>
+
+<div class="progress-bar-container">
+  <div class="progress-label">
+    <span>全体進捗</span>
+    <span id="progress-text">0 / 0</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
+</div>
+
+<!-- ==================== 古川様への送付 ==================== -->
+<div class="category" id="cat-furukawa">
+  <div class="category-header" onclick="toggleCategory('cat-furukawa')">
+    <h2>📮 古川様への資料送付 <span class="category-badge" id="badge-cat-furukawa"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">アクションシート（紙）を送付 <span class="tag tag-todo">未着手</span> <span class="tag-deadline">期限: 4/17</span></div>
+        <div class="task-detail">アクションシート_A4.html を印刷して古川様へ送付</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">手順書を送付 <span class="tag tag-todo">未着手</span> <span class="tag-deadline">期限: 4/17</span></div>
+        <div class="task-detail">FELOダウンロード手順 + 運営進行ガイドを印刷して古川様へ送付</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 資料作成 ==================== -->
+<div class="category" id="cat-docs">
+  <div class="category-header" onclick="toggleCategory('cat-docs')">
+    <h2>📄 資料作成 <span class="category-badge" id="badge-cat-docs"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">企画書の作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">関ビズ企画書_集客プラン講座_0423.html / .pptx</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">スライド（10枚）の作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">スライド_集客プラン講座.html</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">アクションシート（A4）のレイアウト <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">アクションシート_A4.html</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">FELOプロンプト集の作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">集客ロードマップ_FELOプロンプト集.md / 配布物_FELOプロンプト.html</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">QRコード用プロンプトページの作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">GitHub Pages で公開済み。QR画像も生成済み（qr_step1〜4.png）</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">FELOダウンロード手順（スマホ向け）の作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">FELOダウンロード手順.html — iPhone/Android両対応・A4印刷用</div>
+      </div>
+    </div>
+    <div class="task-item checked">
+      <input type="checkbox" checked disabled>
+      <div class="task-content">
+        <div class="task-name">運営進行ガイドの作成 <span class="tag tag-done">完了</span></div>
+        <div class="task-detail">運営進行ガイド.html — 全タイムライン・講師セリフ・発表手順・PDF提出手順</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">業種別データシート（3〜4業種分）をFELOで事前調査 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">カフェ・美容室・整体院・小売店など。参加者がデータを持っていない場合の補助資料</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">広告案内文の確定 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">パターンA（悩みから入る型）or パターンB（成果物から入る型）を選定</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 印刷・配布物 ==================== -->
+<div class="category" id="cat-print">
+  <div class="category-header" onclick="toggleCategory('cat-print')">
+    <h2>🖨️ 印刷・配布物 <span class="category-badge" id="badge-cat-print"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">アクションシート印刷 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">A4 × 人数分（各回6名＋予備 = 16枚程度）</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">FELOプロンプト配布物の印刷 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">A4両面 or 2枚。〇〇部分に記入欄あり。QRコード付き × 人数分</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">関ビズ個別相談の案内チラシ <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">講座終了後の導線用。関ビズ側に依頼 or 自作</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 広報・集客 ==================== -->
+<div class="category" id="cat-promo">
+  <div class="category-header" onclick="toggleCategory('cat-promo')">
+    <h2>📢 広報・集客 <span class="category-badge" id="badge-cat-promo"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">関ビズへ広告案内文を提出 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">確定した案内文を関ビズに送付し、告知してもらう</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">SNS告知（Instagram / X など） <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">自身のアカウントでの告知投稿</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">参加者への事前連絡メール送付 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">持ち物・事前準備の案内（メール_プロンプト配布.html をベースに）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 会場・機材 ==================== -->
+<div class="category" id="cat-venue">
+  <div class="category-header" onclick="toggleCategory('cat-venue')">
+    <h2>🏢 会場・機材 <span class="category-badge" id="badge-cat-venue"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">当日 9:30 本町チャレンジBASEに到着 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">講座開始30分前に到着して会場セットアップ開始</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">プロジェクター / モニターの確認 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">FELOのスクリーン共有用。接続方式（HDMI等）を確認</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">電源タップ・充電器の準備 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">各テーブルに電源タップ設置。スマホ充電器の貸出用を準備</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">筆記用具・マーカー（予備）の準備 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">参加者がペンを忘れた場合の予備</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">アシスタント（操作サポート）の確保 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">FELOの操作に不慣れな参加者へのサポート要員。1名いると理想的</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== リハーサル ==================== -->
+<div class="category" id="cat-rehearsal">
+  <div class="category-header" onclick="toggleCategory('cat-rehearsal')">
+    <h2>🎯 リハーサル・最終確認 <span class="category-badge" id="badge-cat-rehearsal"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">FELOデモのリハーサル <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">ステップ1〜4を通しで実演。回答の質・所要時間を確認</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">タイムテーブルの通しリハーサル <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">90分の流れを確認。各ワークの時間配分が現実的か検証</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">QRコードの動作確認 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">印刷物のQRからプロンプトページにアクセスできるか実機テスト</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 講座後フォロー ==================== -->
+<div class="category" id="cat-follow">
+  <div class="category-header" onclick="toggleCategory('cat-follow')">
+    <h2>📬 講座後フォロー <span class="category-badge" id="badge-cat-follow"></span></h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="task-list">
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">フォローメールの下書き作成 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">講座1週間後に送付。アクション進捗の確認メール</div>
+      </div>
+    </div>
+    <div class="task-item">
+      <input type="checkbox" onchange="updateProgress()">
+      <div class="task-content">
+        <div class="task-name">成果ヒアリングシートの準備 <span class="tag tag-todo">未着手</span></div>
+        <div class="task-detail">1ヶ月後のヒアリング用。事例化の許可取りも含む</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  最終更新: <span id="last-updated"></span> ｜ チェックボックスの状態はブラウザに保存されます
+</div>
+
+<script>
+  // ローカルストレージのキー
+  const STORAGE_KEY = 'sekibiz_0423_tasks';
+
+  // 保存・読み込み
+  function saveState() {
+    const checkboxes = document.querySelectorAll('.task-item input[type="checkbox"]:not([disabled])');
+    const state = Array.from(checkboxes).map(cb => cb.checked);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    const checkboxes = document.querySelectorAll('.task-item input[type="checkbox"]:not([disabled])');
+    checkboxes.forEach((cb, i) => {
+      if (i < state.length) cb.checked = state[i];
+    });
+  }
+
+  // 進捗更新
+  function updateProgress() {
+    const allCheckboxes = document.querySelectorAll('.task-item input[type="checkbox"]');
+    const total = allCheckboxes.length;
+    const checked = document.querySelectorAll('.task-item input[type="checkbox"]:checked').length;
+    const pct = Math.round((checked / total) * 100);
+
+    document.getElementById('progress-text').textContent = `${checked} / ${total}（${pct}%）`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    // タスクアイテムの見た目を更新
+    allCheckboxes.forEach(cb => {
+      cb.closest('.task-item').classList.toggle('checked', cb.checked);
+    });
+
+    // カテゴリごとのバッジ更新
+    document.querySelectorAll('.category').forEach(cat => {
+      const catAll = cat.querySelectorAll('.task-item input[type="checkbox"]');
+      const catDone = cat.querySelectorAll('.task-item input[type="checkbox"]:checked');
+      const badge = document.getElementById('badge-' + cat.id);
+      if (badge) {
+        badge.textContent = `${catDone.length} / ${catAll.length}`;
+        badge.className = 'category-badge' + (catDone.length === catAll.length ? ' done' : '');
+      }
+    });
+
+    saveState();
+  }
+
+  // カテゴリの折りたたみ
+  function toggleCategory(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+  }
+
+  // 初期化
+  loadState();
+  updateProgress();
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('ja-JP');
+</script>
+</body>
+</html>

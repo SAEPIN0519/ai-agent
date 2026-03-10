@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>集客アクションシート</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-size: 10px;
+    color: #333;
+    width: 190mm;
+    margin: 0 auto;
+    line-height: 1.4;
+  }
+
+  /* ヘッダー */
+  .header {
+    text-align: center;
+    padding: 6px 0 4px;
+    border-bottom: 3px solid #2563EB;
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-size: 16px;
+    color: #1E40AF;
+    letter-spacing: 2px;
+  }
+  .header .sub {
+    font-size: 9px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  /* セクション */
+  .section {
+    border: 1.5px solid #93C5FD;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    overflow: hidden;
+  }
+  .section-title {
+    background: #2563EB;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-title .badge {
+    background: #fff;
+    color: #2563EB;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+  }
+  .section-body { padding: 5px 8px; }
+
+  /* テーブル共通 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #D1D5DB;
+    padding: 3px 5px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 9.5px;
+  }
+  th {
+    background: #EFF6FF;
+    font-weight: bold;
+    color: #1E40AF;
+    white-space: nowrap;
+    width: 100px;
+  }
+  td { min-height: 18px; }
+
+  /* 基本情報 2列レイアウト */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .info-grid table { border: none; }
+  .info-grid td, .info-grid th {
+    border-left: none;
+    border-right: none;
+  }
+  .info-grid td { height: 22px; }
+
+  /* 棚卸し */
+  .audit td { height: 22px; }
+
+  /* FELOメモ */
+  .memo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .memo-box {
+    border: 1px dashed #93C5FD;
+    border-radius: 4px;
+    padding: 3px 6px;
+    min-height: 36px;
+  }
+  .memo-box.wide {
+    grid-column: 1 / -1;
+  }
+  .memo-label {
+    font-size: 8.5px;
+    color: #2563EB;
+    font-weight: bold;
+    margin-bottom: 1px;
+  }
+
+  /* アクション表 */
+  .action-table th.col-net {
+    background: #DBEAFE;
+    color: #1E40AF;
+    text-align: center;
+    width: auto;
+  }
+  .action-table th.col-real {
+    background: #FEF3C7;
+    color: #92400E;
+    text-align: center;
+    width: auto;
+  }
+  .action-table th.col-label {
+    width: 80px;
+    text-align: center;
+  }
+  .action-table td {
+    height: 28px;
+    width: 45%;
+  }
+  .action-table .star-row td {
+    height: 22px;
+    font-size: 9px;
+  }
+
+  /* 明日やること */
+  .tomorrow-box {
+    border: 3px solid #F59E0B;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-top: 5px;
+    background: #FFFBEB;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tomorrow-label {
+    background: #F59E0B;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tomorrow-write {
+    flex: 1;
+    min-height: 32px;
+    border-bottom: 2px dotted #F59E0B;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 8px;
+    color: #999;
+    margin-top: 4px;
+  }
+
+  /* シート提出 */
+  .submit-box {
+    border: 2px solid #10B981;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-top: 6px;
+    background: #ECFDF5;
+  }
+  .submit-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #059669;
+    margin-bottom: 4px;
+  }
+  .submit-steps {
+    display: flex;
+    gap: 6px;
+  }
+  .submit-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 8.5px;
+    flex: 1;
+    line-height: 1.3;
+  }
+  .submit-num {
+    background: #10B981;
+    color: #fff;
+    font-size: 9px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  @media print {
+    body { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="header">
+  <h1>集客アクションシート</h1>
+  <div class="sub">2026年4月23日｜明日からお客さんが増える！AIでつくる「うちの店の集客プラン」</div>
+</div>
+
+<!-- ワーク① 基本情報 -->
+<div class="section">
+  <div class="section-title">
+    <span class="badge">ワーク1</span> うちのお店の基本情報
+  </div>
+  <div class="section-body">
+    <div class="info-grid">
+      <table>
+        <tr><th>お名前</th><td></td></tr>
+        <tr><th>業種</th><td></td></tr>
+        <tr><th>場所</th><td></td></tr>
+      </table>
+      <table>
+        <tr><th>営業日・時間</th><td></td></tr>
+        <tr><th>忙しい時間帯</th><td></td></tr>
+        <tr><th>暇な時間帯</th><td></td></tr>
+      </table>
+    </div>
+    <table style="margin-top: 3px;">
+      <tr><th style="width:100px;">一番の悩み</th><td></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ワーク① 集客の棚卸し -->
+<div class="section">
+  <div class="section-title">
+    <span class="badge">ワーク1</span> 今やっている集客の棚卸し
+  </div>
+  <div class="section-body">
+    <table class="audit">
+      <tr><th>使っているSNS</th><td></td></tr>
+      <tr><th>Instagram投稿頻度</th><td></td></tr>
+      <tr><th>発信している内容</th><td></td></tr>
+      <tr><th>リアル集客</th><td></td></tr>
+      <tr><th>うまくいっていること</th><td></td></tr>
+      <tr><th>困っていること</th><td></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ワーク② FELOメモ -->
+<div class="section">
+  <div class="section-title">
+    <span class="badge">ワーク2</span> FELOで分析した結果メモ
+  </div>
+  <div class="section-body">
+    <div class="memo-grid">
+      <div class="memo-box">
+        <div class="memo-label">ステップ1：お客様のスマホ隙間時間</div>
+      </div>
+      <div class="memo-box">
+        <div class="memo-label">ステップ1：Instagram診断で気づいたこと</div>
+      </div>
+      <div class="memo-box wide">
+        <div class="memo-label">ステップ1：使えそうなハッシュタグ</div>
+      </div>
+      <div class="memo-box">
+        <div class="memo-label">ステップ2：最適な媒体（表から転記）</div>
+      </div>
+      <div class="memo-box">
+        <div class="memo-label">ステップ2：背中を押す「最後の一言」</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ワーク③ アクションプラン -->
+<div class="section">
+  <div class="section-title">
+    <span class="badge">ワーク3</span> 集客アクションプラン
+  </div>
+  <div class="section-body">
+    <table class="action-table">
+      <thead>
+        <tr>
+          <th class="col-label"></th>
+          <th class="col-net">ネット施策（SNS・Web）</th>
+          <th class="col-real">リアル施策（店頭・対面）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-label">発見したこと</th>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th class="col-label">集客チャンス</th>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th class="col-label" style="background:#DBEAFE;">アクション1<br><span style="font-size:8px;color:#DC2626;">★ 明日やる</span></th>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th class="col-label">アクション2<br><span style="font-size:8px;color:#666;">1週間以内</span></th>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th class="col-label">アクション3<br><span style="font-size:8px;color:#666;">1ヶ月以内</span></th>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 明日やること1つ -->
+<div class="tomorrow-box">
+  <div class="tomorrow-label">明日やること1つ</div>
+  <div class="tomorrow-write"></div>
+</div>
+
+<!-- シート提出方法 -->
+<div class="submit-box">
+  <div class="submit-title">シートが完成したら → 関ビズ公式LINEに送ってください！</div>
+  <div class="submit-steps">
+    <div class="submit-step">
+      <span class="submit-num">1</span>
+      <span>このシートをスマホのカメラで撮影（全体が入るように真上から）</span>
+    </div>
+    <div class="submit-step">
+      <span class="submit-num">2</span>
+      <span>
+        <strong>iPhone：</strong>写真アプリ →  写真を選択 → 左下の共有ボタン → 「プリント」→ ピンチアウト（2本指で広げる）→ PDFで保存<br>
+        <strong>Android：</strong>写真を選択 → 共有 → 「PDF に変換」またはGoogleドライブで「スキャン」
+      </span>
+    </div>
+    <div class="submit-step">
+      <span class="submit-num">3</span>
+      <span>関ビズ公式LINE を開いて、保存したPDFを送信</span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  関市ビジネスサポートセンター seki-biz｜AIでつくる集客プラン講座
+</div>
+
+</body>
+</html>

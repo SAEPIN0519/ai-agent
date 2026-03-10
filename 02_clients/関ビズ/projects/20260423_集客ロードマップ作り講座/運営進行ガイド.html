@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運営進行ガイド — 4/23 集客ロードマップ作り講座</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-size: 12px;
+    color: #333;
+    width: 190mm;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* ヘッダー */
+  .header {
+    text-align: center;
+    padding: 12px 0 8px;
+    border-bottom: 3px solid #DC2626;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: 18px;
+    color: #DC2626;
+    letter-spacing: 1px;
+  }
+  .header .sub {
+    font-size: 10px;
+    color: #666;
+    margin-top: 3px;
+  }
+  .header .badge {
+    display: inline-block;
+    background: #DC2626;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-weight: bold;
+  }
+
+  /* タイムライン */
+  .timeline { margin-bottom: 10px; }
+
+  .block {
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  .block-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    font-weight: bold;
+  }
+  .block-header .time {
+    font-size: 14px;
+    font-family: monospace;
+    color: #fff;
+    background: #374151;
+    padding: 2px 8px;
+    border-radius: 4px;
+    min-width: 52px;
+    text-align: center;
+  }
+  .block-header .duration {
+    font-size: 10px;
+    color: #9CA3AF;
+  }
+  .block-header .title {
+    font-size: 14px;
+    color: #1F2937;
+  }
+
+  .block-body {
+    padding: 6px 12px 10px;
+    border-top: 1px solid #F3F4F6;
+  }
+
+  /* ブロック色分け */
+  .block.opening { border-color: #6366F1; }
+  .block.opening .block-header { background: #EEF2FF; }
+  .block.work { border-color: #2563EB; }
+  .block.work .block-header { background: #EFF6FF; }
+  .block.share { border-color: #F59E0B; }
+  .block.share .block-header { background: #FFFBEB; }
+  .block.closing { border-color: #10B981; }
+  .block.closing .block-header { background: #ECFDF5; }
+
+  /* 講師セリフ */
+  .talk {
+    background: #FEF3C7;
+    border-left: 3px solid #F59E0B;
+    padding: 4px 10px;
+    margin: 4px 0;
+    font-size: 11px;
+    border-radius: 0 4px 4px 0;
+  }
+  .talk::before {
+    content: "講師：";
+    font-weight: bold;
+    color: #D97706;
+  }
+
+  /* 運営メモ */
+  .ops {
+    background: #FEE2E2;
+    border-left: 3px solid #DC2626;
+    padding: 4px 10px;
+    margin: 4px 0;
+    font-size: 11px;
+    border-radius: 0 4px 4px 0;
+  }
+  .ops::before {
+    content: "運営：";
+    font-weight: bold;
+    color: #DC2626;
+  }
+
+  /* 手順リスト */
+  .steps {
+    padding-left: 18px;
+    font-size: 11px;
+    margin: 4px 0;
+  }
+  .steps li { margin-bottom: 2px; }
+  .steps li strong { color: #1E40AF; }
+
+  /* チェックリスト */
+  .checklist {
+    list-style: none;
+    font-size: 11px;
+    margin: 4px 0;
+  }
+  .checklist li {
+    margin-bottom: 2px;
+    padding-left: 18px;
+    position: relative;
+  }
+  .checklist li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    color: #6B7280;
+  }
+
+  /* 区切り */
+  .divider {
+    text-align: center;
+    font-size: 10px;
+    color: #9CA3AF;
+    margin: 8px 0;
+    border-top: 1px dashed #D1D5DB;
+    padding-top: 6px;
+  }
+
+  /* 発表セクション詳細 */
+  .announce-flow {
+    border: 2px solid #F59E0B;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    background: #FFFBEB;
+  }
+  .announce-flow h4 {
+    color: #D97706;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .announce-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .announce-table th, .announce-table td {
+    border: 1px solid #E5E7EB;
+    padding: 4px 8px;
+    text-align: left;
+  }
+  .announce-table th {
+    background: #FEF3C7;
+    color: #92400E;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  /* LINE提出セクション */
+  .line-flow {
+    border: 2px solid #10B981;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    background: #ECFDF5;
+  }
+  .line-flow h4 {
+    color: #059669;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 9px;
+    color: #999;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  @media print {
+    body { margin: 0; }
+    .block { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>運営進行ガイド</h1>
+  <div class="sub">4/23「スマホ1つで集客プラン完成 90分」｜午前10:00〜 / 午後13:00〜</div>
+  <div class="badge">運営スタッフ用（参加者には配布しないでください）</div>
+</div>
+
+<!-- ===== 開場前 ===== -->
+<div class="divider">▼ 開場前チェック（講座開始30分前）</div>
+
+<div class="block opening">
+  <div class="block-header">
+    <span class="time">-0:30</span>
+    <span class="title">会場セットアップ</span>
+  </div>
+  <div class="block-body">
+    <ul class="checklist">
+      <li>机・椅子の配置（6名分 + 講師席）</li>
+      <li>プロジェクター / モニターの接続・動作確認</li>
+      <li>電源タップを各テーブルに設置</li>
+      <li>充電器の貸出用を準備</li>
+      <li>筆記用具・マーカー（予備）を配置</li>
+      <li>配布物を各席にセット：①アクションシート ②FELOプロンプト集 ③FELOダウンロード手順</li>
+      <li>講師PCでFELOを開き、スクリーン表示を確認</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 0:00 オープニング ===== -->
+<div class="block opening">
+  <div class="block-header">
+    <span class="time">0:00</span>
+    <span class="title">オープニング：今日のゴール説明</span>
+    <span class="duration">5分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「今日のゴールは1つだけ。『明日やること1つ』を決めて帰ることです。難しい知識は要りません。スマホがあれば大丈夫です」</div>
+    <div class="ops">スライド1〜2を表示。遅刻者がいても進行する（アシスタントが個別フォロー）</div>
+  </div>
+</div>
+
+<!-- ===== 0:05 ワーク① ===== -->
+<div class="block work">
+  <div class="block-header">
+    <span class="time">0:05</span>
+    <span class="title">ワーク① 自店の現状を書き出す</span>
+    <span class="duration">10分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「お手元のアクションシートの上の段、『うちのお店の基本情報』と『今やっている集客の棚卸し』を記入してください。正確じゃなくてOK、だいたいで大丈夫です」</div>
+    <div class="ops">机を回って記入が進んでいるか確認。手が止まっている人には「業種は何ですか？」など声かけ</div>
+    <ol class="steps">
+      <li>アクションシート上段の <strong>基本情報6項目</strong> を記入</li>
+      <li><strong>集客の棚卸し6項目</strong> を記入（SNS・リアル両面）</li>
+      <li>全員が書き終わるのを待たず、8分程度で次へ進む</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ===== 0:15 ワーク② ===== -->
+<div class="block work">
+  <div class="block-header">
+    <span class="time">0:15</span>
+    <span class="title">ワーク② FELOで自店を分析（講師と一緒に）</span>
+    <span class="duration">30分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「では、FELOを開いてください。一緒に画面を見ながら進めます。プロンプトはお配りした紙に書いてあります。赤い〇〇のところだけ、さっき書いた自分のお店の情報に書き換えてください」</div>
+
+    <ol class="steps">
+      <li><strong>ステップ1（8分）</strong>：お客様の「1日」を見える化 + SNS診断
+        <br>→ 回答から「隙間時間」「Instagram診断」「ハッシュタグ」をシートにメモ</li>
+      <li><strong>ステップ2（10分）</strong>：知る→気になる→行ってみるの流れ分析
+        <br>→ 「最適な媒体」をシートにメモ。「最後の一言」に丸をつける</li>
+      <li><strong>ステップ3（12分）</strong>：明日からできるアクションプラン
+        <br>→ ネット施策3つ＋リアル施策3つをシートに書き写す。★を1つつける</li>
+    </ol>
+
+    <div class="ops">各ステップで「入力できましたか？」と確認してから講師が送信の合図を出す。回答待ちの間（30秒程度）に「FELOが考え中です、少し待ちましょう」と声かけ</div>
+    <div class="ops">FELOの回答が途中で止まった参加者には「続きを書いてください」と入力するよう案内</div>
+  </div>
+</div>
+
+<!-- ===== 0:45 ワーク③ ===== -->
+<div class="block work">
+  <div class="block-header">
+    <span class="time">0:45</span>
+    <span class="title">ワーク③ アクションシートを完成させる</span>
+    <span class="duration">20分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「ここからが本番です。FELOの回答を参考に、シートの下段『集客アクションプラン』を完成させましょう。ネットとリアル、それぞれ書いてください」</div>
+    <ol class="steps">
+      <li>シート下段の <strong>アクションプラン表</strong>（ネット/リアル各5項目）を記入</li>
+      <li>アクション①〜③に時間軸（明日/1週間/1ヶ月）で書き分け</li>
+      <li>最後に <strong>「明日やること1つ」欄</strong> を記入</li>
+      <li>余裕がある人はボーナス ステップ4（優先順位整理）も案内</li>
+    </ol>
+    <div class="ops">「明日やること1つ」が空欄の人がいないか確認。書けていない人にはアクション①をそのまま書くよう促す</div>
+  </div>
+</div>
+
+<!-- ===== 1:05 グループシェア ===== -->
+<div class="block share">
+  <div class="block-header">
+    <span class="time">1:05</span>
+    <span class="title">グループシェア（全員発表）</span>
+    <span class="duration">10分</span>
+  </div>
+  <div class="block-body">
+    <div class="announce-flow">
+      <h4>発表の進め方（運営が仕切る）</h4>
+      <announce-table>
+      <table class="announce-table">
+        <tr>
+          <th>順番</th>
+          <th>やること</th>
+          <th>時間</th>
+        </tr>
+        <tr>
+          <td>準備</td>
+          <td>全員のシートをテーブルに並べる or 手に持つ</td>
+          <td>30秒</td>
+        </tr>
+        <tr>
+          <td>発表</td>
+          <td>1人ずつ順番に発表（講師から指名、席順でOK）</td>
+          <td>1人1分 × 6人</td>
+        </tr>
+        <tr>
+          <td>内容</td>
+          <td colspan="2">
+            ①「お店の業種」→ ②「FELOでわかったこと」→ ③「明日やること1つ」の3点だけ
+          </td>
+        </tr>
+        <tr>
+          <td>リアクション</td>
+          <td>聞いている人はお客さん目線でひとことフィードバック</td>
+          <td>各20秒程度</td>
+        </tr>
+        <tr>
+          <td>最後</td>
+          <td>他の人の施策で「自分もやりたい」と思ったものをシートに追記OK</td>
+          <td>1分</td>
+        </tr>
+      </table>
+      </div>
+
+    <div class="talk">「では1人ずつ、1分で共有しましょう。①お店の業種、②FELOでわかったこと、③明日やること。この3つだけでOKです。〇〇さんからお願いします」</div>
+    <div class="ops">タイマーを見ながら1人1分を目安に進行。長引く場合は「ありがとうございます、では次の方」と自然に切り替える</div>
+    <div class="ops">発表に抵抗がある参加者には「シートを見せるだけでもOKですよ」と声かけ</div>
+  </div>
+</div>
+
+<!-- ===== 1:15 宣言タイム ===== -->
+<div class="block share">
+  <div class="block-header">
+    <span class="time">1:15</span>
+    <span class="title">宣言タイム「明日やること1つ」</span>
+    <span class="duration">10分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「最後に、全員で『明日やること1つ』を宣言しましょう。シートの一番下に書いたものを、ひとこと声に出してください」</div>
+    <ol class="steps">
+      <li>1人ずつ「私は明日、〇〇をやります」と宣言（10〜15秒/人）</li>
+      <li>全員が言い終わったら拍手で締める</li>
+    </ol>
+
+    <div class="line-flow">
+      <h4>シートのPDF提出 → 関ビズ公式LINEへ送付</h4>
+      <div class="talk">「完成したシートは、ぜひ関ビズの公式LINEに送ってください。シートをスマホで撮影して、PDFにして送るだけです。やり方はシートの一番下に書いてあります。今から一緒にやりましょう」</div>
+      <ol class="steps">
+        <li>講師がスクリーンで <strong>実演</strong>：シートを撮影 → PDF化 → LINE送信</li>
+        <li><strong>iPhone</strong>：写真アプリ → 共有 → 「プリント」→ 2本指で広げる → PDF保存 → LINEで送信</li>
+        <li><strong>Android</strong>：写真 → 共有 → 「PDFに変換」or Googleドライブの「スキャン」→ LINEで送信</li>
+        <li>関ビズ公式LINEのQRコードをスクリーンに表示（まだ友だち登録していない人向け）</li>
+      </ol>
+      <div class="ops">全員の送信完了を確認。うまくいかない人にはアシスタントが個別サポート。最悪、写真のまま送ってもらってもOK</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 1:25 クロージング ===== -->
+<div class="block closing">
+  <div class="block-header">
+    <span class="time">1:25</span>
+    <span class="title">まとめ＋関ビズ個別相談の案内</span>
+    <span class="duration">5分</span>
+  </div>
+  <div class="block-body">
+    <div class="talk">「今日作ったシートが、みなさんの集客プランの第一歩です。1つでも実行してみて、うまくいったこと・困ったことがあればぜひ関ビズに相談してください。個別相談は無料です」</div>
+    <ol class="steps">
+      <li>関ビズ個別相談の案内チラシを配布</li>
+      <li>希望者にはその場で相談予約を受付</li>
+      <li>アンケートがあれば配布・回収</li>
+    </ol>
+    <div class="ops">講座終了。撤収時に忘れ物チェック</div>
+  </div>
+</div>
+
+<!-- ===== 講座後 ===== -->
+<div class="divider">▼ 講座後フォロー</div>
+
+<div class="block closing">
+  <div class="block-header">
+    <span class="title">講座後の対応スケジュール</span>
+  </div>
+  <div class="block-body">
+    <table class="announce-table">
+      <tr><th>タイミング</th><th>アクション</th><th>担当</th></tr>
+      <tr><td>当日</td><td>LINEで届いたPDFを確認・保存</td><td>関ビズ</td></tr>
+      <tr><td>1週間後</td><td>参加者へフォローメール（アクション進捗の確認）</td><td>講師</td></tr>
+      <tr><td>1ヶ月後</td><td>成果ヒアリング（事例化の許可取り）</td><td>講師 + 関ビズ</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  運営スタッフ用｜関市ビジネスサポートセンター seki-biz｜4/23 AIでつくる集客プラン講座
+</div>
+
+</body>
+</html>

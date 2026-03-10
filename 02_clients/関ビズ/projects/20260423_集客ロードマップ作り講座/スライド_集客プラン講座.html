@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>明日からお客さんが増える！AIでつくる「うちの店の集客プラン」</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #1a1a2e;
+    color: #333;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  /* スライド番号 */
+  .slide-number {
+    position: absolute;
+    bottom: 24px;
+    right: 40px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ========== 背景テーマ ========== */
+  .bg-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+  .bg-warm {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+  }
+  .bg-white {
+    background: #f8f9fa;
+    color: #333;
+  }
+  .bg-white .slide-number { color: rgba(0,0,0,0.3); }
+  .bg-blue {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: #fff;
+  }
+  .bg-green {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: #1a3a1a;
+  }
+  .bg-green .slide-number { color: rgba(0,0,0,0.3); }
+  .bg-orange {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: #333;
+  }
+  .bg-orange .slide-number { color: rgba(0,0,0,0.3); }
+  .bg-dark {
+    background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+    color: #fff;
+  }
+  .bg-purple {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    color: #333;
+  }
+  .bg-purple .slide-number { color: rgba(0,0,0,0.3); }
+  .bg-sky {
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    color: #1a2a4a;
+  }
+  .bg-sky .slide-number { color: rgba(0,0,0,0.3); }
+  .bg-final {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+
+  /* ========== テキストスタイル ========== */
+  .title-main {
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.3;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .title-sub {
+    font-size: 28px;
+    font-weight: 400;
+    text-align: center;
+    opacity: 0.9;
+    margin-bottom: 40px;
+  }
+  .slide-title {
+    font-size: 44px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.3;
+  }
+  .slide-body {
+    font-size: 26px;
+    line-height: 1.8;
+    max-width: 900px;
+    width: 100%;
+  }
+  .slide-body li {
+    margin-bottom: 12px;
+    list-style: none;
+    padding-left: 36px;
+    position: relative;
+  }
+  .slide-body li::before {
+    content: '✅';
+    position: absolute;
+    left: 0;
+  }
+  .slide-body .num-list li::before { content: none; }
+  .slide-body .num-list li {
+    padding-left: 0;
+    counter-increment: step;
+  }
+  .highlight {
+    background: rgba(255,255,255,0.25);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  .big-text {
+    font-size: 64px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .big-emoji {
+    font-size: 80px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 20px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .card-white {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 20px;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .card-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card-text {
+    font-size: 22px;
+    line-height: 1.6;
+  }
+
+  .info-row {
+    display: flex;
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .info-box {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+  .info-box .label {
+    font-size: 18px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+  .info-box .value {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .step-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    color: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 6px 20px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+  }
+  .bg-white .step-badge {
+    background: #667eea;
+    color: #fff;
+  }
+
+  .timeline {
+    max-width: 900px;
+    width: 100%;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+  .timeline-time {
+    min-width: 80px;
+    font-weight: 700;
+    font-size: 20px;
+    padding-top: 4px;
+  }
+  .timeline-content {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 20px;
+  }
+  .bg-white .timeline-content {
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .timeline-label {
+    font-weight: 700;
+  }
+
+  .profile-section {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    max-width: 1000px;
+  }
+  .profile-text {
+    flex: 1;
+    font-size: 20px;
+    line-height: 1.8;
+  }
+  .profile-name {
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .profile-tagline {
+    font-size: 20px;
+    opacity: 0.85;
+    margin-bottom: 20px;
+  }
+
+  .share-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .share-card {
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 24px;
+    font-size: 22px;
+    line-height: 1.5;
+  }
+  .share-num {
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .qr-placeholder {
+    width: 180px;
+    height: 180px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 12px;
+  }
+
+  /* ナビゲーション */
+  .nav-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 40px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    z-index: 100;
+  }
+
+  /* 印刷用 */
+  @media print {
+    .slide {
+      display: flex !important;
+      page-break-after: always;
+      height: 100vh;
+    }
+    .nav-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== スライド1：タイトル＋自己紹介 ===== -->
+<div class="slide bg-hero active" id="slide1">
+  <div class="title-main">明日からお客さんが増える！<br>AIでつくる<br>「うちの店の集客プラン」</div>
+  <div class="title-sub">2026年4月23日（木）｜関市ビジネスサポートセンター</div>
+  <div class="card" style="margin-top:20px;">
+    <div class="card-text" style="text-align:center;">
+      <span style="font-size:24px; font-weight:700;">AIコンサルタント　SAEPIN</span><br>
+      <span style="font-size:18px; opacity:0.9;">
+        国内最大級のAI特化型プラットフォームでコンサルティングコーチを務める。<br>
+        完全伴走型の新事業プロジェクトリーダーとして、AIの社会実装を推進。<br>
+        岐阜県では16社の支援実績を誇り、経営者の相談パートナーとしてAIを活用した支援を行っている。
+      </span>
+    </div>
+  </div>
+  <div class="slide-number">1 / 10</div>
+</div>
+
+<!-- ===== スライド2：今日のゴール ===== -->
+<div class="slide bg-warm" id="slide2">
+  <div class="big-emoji">🎯</div>
+  <div class="slide-title">今日のゴール</div>
+  <div class="big-text" style="font-size:48px;">
+    「明日やること<span class="highlight">1つ</span>」<br>を決めて帰る
+  </div>
+  <div style="margin-top:40px; font-size:24px; opacity:0.9; text-align:center; line-height:1.8;">
+    難しい話は一切なし。<br>
+    スマホを触りながら、一緒に作りましょう。
+  </div>
+  <div class="slide-number">2 / 10</div>
+</div>
+
+<!-- ===== スライド3：FELOの開き方 ===== -->
+<div class="slide bg-white" id="slide3">
+  <div class="step-badge">準備</div>
+  <div class="slide-title" style="color:#667eea;">FELOを開きましょう</div>
+  <div style="display:flex; gap:40px; align-items:center; max-width:900px;">
+    <div style="flex:1;">
+      <div class="slide-body">
+        <ul class="num-list" style="font-size:28px; line-height:2;">
+          <li>① スマホのカメラでQRコードを読み取る</li>
+          <li>② ブラウザでFELOが開く</li>
+          <li>③ ログイン不要！そのまま使えます</li>
+        </ul>
+      </div>
+      <div style="margin-top:30px; font-size:20px; color:#888;">
+        ※ うまく開かない方は「FELO AI」で検索してください
+      </div>
+    </div>
+    <div>
+      <div class="qr-placeholder">
+        QRコード<br>（FELO URL）<br>ここに貼付
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">3 / 10</div>
+</div>
+
+<!-- ===== スライド4：ワーク① ===== -->
+<div class="slide bg-blue" id="slide4">
+  <div class="step-badge">ワーク① ── 10分</div>
+  <div class="slide-title">まず、自分のお店の「今」を書き出す</div>
+  <div class="card">
+    <div class="card-title">アクションシートの上段に記入</div>
+    <div class="card-text">
+      <ul class="num-list" style="list-style:none; padding:0;">
+        <li style="padding-left:0;">📝 業種・営業時間・忙しい時間帯・暇な時間帯</li>
+        <li style="padding-left:0;">📝 一番の悩み（例：平日午後にお客さんが来ない）</li>
+        <li style="padding-left:0;">📝 今やっている集客（Instagram？チラシ？口コミ？）</li>
+        <li style="padding-left:0;">📝 うまくいっていること・いっていないこと</li>
+      </ul>
+    </div>
+  </div>
+  <div style="font-size:22px; opacity:0.9; margin-top:12px;">
+    💡 正確なデータがなくても大丈夫。体感値でOKです！
+  </div>
+  <div class="slide-number">4 / 10</div>
+</div>
+
+<!-- ===== スライド5：ワーク②概要 ===== -->
+<div class="slide bg-white" id="slide5">
+  <div class="step-badge">ワーク② ── 30分</div>
+  <div class="slide-title" style="color:#764ba2;">FELOに3つの質問をする</div>
+  <div style="display:flex; gap:20px; max-width:900px; width:100%;">
+    <div class="card-white" style="flex:1; text-align:center;">
+      <div style="font-size:48px; margin-bottom:8px;">🔍</div>
+      <div class="card-title" style="color:#4facfe;">ステップ1</div>
+      <div class="card-text" style="font-size:20px;">
+        お客様の<br>「1日」を<br>見える化する
+      </div>
+      <div style="font-size:16px; color:#888; margin-top:8px;">8分</div>
+    </div>
+    <div class="card-white" style="flex:1; text-align:center;">
+      <div style="font-size:48px; margin-bottom:8px;">🧠</div>
+      <div class="card-title" style="color:#f5576c;">ステップ2</div>
+      <div class="card-text" style="font-size:20px;">
+        知る→気になる<br>→行ってみる<br>の流れを分析
+      </div>
+      <div style="font-size:16px; color:#888; margin-top:8px;">10分</div>
+    </div>
+    <div class="card-white" style="flex:1; text-align:center;">
+      <div style="font-size:48px; margin-bottom:8px;">🚀</div>
+      <div class="card-title" style="color:#43e97b;">ステップ3</div>
+      <div class="card-text" style="font-size:20px;">
+        明日からできる<br>アクションプラン<br>を作る
+      </div>
+      <div style="font-size:16px; color:#888; margin-top:8px;">12分</div>
+    </div>
+  </div>
+  <div style="margin-top:30px; font-size:24px; color:#666; text-align:center;">
+    配布した紙のプロンプトを<span style="font-weight:700; color:#764ba2;">そのまま入力</span>するだけ！<br>
+    〇〇の部分を自分のお店に書き換えてください。
+  </div>
+  <div class="slide-number">5 / 10</div>
+</div>
+
+<!-- ===== スライド6：FELO実演（切替案内） ===== -->
+<div class="slide bg-dark" id="slide6">
+  <div class="big-emoji">💻</div>
+  <div class="slide-title">ここからFELOの画面を<br>一緒に見ながら進めます</div>
+  <div class="card" style="text-align:center;">
+    <div class="card-text" style="font-size:24px;">
+      講師がスクリーンで実演します。<br>
+      <span style="font-weight:700;">「では一緒に開いてください」</span>の合図で<br>
+      皆さんも自分のスマホで同じ操作をしてください。
+    </div>
+  </div>
+  <div style="margin-top:20px; font-size:20px; opacity:0.7; text-align:center;">
+    困ったら手を挙げてください。一緒にやりましょう！
+  </div>
+  <div class="slide-number">6 / 10</div>
+</div>
+
+<!-- ===== スライド7：ワーク③ ===== -->
+<div class="slide bg-green" id="slide7">
+  <div class="step-badge">ワーク③ ── 20分</div>
+  <div class="slide-title">アクションシートを完成させる</div>
+  <div style="display:flex; gap:24px; max-width:900px; width:100%;">
+    <div class="card-white" style="flex:1;">
+      <div class="card-title" style="text-align:center;">📱 ネット施策</div>
+      <div class="card-text" style="font-size:20px;">
+        <div style="margin-bottom:8px;">① 明日やること</div>
+        <div style="margin-bottom:8px;">② 1週間以内にやること</div>
+        <div>③ 1ヶ月以内に仕組み化</div>
+      </div>
+    </div>
+    <div class="card-white" style="flex:1;">
+      <div class="card-title" style="text-align:center;">🏪 リアル施策</div>
+      <div class="card-text" style="font-size:20px;">
+        <div style="margin-bottom:8px;">① 明日やること</div>
+        <div style="margin-bottom:8px;">② 1週間以内にやること</div>
+        <div>③ 1ヶ月以内にやること</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:30px; font-size:26px; font-weight:700; text-align:center;">
+    ★ それぞれ「明日やること」に★をつける
+  </div>
+  <div class="slide-number">7 / 10</div>
+</div>
+
+<!-- ===== スライド8：グループシェア ===== -->
+<div class="slide bg-purple" id="slide8">
+  <div class="step-badge">グループシェア ── 10分</div>
+  <div class="slide-title">みんなのシートを見せ合おう</div>
+  <div class="share-grid">
+    <div class="share-card">
+      <div class="share-num">1</div>
+      全員のシートを<br>テーブルに並べる
+    </div>
+    <div class="share-card">
+      <div class="share-num">2</div>
+      1人1分で<br>自分のポイントを共有
+    </div>
+    <div class="share-card">
+      <div class="share-num">3</div>
+      お客さん目線で<br>ひとことフィードバック
+    </div>
+    <div class="share-card">
+      <div class="share-num">4</div>
+      他の人のアイデアを<br>1つ盗んでメモ！
+    </div>
+  </div>
+  <div style="margin-top:24px; font-size:22px; text-align:center;">
+    💬「その投稿、〇〇時に見たら行きたくなる！」
+  </div>
+  <div class="slide-number">8 / 10</div>
+</div>
+
+<!-- ===== スライド9：宣言タイム ===== -->
+<div class="slide bg-orange" id="slide9">
+  <div class="step-badge">宣言タイム ── 10分</div>
+  <div class="big-emoji">✊</div>
+  <div class="big-text" style="font-size:52px;">
+    「明日やること<br>1つ」を<br>みんなの前で宣言！
+  </div>
+  <div style="margin-top:30px; font-size:22px; text-align:center; line-height:1.8;">
+    口に出すと、やる確率が上がります。<br>
+    小さな一歩でOK。完璧じゃなくていい。
+  </div>
+  <div class="slide-number">9 / 10</div>
+</div>
+
+<!-- ===== スライド10：関ビズ案内＋クロージング ===== -->
+<div class="slide bg-final" id="slide10">
+  <div class="slide-title">今日はありがとうございました！</div>
+  <div class="card" style="text-align:center;">
+    <div class="card-title" style="font-size:28px;">もっと深く相談したい方へ</div>
+    <div class="card-text" style="font-size:22px; margin-top:12px;">
+      関ビズでは<span style="font-weight:700;">無料の個別相談</span>を受け付けています。<br>
+      今日のアクションシートを持って、ぜひご相談ください。
+    </div>
+    <div style="margin-top:20px;">
+      <div class="qr-placeholder">
+        QRコード<br>（関ビズ予約）<br>ここに貼付
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:30px; font-size:22px; opacity:0.9; text-align:center; line-height:1.8;">
+    📌 配布したプロンプトは講座後も使えます<br>
+    季節の変わり目・新メニューのときにまたお試しください
+  </div>
+  <div class="slide-number">10 / 10</div>
+</div>
+
+<div class="nav-hint">← → キーまたはクリックでページ送り</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      showSlide(current + 1);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      showSlide(current - 1);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    // 画面の左1/4クリックで戻る、それ以外で進む
+    if (e.clientX < window.innerWidth * 0.25) {
+      showSlide(current - 1);
+    } else {
+      showSlide(current + 1);
+    }
+  });
+</script>
+
+</body>
+</html>

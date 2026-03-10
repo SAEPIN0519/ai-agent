@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>明日からお客さんが増える！AIでつくる「うちの店の集客プラン」</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif; background: #111; overflow: hidden; }
+
+.slide {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  padding: 60px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.slide.active { display: flex; flex-direction: column; }
+
+/* ナビゲーション */
+.nav { position: fixed; bottom: 20px; right: 30px; z-index: 100; display: flex; gap: 10px; }
+.nav button {
+  background: rgba(0,0,0,0.5); color: #fff; border: none; padding: 10px 20px;
+  border-radius: 8px; font-size: 18px; cursor: pointer;
+}
+.nav button:hover { background: rgba(0,0,0,0.7); }
+.page-num {
+  position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.4); font-size: 14px; z-index: 100;
+}
+
+/* 共通 */
+.header-bar { background: #1B2A4A; color: #fff; padding: 20px 60px; margin: -60px -80px 40px -80px; }
+.header-bar h2 { font-size: 36px; text-align: center; }
+.cards { display: flex; gap: 30px; flex: 1; align-items: stretch; }
+.card { flex: 1; border-radius: 16px; padding: 30px; }
+
+/* スライド1: 表紙 */
+#s1 { background: #1B2A4A; justify-content: center; align-items: center; text-align: center; }
+#s1 h1 { color: #fff; font-size: 52px; margin-bottom: 10px; }
+#s1 .accent { color: #E86C00; font-size: 48px; font-weight: bold; }
+#s1 .divider { width: 80%; height: 4px; background: #E86C00; margin: 30px auto; }
+#s1 .sub { color: #BBCCDD; font-size: 22px; margin-top: 20px; }
+#s1 .info { color: #8899AA; font-size: 20px; margin-top: 30px; }
+
+/* スライド2: お悩み */
+#s2 { background: #fff; }
+#s2 .card { background: #E8F4FD; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; }
+#s2 .emoji { font-size: 60px; margin-bottom: 15px; }
+#s2 .card p { font-size: 20px; color: #333; line-height: 1.7; }
+#s2 .bottom-msg { text-align: center; color: #E86C00; font-size: 24px; font-weight: bold; margin-top: 30px; }
+
+/* スライド3: 概要 */
+#s3 { background: #fff; }
+.time-cards { display: flex; gap: 40px; margin-bottom: 30px; }
+.time-card { flex: 1; background: #E8F4FD; border-radius: 16px; padding: 30px; text-align: center; }
+.time-card h3 { color: #2D6A9F; font-size: 28px; margin-bottom: 15px; }
+.time-card p { font-size: 22px; color: #333; line-height: 1.8; }
+.info-list { font-size: 20px; color: #333; line-height: 2.2; }
+
+/* スライド4: 得られること */
+#s4 { background: #fff; }
+#s4 .card { background: #F5F5F5; border-radius: 16px; text-align: center; display: flex; flex-direction: column; }
+.num-circle { width: 50px; height: 50px; background: #E86C00; color: #fff; border-radius: 50%; font-size: 28px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
+#s4 .card h3 { color: #1B2A4A; font-size: 22px; margin-bottom: 15px; line-height: 1.5; }
+#s4 .card p { color: #555; font-size: 17px; line-height: 1.8; text-align: left; padding: 0 10px; }
+
+/* スライド5: FELO */
+#s5 { background: #fff; }
+.felo-left { flex: 1; background: #E8F4FD; border-radius: 16px; padding: 35px; }
+.felo-right { flex: 1; background: #FFF3E0; border-radius: 16px; padding: 35px; }
+.felo-left h3 { color: #2D6A9F; font-size: 28px; margin-bottom: 20px; }
+.felo-right h3 { color: #E86C00; font-size: 28px; margin-bottom: 20px; }
+.check-list { list-style: none; font-size: 20px; line-height: 2.2; color: #333; }
+.step-flow { font-size: 22px; color: #333; line-height: 2.4; }
+.step-flow .arrow { color: #999; display: block; text-align: center; font-size: 20px; }
+.note-orange { color: #E86C00; font-size: 18px; margin-top: 15px; }
+
+/* スライド6: タイムテーブル */
+#s6 { background: #fff; }
+.timetable { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.tt-row { display: flex; align-items: center; padding: 12px 20px; border-radius: 10px; font-size: 18px; }
+.tt-time { width: 80px; color: #555; text-align: center; }
+.tt-dur { width: 80px; color: #2D6A9F; font-weight: bold; text-align: center; }
+.tt-title { width: 200px; color: #1B2A4A; font-weight: bold; }
+.tt-desc { flex: 1; color: #555; }
+.tt-bg1 { background: #F5F5F5; }
+.tt-bg2 { background: #E8F4FD; }
+.tt-bg3 { background: #FFF3E0; }
+.tt-bg4 { background: #E8F8E8; }
+
+/* スライド7: 3ステップ */
+#s7 { background: #fff; }
+.step-card { flex: 1; border-radius: 16px; overflow: hidden; background: #F5F5F5; display: flex; flex-direction: column; }
+.step-header { padding: 15px 20px; color: #fff; font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; }
+.step-header.blue { background: #2D6A9F; }
+.step-header.green { background: #27AE60; }
+.step-header.orange { background: #E86C00; }
+.step-body { padding: 25px; flex: 1; }
+.step-body h4 { color: #1B2A4A; font-size: 20px; margin-bottom: 15px; text-align: center; line-height: 1.5; }
+.step-body p { color: #555; font-size: 16px; line-height: 1.9; }
+
+/* スライド8: グループシェア */
+#s8 { background: #fff; }
+#s8 .subtitle { text-align: center; font-size: 22px; color: #555; margin-bottom: 25px; }
+.share-card { flex: 1; background: #E8F8E8; border-radius: 16px; text-align: center; padding: 25px; display: flex; flex-direction: column; }
+.share-num { width: 50px; height: 50px; background: #27AE60; color: #fff; border-radius: 50%; font-size: 28px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
+.share-card h3 { color: #1B2A4A; font-size: 20px; margin-bottom: 15px; line-height: 1.5; }
+.share-card p { color: #555; font-size: 16px; line-height: 1.8; text-align: left; }
+
+/* スライド9: 持ち帰るもの */
+#s9 { background: #fff; }
+.main-output { background: #FFF3E0; border-radius: 16px; padding: 25px 35px; margin-bottom: 25px; }
+.main-output h3 { color: #E86C00; font-size: 26px; margin-bottom: 10px; }
+.main-output ul { list-style: none; font-size: 19px; color: #333; line-height: 2; }
+.sub-outputs { display: flex; gap: 25px; }
+.sub-card { flex: 1; background: #E8F4FD; border-radius: 16px; padding: 25px; }
+.sub-card h4 { color: #2D6A9F; font-size: 20px; margin-bottom: 10px; }
+.sub-card p { color: #555; font-size: 16px; line-height: 1.8; }
+
+/* スライド10: フォロー */
+#s10 { background: #fff; }
+#s10 .subtitle { text-align: center; font-size: 22px; color: #555; margin-bottom: 25px; }
+.follow-card { flex: 1; background: #F5F5F5; border-radius: 16px; text-align: center; padding: 25px; }
+.follow-timing { display: inline-block; background: #2D6A9F; color: #fff; padding: 8px 25px; border-radius: 8px; font-size: 22px; font-weight: bold; margin-bottom: 20px; }
+.follow-card p { color: #555; font-size: 18px; line-height: 1.8; margin-bottom: 15px; }
+.follow-effect { color: #27AE60; font-weight: bold; font-size: 16px; }
+
+/* スライド11: まとめ */
+#s11 { background: #1B2A4A; justify-content: center; align-items: center; text-align: center; }
+#s11 h2 { color: #fff; font-size: 44px; }
+#s11 .accent { color: #E86C00; font-size: 40px; font-weight: bold; margin-top: 5px; }
+#s11 .divider { width: 80%; height: 4px; background: #E86C00; margin: 30px auto; }
+#s11 .summary { text-align: left; display: inline-block; margin-top: 10px; }
+#s11 .summary p { color: #fff; font-size: 22px; line-height: 2.2; }
+#s11 .info { color: #BBCCDD; font-size: 22px; margin-top: 35px; }
+
+@media print {
+  body { background: #fff; overflow: visible; }
+  .slide { display: flex !important; page-break-after: always; height: 100vh; }
+  .nav, .page-num { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- スライド1: 表紙 -->
+<div class="slide active" id="s1">
+  <h1>明日からお客さんが増える！</h1>
+  <div class="divider"></div>
+  <div class="accent">AIでつくる「うちの店の集客プラン」</div>
+  <p class="sub">〜 無料AIツール「FELO」で、90分であなたの店の集客アクションが見つかる 〜</p>
+  <p class="info">2026年4月23日（木） ｜ 関市ビジネスサポートセンター（関ビズ）</p>
+</div>
+
+<!-- スライド2: お悩み -->
+<div class="slide" id="s2">
+  <div class="header-bar"><h2>こんなお悩み、ありませんか？</h2></div>
+  <div class="cards">
+    <div class="card"><div class="emoji">😟</div><p>SNSをやった方がいいのは<br>わかるけど、<strong>何を投稿</strong>すれば…</p></div>
+    <div class="card"><div class="emoji">😟</div><p>チラシを配っても<br><strong>反応がわからない</strong>…</p></div>
+    <div class="card"><div class="emoji">😟</div><p>お客さんが来ない<br><strong>時間帯をなんとか</strong>したい…</p></div>
+    <div class="card"><div class="emoji">😟</div><p>集客って結局<br><strong>何から始めれば</strong>いいの？</p></div>
+  </div>
+  <p class="bottom-msg">▶ この講座で、あなたの店に合った「具体的なアクション」が見つかります</p>
+</div>
+
+<!-- スライド3: 概要 -->
+<div class="slide" id="s3">
+  <div class="header-bar"><h2>講座概要</h2></div>
+  <div class="time-cards">
+    <div class="time-card">
+      <h3>午前の部</h3>
+      <p>⏰ 10:00 〜 11:30（90分）<br>👥 定員 6名</p>
+    </div>
+    <div class="time-card">
+      <h3>午後の部</h3>
+      <p>⏰ 13:00 〜 14:30（90分）<br>👥 定員 6名</p>
+    </div>
+  </div>
+  <div class="info-list">
+    <p>📱 持ち物：スマホまたはPC（各自の通信回線を使用）</p>
+    <p>🤖 使用ツール：FELO（無料AIツール・アカウント登録不要）</p>
+    <p>📝 成果物：1枚アクションシート（ネット施策＋リアル施策）</p>
+    <p>💡 事前準備：今やっている集客方法を整理しておくだけでOK</p>
+  </div>
+</div>
+
+<!-- スライド4: 得られること -->
+<div class="slide" id="s4">
+  <div class="header-bar"><h2>90分で得られること</h2></div>
+  <div class="cards">
+    <div class="card">
+      <div class="num-circle">1</div>
+      <h3>お客様の行動が<br>見えるようになる</h3>
+      <p>AIがあなたのお客様の1日の行動をシミュレーション。「いつ」「どこで」情報を届ければいいかがわかります。</p>
+    </div>
+    <div class="card">
+      <div class="num-circle">2</div>
+      <h3>今のSNS・集客の<br>改善点がわかる</h3>
+      <p>今やっているInstagramやチラシの効果をAIが診断。「何を変えればいいか」が具体的にわかります。</p>
+    </div>
+    <div class="card">
+      <div class="num-circle">3</div>
+      <h3>明日からの<br>アクションが決まる</h3>
+      <p>ネット（SNS）とリアル（店頭・口コミ）に分けて、コスト0円で今すぐできるアクションを持ち帰れます。</p>
+    </div>
+  </div>
+</div>
+
+<!-- スライド5: FELO -->
+<div class="slide" id="s5">
+  <div class="header-bar"><h2>使うのはコレだけ！ 無料AIツール「FELO」</h2></div>
+  <div class="cards">
+    <div class="felo-left">
+      <h3>FELOってなに？</h3>
+      <ul class="check-list">
+        <li>✅ 質問を入力するだけで、AIが最新情報を調べてまとめてくれる無料ツール</li>
+        <li>✅ アカウント登録なしですぐ使える</li>
+        <li>✅ スマホのブラウザから開くだけ</li>
+        <li>✅ 講座では講師と一緒に操作するので初めてでも安心</li>
+      </ul>
+    </div>
+    <div class="felo-right">
+      <h3>講座での使い方</h3>
+      <div class="step-flow">
+        <strong>① 講師がスクリーンで実演</strong>
+        <span class="arrow">↓</span>
+        <strong>② 参加者も一緒に同じ操作</strong>
+        <span class="arrow">↓</span>
+        <strong>③ AIの回答をシートにメモ</strong>
+      </div>
+      <p class="note-orange">※ 難しい操作は一切ありません</p>
+    </div>
+  </div>
+</div>
+
+<!-- スライド6: タイムテーブル -->
+<div class="slide" id="s6">
+  <div class="header-bar"><h2>90分の流れ</h2></div>
+  <div class="timetable">
+    <div class="tt-row tt-bg1"><span class="tt-time">0:00</span><span class="tt-dur">5分</span><span class="tt-title">オープニング</span><span class="tt-desc">今日のゴール説明</span></div>
+    <div class="tt-row tt-bg2"><span class="tt-time">0:05</span><span class="tt-dur">10分</span><span class="tt-title">ワーク①</span><span class="tt-desc">自店の現状を書き出す（SNS・集客の棚卸し）</span></div>
+    <div class="tt-row tt-bg3"><span class="tt-time">0:15</span><span class="tt-dur">30分</span><span class="tt-title">ワーク②</span><span class="tt-desc">講師と一緒にFELOで分析（3ステップ）</span></div>
+    <div class="tt-row tt-bg2"><span class="tt-time">0:45</span><span class="tt-dur">20分</span><span class="tt-title">ワーク③</span><span class="tt-desc">アクションシート完成（ネット / リアルに分けて）</span></div>
+    <div class="tt-row tt-bg4"><span class="tt-time">1:05</span><span class="tt-dur">10分</span><span class="tt-title">グループシェア</span><span class="tt-desc">全員でシートを共有、互いの施策から学び合う</span></div>
+    <div class="tt-row tt-bg3"><span class="tt-time">1:15</span><span class="tt-dur">10分</span><span class="tt-title">宣言タイム</span><span class="tt-desc">「明日やること1つ」を全員が発表</span></div>
+    <div class="tt-row tt-bg1"><span class="tt-time">1:25</span><span class="tt-dur">5分</span><span class="tt-title">まとめ</span><span class="tt-desc">関ビズ個別相談の案内</span></div>
+  </div>
+</div>
+
+<!-- スライド7: 3ステップ -->
+<div class="slide" id="s7">
+  <div class="header-bar"><h2>AIに聞く3つの質問（ワーク②の詳細）</h2></div>
+  <div class="cards">
+    <div class="step-card">
+      <div class="step-header blue"><span>STEP 1</span><span>8分</span></div>
+      <div class="step-body">
+        <h4>お客様の「1日」を<br>見える化する</h4>
+        <p>理想のお客様がいつスマホを見るか、いつお店の情報に触れるかをAIが分析<br><br>→ 今のInstagram投稿の<br>　診断もしてくれる</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header green"><span>STEP 2</span><span>10分</span></div>
+      <div class="step-body">
+        <h4>「知る→気になる→<br>行ってみる」を分析</h4>
+        <p>お客様が店を知ってから来店するまでの心の動きと、最適な伝え方をAIが提案<br><br>→ 背中を押す「最後の一言」<br>　も教えてくれる</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header orange"><span>STEP 3</span><span>12分</span></div>
+      <div class="step-body">
+        <h4>明日からできる<br>アクションプラン</h4>
+        <p>ネット施策とリアル施策に分けて、コスト0円でできるアクションをAIが提案<br><br>→ 明日 / 1週間 / 1ヶ月の<br>　3段階で具体的に</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- スライド8: グループシェア -->
+<div class="slide" id="s8">
+  <div class="header-bar"><h2>参加者同士で学び合う「グループシェア」</h2></div>
+  <p class="subtitle">6人全員でアクションシートを共有し、互いの集客アイデアからヒントをもらう</p>
+  <div class="cards">
+    <div class="share-card">
+      <div class="share-num">1</div>
+      <h3>自分のシートを共有</h3>
+      <p>「うちの店は今〇〇をやっていて、AIに聞いたら〇〇がわかりました」<br><br>→ 1人1分で発表</p>
+    </div>
+    <div class="share-card">
+      <div class="share-num">2</div>
+      <h3>お客さん目線で<br>フィードバック</h3>
+      <p>「その投稿、○○時に見たら行きたくなります！」<br><br>→ 異業種の視点が新鮮な気づきに</p>
+    </div>
+    <div class="share-card">
+      <div class="share-num">3</div>
+      <h3>他の人のアイデアを<br>自分のシートに追記</h3>
+      <p>「これ自分もやりたい！」と思ったものは遠慮なくメモ<br><br>→ 6人分のアイデアが全員の財産に</p>
+    </div>
+  </div>
+</div>
+
+<!-- スライド9: 持ち帰るもの -->
+<div class="slide" id="s9">
+  <div class="header-bar"><h2>参加者が持ち帰るもの</h2></div>
+  <div class="main-output">
+    <h3>📝 1枚アクションシート</h3>
+    <ul>
+      <li>・自店の現状分析（今やっている集客の棚卸し）</li>
+      <li>・ネット施策 3つ（明日 / 1週間以内 / 1ヶ月以内）</li>
+      <li>・リアル施策 3つ（明日 / 1週間以内 / 1ヶ月以内）</li>
+      <li>・「明日やること1つ」の宣言</li>
+    </ul>
+  </div>
+  <div class="sub-outputs">
+    <div class="sub-card">
+      <h4>🤖 FELOの使い方</h4>
+      <p>講座後も自宅で使える。季節やメニューが変われば新しいプランが作れる</p>
+    </div>
+    <div class="sub-card">
+      <h4>💡 仲間のアイデア</h4>
+      <p>6人分の集客アイデアをグループシェアで共有。異業種の視点がヒントに</p>
+    </div>
+    <div class="sub-card">
+      <h4>🔗 関ビズの個別相談</h4>
+      <p>講座後もサポート。アクション実行の相談や次のステップを一緒に</p>
+    </div>
+  </div>
+</div>
+
+<!-- スライド10: フォロー体制 -->
+<div class="slide" id="s10">
+  <div class="header-bar"><h2>講座後のフォロー体制</h2></div>
+  <p class="subtitle">講座は「始まり」。実行と改善を関ビズが継続サポート</p>
+  <div class="cards">
+    <div class="follow-card">
+      <div class="follow-timing">講座当日</div>
+      <p>希望者にその場で<br>関ビズ個別相談を予約</p>
+      <p class="follow-effect">→ すぐに次のステップへ</p>
+    </div>
+    <div class="follow-card">
+      <div class="follow-timing">1週間後</div>
+      <p>参加者へフォロー連絡<br>アクション進捗の確認</p>
+      <p class="follow-effect">→ 実行のモチベーション維持</p>
+    </div>
+    <div class="follow-card">
+      <div class="follow-timing">1ヶ月後</div>
+      <p>成果ヒアリング<br>（事例化の許可取り）</p>
+      <p class="follow-effect">→ 次回講座の実績にも活用</p>
+    </div>
+  </div>
+</div>
+
+<!-- スライド11: まとめ -->
+<div class="slide" id="s11">
+  <h2>明日からお客さんが増える！</h2>
+  <div class="divider"></div>
+  <div class="accent">AIでつくる「うちの店の集客プラン」</div>
+  <div class="summary" style="margin-top: 30px;">
+    <p>✅ 無料AIツール「FELO」で、自分の店に合った集客法を発見</p>
+    <p>✅ ネット × リアル、両方のアクションプランを持ち帰り</p>
+    <p>✅ 参加者同士のシェアで、6人分のアイデアが全員の財産に</p>
+    <p>✅ 講座後も関ビズが継続サポート</p>
+  </div>
+  <p class="info">2026年4月23日（木） 午前10:00 / 午後13:00 ｜ 各回定員6名</p>
+</div>
+
+<!-- ナビ -->
+<div class="nav">
+  <button onclick="prev()">◀</button>
+  <button onclick="next()">▶</button>
+</div>
+<div class="page-num" id="pageNum">1 / 11</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+
+function show(n) {
+  slides[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  document.getElementById('pageNum').textContent = (current + 1) + ' / ' + slides.length;
+}
+function next() { show(current + 1); }
+function prev() { show(current - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') next();
+  if (e.key === 'ArrowLeft') prev();
+});
+document.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') next();
+});
+</script>
+</body>
+</html>
