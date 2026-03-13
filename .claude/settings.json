@@ -6,10 +6,20 @@
       "Bash(ping -n 1 google.com)",
       "Bash(ping -n 1 notify-api.line.me)",
       "Bash(ipconfig //flushdns)",
-      "Bash(nslookup notify-api.line.me 8.8.8.8)"
+      "Bash(nslookup notify-api.line.me 8.8.8.8)",
+      "Read(//c/Users/npino/ai-agent/$APPDATA/Code/User/**)",
+      "Read(//c/Users/npino/AppData/Roaming/Code/User/**)",
+      "Bash(start \"\" \"c:\\\\Users\\\\npino\\\\ai-agent\\\\02_clients\\\\SIFTAI\\\\プロプレミアムTEAM\\\\PRO_PREMIUM_ロードマップ.html\")",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(pip list)",
+      "Bash(pip install gspread google-auth google-auth-oauthlib)",
+      "Bash(\"c:/Users/npino/ai-agent/09_system/config/slack_bot_token.txt\")",
+      "Bash(pip install slack-sdk)",
+      "Bash(pip show slack-sdk)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\npino\\OneDrive\\デスクトップ\\Cloudcord"
+      "c:\\Users\\npino\\OneDrive\\デスクトップ\\Cloudcord",
+      "C:\\Users\\npino\\AppData\\Roaming\\Code\\User"
     ]
   }
 }

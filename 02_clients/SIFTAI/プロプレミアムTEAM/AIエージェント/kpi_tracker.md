@@ -63,6 +63,13 @@
 - Notion データベースで会員管理
 - Claude API でサマリー文章生成
 - Slack Webhook でアラート送信
+- **Slack連携: slack_reader.py（稼働中）** — Slackの投稿頻度・内容からアクティブ度を補完判定
+
+## Slack連携（稼働中）
+
+- 対象チャンネル: `community_ss_pro-premium_plan`（ID: C0AC8404FPE）
+- 読み取りスクリプト: [09_system/slack_reader.py](../../../../09_system/slack_reader.py)
+- 活用方法: メンバーのSlack投稿数・スレッド参加状況をアクティブ判定の補助指標として使用
 
 ## 次のアクション（冴香さん確認事項）
 - [ ] 現在の会員名簿の管理ツールを確認（Notion? スプレッドシート?）

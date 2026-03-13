@@ -9,6 +9,10 @@ __pycache__/
 venv/
 .venv/
 
+# Google API認証情報（絶対にコミットしない）
+**/google_service_account.json
+
 # OS
 .DS_Store
 Thumbs.db
+slack_bot_token.txt

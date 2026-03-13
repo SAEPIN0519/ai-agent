@@ -115,6 +115,22 @@
 - 連続日数集計: Google Apps Script（Sheets直結・無料）
 - エルメ送信: エルメ API または Webhook 連携
 - レポート生成: Claude API でサマリー文章生成
+- **Slack連携: slack_reader.py（稼働中）** — チーム運営チャンネルの会話を読み取り
+
+## Slack連携（稼働中）
+
+- Slack App: サイバン（Bot Token: 09_system/config/slack_bot_token.txt）
+- 対象チャンネル: `community_ss_pro-premium_plan`（ID: C0AC8404FPE）
+- 読み取りスクリプト: [09_system/slack_reader.py](../../../../09_system/slack_reader.py)
+- 権限: channels:history / channels:read / users:read（読み取り専用）
+- 用途: メンバーの活動状況・投稿内容・スレッド議論を自動収集し、エージェントの判断材料にする
+
+## 関連ドキュメント
+
+- [会員日報ウィークリー分析 SKILL.md](../../クロードコード勉強会/SKILL.md) — 週次分析・感情分析・アクティブTOP3抽出・Slack週次報告の全体フロー
+- [Slack読み取りスクリプト](../../../../09_system/slack_reader.py) — チャンネルメッセージ＋スレッド返信の取得・メンバー別集計
+
+---
 
 ## 次のアクション（冴香さん確認事項）
 - [x] 会員カルテの管理ツール → Google Sheets 確定

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO/PREMIUMプラン 1ヶ月活動報告</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #a51e6d;
+            --primary-light: #d63384;
+            --bg-dark: #0a0a1a;
+            --bg-card: rgba(255,255,255,0.05);
+            --bg-card-hover: rgba(255,255,255,0.08);
+            --text: #e8e8f0;
+            --text-muted: #8888a0;
+            --border: rgba(255,255,255,0.1);
+            --team-iwama: #f59e0b;
+            --team-abe: #3b82f6;
+            --team-nomura: #10b981;
+            --team-hisho: #8b5cf6;
+            --team-ai: #06b6d4;
+            --glass: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.12);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ヒーロー */
+        .hero {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 40%, #2d1045 70%, #a51e6d 100%);
+            padding: 80px 20px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 50%, rgba(165,30,109,0.15) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(165,30,109,0.3);
+            border: 1px solid rgba(165,30,109,0.5);
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+            color: #f0a0d0;
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #f0a0d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        /* KPIカード */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .kpi-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(165,30,109,0.2);
+        }
+        .kpi-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* セクション共通 */
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 60px 0; }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title .material-icons-round {
+            font-size: 1.8rem;
+            color: var(--primary-light);
+        }
+
+        /* Before */
+        .before-section { background: rgba(255,255,255,0.02); }
+        .before-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+        .before-list li {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+        .before-list li::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* After - 概要 */
+        .after-intro {
+            background: linear-gradient(135deg, rgba(165,30,109,0.1), rgba(59,130,246,0.1));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 40px;
+            font-size: 1.05rem;
+            text-align: center;
+        }
+        .flow-steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: rgba(165,30,109,0.2);
+            border: 1px solid rgba(165,30,109,0.3);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .flow-arrow { color: var(--text-muted); font-size: 1.2rem; line-height: 2; }
+
+        /* チームカード */
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+            transition: background 0.3s;
+        }
+        .team-card:hover { background: var(--bg-card-hover); }
+        .team-card.iwama { border-left-color: var(--team-iwama); }
+        .team-card.abe { border-left-color: var(--team-abe); }
+        .team-card.nomura { border-left-color: var(--team-nomura); }
+        .team-card.hisho { border-left-color: var(--team-hisho); }
+        .team-card.ai { border-left-color: var(--team-ai); }
+
+        .team-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+        .team-name { font-size: 1.2rem; font-weight: 700; }
+        .team-members { font-size: 0.85rem; color: var(--text-muted); }
+        .focus-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .task-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .task-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .task-table td {
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: top;
+        }
+        .task-table tr:last-child td { border-bottom: none; }
+        .task-table td:first-child { font-weight: 500; white-space: nowrap; }
+
+        /* 機動力 */
+        .speed-section { background: rgba(255,255,255,0.02); }
+        .speed-stat {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+        .speed-stat strong { color: #fff; font-size: 1.3rem; }
+        .speed-grid { display: grid; gap: 12px; }
+        .speed-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .speed-issue { font-size: 0.9rem; flex: 1; }
+        .speed-badge {
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: #34d399;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Next */
+        .next-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+        .next-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .next-table td {
+            padding: 12px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: top;
+        }
+        .next-table tr:last-child td { border-bottom: none; }
+
+        .vision-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+        .vision-list li {
+            background: linear-gradient(135deg, rgba(165,30,109,0.08), rgba(6,182,212,0.08));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 0.95rem;
+        }
+
+        /* まとめ */
+        .summary-section {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 100%);
+        }
+        .summary-message {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 32px;
+            line-height: 1.9;
+            text-align: center;
+        }
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .member-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .member-role { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+        .member-name { font-size: 1rem; font-weight: 700; }
+
+        .closing {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* 8種の内訳 */
+        .template-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .template-tag {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #6ee7b7;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 1.6rem; }
+            .kpi-number { font-size: 1.5rem; }
+            .team-card { padding: 20px; }
+            .member-grid { grid-template-columns: 1fr; }
+            .task-table td:first-child { white-space: normal; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ヒーロー -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">PRO / PREMIUM PLAN</div>
+        <h1>1ヶ月活動報告</h1>
+        <p class="hero-sub">報告者：青嶋一輝 ｜ 対象期間：2026年2月8日〜3月13日（約5週間）</p>
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-number">17名</div>
+                <div class="kpi-label">PRO会員</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-number">13名</div>
+                <div class="kpi-label">PREMIUM会員</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-number">週7日</div>
+                <div class="kpi-label">実践FB会開催</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-number">2,200+</div>
+                <div class="kpi-label">Slack議論数</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Before -->
+<section class="before-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="material-icons-round">history</span>
+            Before：2月8日時点
+        </h2>
+        <ul class="before-list">
+            <li>会員管理は手作業。誰がどの段階にいるか把握しづらい</li>
+            <li>オンボーディングが体系化されていない</li>
+            <li>FB会の参加状況を追跡する手段がない</li>
+            <li>チーム内の情報共有がSlackの個別やりとりに依存</li>
+        </ul>
+    </div>
+</section>
+
+<!-- After -->
+<section>
+    <div class="container">
+        <h2 class="section-title">
+            <span class="material-icons-round">rocket_launch</span>
+            After：5週間で構築した運営体制
+        </h2>
+        <div class="after-intro">
+            10名のチームでゼロから構築。会員の全段階をカバー
+            <div class="flow-steps">
+                <span class="flow-step">入会</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">実践</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">成長</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">定着</span>
+            </div>
+        </div>
+
+        <!-- 野村 -->
+        <div class="team-card nomura">
+            <div class="team-header">
+                <div>
+                    <div class="team-name">会員フォロー・管理基盤</div>
+                    <div class="team-members">野村冴香</div>
+                </div>
+                <span class="focus-badge">管理テンプレート8種</span>
+            </div>
+            <div class="template-tags">
+                <span class="template-tag">会員ロースター</span>
+                <span class="template-tag">オンボーディング進捗管理</span>
+                <span class="template-tag">日報週報回収管理</span>
+                <span class="template-tag">FB会参加状況管理</span>
+                <span class="template-tag">定型文集</span>
+                <span class="template-tag">面談前資料</span>
+                <span class="template-tag">KPIダッシュボード</span>
+                <span class="template-tag">週次PL分析</span>
+            </div>
+            <table class="task-table">
+                <thead><tr><th>施策</th><th>成果</th></tr></thead>
+                <tbody>
+                    <tr><td>プラットフォーム設計・構築</td><td>PRO/PREMIUM向けの各プラットフォーム設計・構築を推進（UTAGE/Discord/エルメ）</td></tr>
+                    <tr><td>初回導線整理</td><td>入会後の初期案内フローを整理・体系化</td></tr>
+                    <tr><td>PRO/PREMIUMの歩みの設計</td><td>会員が入会から成長までたどるステップを設計</td></tr>
+                    <tr><td>PRO実践FB会運用構築</td><td>サービスフローチャート作成</td></tr>
+                    <tr><td>KPI・OKR行動指針の設計</td><td>チーム・会員の目標管理と行動指針を策定</td></tr>
+                    <tr><td>週次PL設計管理</td><td>PRO/PREMIUM別の収益管理体制を設計・運用</td></tr>
+                    <tr><td>日報・週報の回収管理</td><td>提出状況の追跡＋未提出者への段階的フォロー設計</td></tr>
+                    <tr><td>週報に「マネタイズ成果」欄を追加</td><td>会員の収益状況を定期的に把握できる仕組み構築</td></tr>
+                    <tr><td>日報未提出者へのリマインド文面策定</td><td>PRO向け・PREMIUM向けの2パターンを作成</td></tr>
+                    <tr><td>PROスタート質問会の構築</td><td>UTAGEページ・Discord配信構築</td></tr>
+                    <tr><td>特別招待者への初回面談構築</td><td>特別招待者向けの初回面談フローを設計</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 岩間 -->
+        <div class="team-card iwama">
+            <div class="team-header">
+                <div>
+                    <div class="team-name">会員導線・システム基盤</div>
+                    <div class="team-members">岩間慧大</div>
+                </div>
+                <span class="focus-badge">15ステップ標準化</span>
+            </div>
+            <table class="task-table">
+                <thead><tr><th>施策</th><th>成果</th></tr></thead>
+                <tbody>
+                    <tr><td>初回導線整理</td><td>入会後の初期案内フローを整理・体系化</td></tr>
+                    <tr><td>会員カルテでの各会員状況の見える化</td><td>各会員の状況を一元管理・可視化</td></tr>
+                    <tr><td>入会から開始までのエルメ定型文とタグ作成</td><td>入会フロー全体のエルメ定型文・タグを設計・実装</td></tr>
+                    <tr><td>カルテ自動連携構築</td><td>会員データの自動集約・一元管理を実現</td></tr>
+                    <tr><td>初期停滞会員エルメフォロー</td><td>停滞会員へのエルメフォロー</td></tr>
+                    <tr><td>特別招待者へのご案内・会員フォロー</td><td>特別招待者への案内・フォロー対応</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 安部・安永・山本 -->
+        <div class="team-card abe">
+            <div class="team-header">
+                <div>
+                    <div class="team-name">実践FB会・コンシェルジュ</div>
+                    <div class="team-members">安部友博・安永・山本大輔</div>
+                </div>
+                <span class="focus-badge">週7日開催体制</span>
+            </div>
+            <table class="task-table">
+                <thead><tr><th>施策</th><th>成果</th></tr></thead>
+                <tbody>
+                    <tr><td>実践FB会主催・内容企画（安部・安永）</td><td>講師アサイン・進行管理・アーカイブ整備を一から設計</td></tr>
+                    <tr><td>講師サポート</td><td>講師との連携・調整・当日のサポート体制を構築</td></tr>
+                    <tr><td>アーカイブ管理の体系化</td><td>一覧ページ作成・アクセス方法の統一</td></tr>
+                    <tr><td>実践FB会講師・コンシェルジュ・運営監督（安永）</td><td>FB会講師として登壇・コンシェルジュ・運営全体の監督</td></tr>
+                    <tr><td>コンシェルジュ（安部・山本）</td><td>会員相談・退会相談・個別フォローを実施</td></tr>
+                    <tr><td>参加者が少ない日のアクション基準策定</td><td>5名以下の場合の対応ルールを決定</td></tr>
+                    <tr><td>PREMIUM非アクティブ会員へのフォロー（安部・山本）</td><td>非アクティブ会員への個別フォロー・復帰支援</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 秘書チーム -->
+        <div class="team-card hisho">
+            <div class="team-header">
+                <div>
+                    <div class="team-name">秘書チーム・オペレーション</div>
+                    <div class="team-members">仲山知里・門田遥・浅野・川瀬</div>
+                </div>
+                <span class="focus-badge">安定稼働実現</span>
+            </div>
+            <table class="task-table">
+                <thead><tr><th>施策</th><th>成果</th></tr></thead>
+                <tbody>
+                    <tr><td>Discord配信定例業務</td><td>秘書チーム全員が対応可能な体制に</td></tr>
+                    <tr><td>UTAGE更新定例業務</td><td>定期的なコンテンツ更新・管理を実施</td></tr>
+                    <tr><td>会員向け案内の整備</td><td>定型化された案内フローで品質を統一</td></tr>
+                    <tr><td>Pro秘書定例の開始</td><td>毎週木曜13:00に定例ミーティングを実施</td></tr>
+                    <tr><td>参加予定人数の事前周知GASセット</td><td>自動通知で講師・運営の準備効率を向上</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 自動化・AI -->
+        <div class="team-card ai">
+            <div class="team-header">
+                <div>
+                    <div class="team-name">自動化・AI活用</div>
+                    <div class="team-members">推進中</div>
+                </div>
+                <span class="focus-badge">BOT稼働中</span>
+            </div>
+            <table class="task-table">
+                <thead><tr><th>施策</th><th>成果</th></tr></thead>
+                <tbody>
+                    <tr><td>日次タスク自動配信（BOT稼働中）</td><td>毎朝8:56にチーム全員のタスク状況を自動通知</td></tr>
+                    <tr><td>Slack定型文集（6カテゴリ）</td><td>リマインド・フォロー・表彰など定型対応を効率化</td></tr>
+                    <tr><td>AIエージェント3体の設計</td><td>日報監視・KPI分析・オンボーディング管理（GASスクリプト作成済み）</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- チームの機動力 -->
+<section class="speed-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="material-icons-round">speed</span>
+            チームの機動力
+        </h2>
+        <div class="speed-stat">
+            投稿<strong>155件</strong>に対し、スレッド返信<strong>1,800件超</strong>。<br>1課題あたり平均<strong>10件以上</strong>の議論。
+        </div>
+        <div class="speed-grid">
+            <div class="speed-item">
+                <span class="speed-issue">カレンダー公開設定ミスで面談予約が入る</span>
+                <span class="speed-badge">当日中</span>
+            </div>
+            <div class="speed-item">
+                <span class="speed-issue">Discord配信手順の不備</span>
+                <span class="speed-badge">翌日</span>
+            </div>
+            <div class="speed-item">
+                <span class="speed-issue">特別招待枠の案内で会員に混乱</span>
+                <span class="speed-badge">即日</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Next -->
+<section>
+    <div class="container">
+        <h2 class="section-title">
+            <span class="material-icons-round">trending_up</span>
+            Next：今後の取り組み
+        </h2>
+        <h3 style="font-size:1.1rem; font-weight:500; margin-bottom:16px; color:var(--text-muted);">直近1ヶ月</h3>
+        <table class="next-table">
+            <thead><tr><th>項目</th><th>内容</th><th>期待効果</th></tr></thead>
+            <tbody>
+                <tr><td style="font-weight:500;">初動導線設計の構築</td><td>入会後の初期体験フローを最適化</td><td>会員の早期定着率向上</td></tr>
+                <tr><td style="font-weight:500;">AIエージェント本稼働</td><td>日報監視→自動リマインド→面談促進の自動化</td><td>手動フォロー工数の大幅削減</td></tr>
+                <tr><td style="font-weight:500;">FB会のコンテンツ改善（野村）</td><td>参加者データ分析→人気テーマの特定→講師配置最適化</td><td>参加率・満足度の向上</td></tr>
+                <tr><td style="font-weight:500;">Claude Codeでの業務効率化</td><td>チーム業務へのAIツール導入・活用推進</td><td>作業時間の短縮・品質向上</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="font-size:1.1rem; font-weight:500; margin-bottom:16px; color:var(--text-muted);">中期的な展望</h3>
+        <ul class="vision-list">
+            <li><strong>人がやるべき仕事（判断・コーチング・信頼構築）に集中できる体制</strong>を目指す</li>
+            <li>AIが「作業」を担い、チームメンバーは<strong>「会員との対話」に時間を使える</strong>ようにする</li>
+            <li>仕組みの再現性を高め、<strong>会員数が増えてもチーム負荷が比例しない構造</strong>をつくる</li>
+        </ul>
+    </div>
+</section>
+
+<!-- まとめ -->
+<section class="summary-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="material-icons-round">groups</span>
+            まとめ
+        </h2>
+        <p class="summary-message">
+            PRO/PREMIUMプラン開始から1ヶ月。<br>
+            <strong>サービスの迅速な立ち上げに向けて、10名全員がそれぞれの役割を果たし、<br>力を合わせてゼロから運営体制を構築しました。</strong>
+        </p>
+        <div class="member-grid">
+            <div class="member-item">
+                <div class="member-role">全体統括・方針決定・メンバーフォロー</div>
+                <div class="member-name">青嶋一輝</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">実践FB会講師・コンシェルジュ・運営監督</div>
+                <div class="member-name">安永</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">会員フォロー・仕組み基盤構築・Discord/UTAGE/エルメ構築・質問対応</div>
+                <div class="member-name">野村冴香</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">会員導線・エルメタグ構築・カルテ自動連携・非アクティブ会員フォロー</div>
+                <div class="member-name">岩間慧大</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">実践FB会主催・コンシェルジュ・講師サポート・質問対応</div>
+                <div class="member-name">安部友博</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">コンシェルジュ</div>
+                <div class="member-name">山本大輔</div>
+            </div>
+            <div class="member-item">
+                <div class="member-role">秘書チーム・オペレーション</div>
+                <div class="member-name">仲山知里・門田遥・浅野・川瀬</div>
+            </div>
+        </div>
+        <p class="closing">
+            各自の強みを活かした明確な役割分担で、短期間での体制構築を実現。<br>
+            次の1ヶ月で、この仕組みにAIエージェントが加わることで、<br>
+            チームの生産性はさらに向上し、会員一人ひとりへのサポート品質が上がる見込みです。
+        </p>
+    </div>
+</section>
+
+</body>
+</html>

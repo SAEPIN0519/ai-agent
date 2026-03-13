@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第2回 クロードコード勉強会 — My First Skill</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background: #0f0f1a;
+      color: #e8e8f0;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    /* ヘッダーバッジ */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .badge-step {
+      background: #7c3aed;
+      color: #fff;
+    }
+
+    .badge-time {
+      background: transparent;
+      border: 1px solid #a78bfa;
+      color: #a78bfa;
+    }
+
+    .header-label {
+      font-size: 18px;
+      color: #a0a0b8;
+      font-weight: 600;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #2a2a40;
+      margin-bottom: 32px;
+    }
+
+    /* メインタイトル */
+    .main-title {
+      font-size: 42px;
+      font-weight: 900;
+      margin-bottom: 40px;
+      line-height: 1.3;
+    }
+
+    /* レイアウト */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ステップリスト */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #1a1a2e;
+      border: 1px solid #2a2a45;
+      border-radius: 12px;
+      padding: 20px 24px;
+      transition: border-color 0.2s;
+    }
+
+    .step-item:hover {
+      border-color: #7c3aed;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .step-text {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .step-text code {
+      background: #2a2a45;
+      border: 1px solid #3a3a5a;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      color: #c4b5fd;
+    }
+
+    /* サイドパネル */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* タイマー */
+    .timer-box {
+      border: 2px solid #ec4899;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .timer-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ec4899;
+      margin-bottom: 8px;
+    }
+
+    .timer-display {
+      font-size: 64px;
+      font-weight: 900;
+      font-family: 'Inter', monospace;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+
+    .timer-display .colon {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Adviceボックス */
+    .advice-box {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .advice-box .box-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #a5b4fc;
+    }
+
+    .advice-box .box-title::before {
+      content: "\2714";
+      color: #34d399;
+      font-size: 16px;
+    }
+
+    .advice-box p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #c7d2fe;
+    }
+
+    /* Importantボックス */
+    .important-box {
+      background: linear-gradient(135deg, #2a1a2e, #3b1a3e);
+      border-left: 4px solid #ef4444;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .important-box .box-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #fca5a5;
+    }
+
+    .important-box .box-title::before {
+      content: "\26A0";
+      font-size: 16px;
+    }
+
+    .important-box p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #fecaca;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-title {
+        font-size: 28px;
+      }
+      body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <span class="badge badge-step">STEP 2</span>
+    <span class="badge badge-time">15 min</span>
+    <span class="header-label">ワーク</span>
+  </div>
+
+  <hr class="divider">
+
+  <h1 class="main-title">「My First Skill」を作ってください</h1>
+
+  <div class="content-grid">
+    <!-- 左: ステップ -->
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-number">1</div>
+        <div class="step-text">STEP1で作った業務フローを確認する</div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">2</div>
+        <div class="step-text">最もSkillにしたい部分を1つ選ぶ</div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">3</div>
+        <div class="step-text">配布された <code>skill_template.md</code> を開く</div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">4</div>
+        <div class="step-text">テンプレートを埋めていく</div>
+      </div>
+      <div class="step-item">
+        <div class="step-number">5</div>
+        <div class="step-text">ファイルを保存する（名: <code>SKILL.md</code>）</div>
+      </div>
+    </div>
+
+    <!-- 右: サイドパネル -->
+    <div class="side-panel">
+      <div class="timer-box">
+        <div class="timer-label">TIME REMAINING</div>
+        <div class="timer-display" id="timer">15<span class="colon">:</span>00</div>
+      </div>
+
+      <div class="advice-box">
+        <div class="box-title">Advice</div>
+        <p>完璧なSkillでなくてOKです。<br>「動くSkill」を目指してください。</p>
+      </div>
+
+      <div class="important-box">
+        <div class="box-title">Important</div>
+        <p>「チームの課題」の欄が最重要です。<br>ここだけは具体的に書いてください。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- タイマー機能 -->
+  <script>
+    // 15分カウントダウンタイマー
+    let totalSeconds = 15 * 60;
+    let timerRunning = false;
+    const timerEl = document.getElementById('timer');
+
+    function updateDisplay() {
+      const min = Math.floor(totalSeconds / 60);
+      const sec = totalSeconds % 60;
+      timerEl.innerHTML = `${String(min).padStart(2, '0')}<span class="colon">:</span>${String(sec).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (timerRunning) return;
+      timerRunning = true;
+      const interval = setInterval(() => {
+        if (totalSeconds <= 0) {
+          clearInterval(interval);
+          timerEl.style.color = '#ef4444';
+          timerEl.innerHTML = '00<span class="colon">:</span>00';
+          return;
+        }
+        totalSeconds--;
+        updateDisplay();
+      }, 1000);
+    }
+
+    // クリックでタイマー開始
+    document.querySelector('.timer-box').addEventListener('click', startTimer);
+    document.querySelector('.timer-box').style.cursor = 'pointer';
+    document.querySelector('.timer-box').title = 'クリックでタイマー開始';
+  </script>
+
+</body>
+</html>
