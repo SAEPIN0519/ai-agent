@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アクショントラッカー — プロプレミアムTEAM</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; color: #1a1a2e; padding: 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { background: linear-gradient(135deg, #1e3a5f, #2d6aa0); color: #fff; padding: 20px 28px; border-radius: 12px 12px 0 0; font-size: 1.4em; }
+  h1 small { display: block; font-weight: 400; font-size: 0.65em; margin-top: 4px; opacity: 0.85; }
+  .summary { background: #fff; padding: 20px 28px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 16px; flex-wrap: wrap; }
+  .summary-card { background: #f8f9fb; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 20px; text-align: center; min-width: 120px; }
+  .summary-card .num { font-size: 1.8em; font-weight: 700; color: #1e3a5f; }
+  .summary-card .label { font-size: 0.8em; color: #666; margin-top: 2px; }
+  .member-section { background: #fff; margin-bottom: 2px; }
+  .member-header { background: linear-gradient(90deg, #e8f0fe, #f8f9fb); padding: 14px 28px; font-size: 1.05em; font-weight: 700; color: #1e3a5f; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px; }
+  .member-header .badge { background: #1e3a5f; color: #fff; font-size: 0.7em; padding: 2px 10px; border-radius: 10px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f0f4f8; color: #1e3a5f; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border-bottom: 2px solid #d0d8e0; }
+  td { padding: 12px 14px; border-bottom: 1px solid #eee; font-size: 0.88em; vertical-align: top; }
+  tr:hover td { background: #f8fafd; }
+  tr.completed-row td { opacity: 0.5; text-decoration: line-through; }
+  .task-name { font-weight: 600; color: #1a1a2e; }
+  .deadline { white-space: nowrap; }
+  .deadline.urgent { color: #d32f2f; font-weight: 600; }
+  .deadline.normal { color: #555; }
+  .how { color: #666; font-size: 0.85em; }
+  .status-btn { display: inline-block; padding: 5px 14px; border-radius: 12px; font-size: 0.8em; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+  .status-btn:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .status-btn.todo { background: #fff3e0; color: #e65100; }
+  .status-btn.doing { background: #e3f2fd; color: #1565c0; }
+  .status-btn.done { background: #e8f5e9; color: #2e7d32; }
+  .completed-section { background: #fff; border-radius: 0 0 12px 12px; padding: 20px 28px; }
+  .completed-section h2 { font-size: 1em; color: #888; margin-bottom: 12px; }
+  .completed-table { margin-top: 8px; }
+  .completed-table td { opacity: 0.7; }
+  .completed-table .completed-date { color: #2e7d32; font-weight: 600; white-space: nowrap; }
+  .empty-note { color: #aaa; font-style: italic; font-size: 0.85em; }
+  .footer { text-align: center; margin-top: 20px; font-size: 0.75em; color: #999; }
+  .log-section { background: #fff; margin-top: 16px; border-radius: 12px; padding: 20px 28px; }
+  .log-section h2 { font-size: 1em; color: #888; margin-bottom: 12px; }
+  .log-entry { padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.82em; color: #555; }
+  .log-entry .log-time { color: #999; margin-right: 8px; }
+  .log-entry .log-action { font-weight: 600; }
+  .toast { position: fixed; bottom: 30px; right: 30px; background: #1e3a5f; color: #fff; padding: 14px 24px; border-radius: 10px; font-size: 0.9em; opacity: 0; transition: opacity 0.3s; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>アクショントラッカー — プロプレミアムTEAM
+  <small>MTGで決まった全員のアクションを一元管理 ｜ ステータスをクリックで切替</small>
+</h1>
+
+<div class="summary">
+  <div class="summary-card"><div class="num" id="total-count">10</div><div class="label">全タスク</div></div>
+  <div class="summary-card"><div class="num" id="todo-count">10</div><div class="label">未着手</div></div>
+  <div class="summary-card"><div class="num" id="doing-count">0</div><div class="label">進行中</div></div>
+  <div class="summary-card"><div class="num" id="done-count">0</div><div class="label">完了</div></div>
+</div>
+
+<div id="active-tasks">
+
+<!-- 青嶋一輝 -->
+<div class="member-section" data-member="青嶋一輝">
+  <div class="member-header">青嶋一輝 <span class="badge">3件</span></div>
+  <table>
+    <thead><tr><th>MTG日</th><th>やること</th><th>期限</th><th>どうやって</th><th>ステータス</th></tr></thead>
+    <tbody>
+      <tr data-member="青嶋一輝" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">チーム全員の役割と責任範囲を明確化しまとめる</td>
+        <td class="deadline normal">次回MTGまで</td>
+        <td class="how">各メンバーの活動を棚卸し→ドキュメント化</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+      <tr data-member="青嶋一輝" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">Claude Code連携用の共通Google Driveフォルダーを作成・試用開始</td>
+        <td class="deadline normal">次回MTGまで</td>
+        <td class="how">Google Driveにフォルダ作成→メンバーに共有</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+      <tr data-member="青嶋一輝" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">非アクティブ会員への通知文言を起草→大笠さんに表現確認</td>
+        <td class="deadline urgent">早めに</td>
+        <td class="how">文言ドラフト作成→大笠さんレビュー</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 青嶋一輝・安永智也 -->
+<div class="member-section" data-member="青嶋一輝・安永智也">
+  <div class="member-header">青嶋一輝・安永智也 <span class="badge">1件</span></div>
+  <table>
+    <thead><tr><th>MTG日</th><th>やること</th><th>期限</th><th>どうやって</th><th>ステータス</th></tr></thead>
+    <tbody>
+      <tr data-member="青嶋一輝・安永智也" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">KR3の金額算出方法をフォローアップスレッドで確定する</td>
+        <td class="deadline urgent">早めに</td>
+        <td class="how">Slackスレッドでやり取り</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 野村冴香 -->
+<div class="member-section" data-member="野村冴香">
+  <div class="member-header">野村冴香 <span class="badge">4件</span></div>
+  <table>
+    <thead><tr><th>MTG日</th><th>やること</th><th>期限</th><th>どうやって</th><th>ステータス</th></tr></thead>
+    <tbody>
+      <tr data-member="野村冴香" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">週報に今週の収益項目を追加し、報告形式を統一する</td>
+        <td class="deadline normal">次回週報から</td>
+        <td class="how">現在の週報テンプレに収益欄を追加</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+      <tr data-member="野村冴香" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">AIタスクの標準外注価格と自己作業時間のメニュー表を作成</td>
+        <td class="deadline normal">KR3確定前</td>
+        <td class="how">GPT等で外注相場を調査→中間値で一覧化</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+      <tr data-member="野村冴香" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">3月15日プロ質問スタート会用の専用Google Meetリンクを発行</td>
+        <td class="deadline urgent">2026-03-15まで</td>
+        <td class="how">Google Meetから新規リンク作成</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+      <tr data-member="野村冴香" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">3月15日プロ質問スタート会用のDiscord専用ページ/チャンネルを作成</td>
+        <td class="deadline urgent">2026-03-15まで</td>
+        <td class="how">Discord上にチャンネル作成</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 仲山知里 -->
+<div class="member-section" data-member="仲山知里">
+  <div class="member-header">仲山知里 <span class="badge">1件</span></div>
+  <table>
+    <thead><tr><th>MTG日</th><th>やること</th><th>期限</th><th>どうやって</th><th>ステータス</th></tr></thead>
+    <tbody>
+      <tr data-member="仲山知里" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">秘書チームの取り組み内容を毎週の集報に含めてまとめる。川瀬・浅野のサポート体制を整える</td>
+        <td class="deadline normal">次回MTGまで</td>
+        <td class="how">川瀬・浅野と連携し週次報告テンプレに秘書チーム欄を追加</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 山本大輔 -->
+<div class="member-section" data-member="山本大輔">
+  <div class="member-header">山本大輔 <span class="badge">1件</span></div>
+  <table>
+    <thead><tr><th>MTG日</th><th>やること</th><th>期限</th><th>どうやって</th><th>ステータス</th></tr></thead>
+    <tbody>
+      <tr data-member="山本大輔" data-mtg="03-09" data-mtg-name="ProプランMTG">
+        <td>03-09</td>
+        <td class="task-name">非アクティブ会員にDiscord・プレミアムルーム・メールの3手段で3日に1回リマインダー送信（自動化検討）</td>
+        <td class="deadline normal">継続</td>
+        <td class="how">まず手動運用→自動化ツール検討</td>
+        <td><button class="status-btn todo" onclick="cycleStatus(this)">⬜ 未着手</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<!-- 完了タスク -->
+<div class="completed-section">
+  <h2>完了タスク</h2>
+  <table class="completed-table" id="completed-table">
+    <thead><tr><th>MTG日</th><th>やること</th><th>担当者</th><th>完了日</th></tr></thead>
+    <tbody id="completed-body">
+    </tbody>
+  </table>
+  <p class="empty-note" id="empty-note">まだ完了タスクはありません</p>
+</div>
+
+<!-- 更新履歴 -->
+<div class="log-section">
+  <h2>更新履歴</h2>
+  <div id="log-entries">
+    <p class="empty-note" id="log-empty">まだ操作履歴はありません</p>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="footer">プロプレミアムTEAM アクショントラッカー ｜ 最終更新: 2026-03-14 ｜ ソース: 3/9 ProプランMTG</div>
+
+<script>
+// ステータスの状態定義
+const states = [
+  { key: 'todo',  label: '⬜ 未着手', cls: 'todo' },
+  { key: 'doing', label: '🔄 進行中', cls: 'doing' },
+  { key: 'done',  label: '✅ 完了',   cls: 'done' }
+];
+
+// localStorage からデータ復元
+const STORAGE_KEY = 'action_tracker_state';
+const LOG_KEY = 'action_tracker_log';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch { return []; }
+}
+function saveLog(log) {
+  localStorage.setItem(LOG_KEY, JSON.stringify(log));
+}
+
+// タスクのユニークID生成
+function getTaskId(tr) {
+  const member = tr.dataset.member;
+  const taskName = tr.querySelector('.task-name').textContent;
+  return member + '::' + taskName;
+}
+
+// 今日の日付を取得
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function now() {
+  const d = new Date();
+  return today() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+// ステータス切替
+function cycleStatus(btn) {
+  const tr = btn.closest('tr');
+  const currentCls = states.find(s => btn.classList.contains(s.cls));
+  const currentIdx = states.indexOf(currentCls);
+  const next = states[(currentIdx + 1) % states.length];
+
+  // ボタン更新
+  btn.className = 'status-btn ' + next.cls;
+  btn.textContent = next.label;
+
+  const taskId = getTaskId(tr);
+  const member = tr.dataset.member;
+  const taskName = tr.querySelector('.task-name').textContent;
+  const mtgDate = tr.dataset.mtg;
+
+  // 状態保存
+  const state = loadState();
+  state[taskId] = next.key;
+  saveState(state);
+
+  // ログ記録
+  const log = loadLog();
+  log.unshift({
+    time: now(),
+    member: member,
+    task: taskName,
+    from: currentCls.label,
+    to: next.label
+  });
+  saveLog(log);
+
+  // 完了時: 行を完了テーブルに移動
+  if (next.key === 'done') {
+    moveToCompleted(tr, member, taskName, mtgDate);
+    showToast('✅ ' + member + ' のタスクを完了に移動しました');
+  } else {
+    tr.classList.remove('completed-row');
+    showToast(next.label + ' に変更: ' + taskName.substring(0, 20) + '...');
+  }
+
+  updateCounts();
+  renderLog();
+  updateBadges();
+}
+
+// 完了テーブルへ移動
+function moveToCompleted(tr, member, taskName, mtgDate) {
+  const completedBody = document.getElementById('completed-body');
+  const newRow = document.createElement('tr');
+  newRow.innerHTML = `
+    <td>${mtgDate}</td>
+    <td class="task-name">${taskName}</td>
+    <td>${member}</td>
+    <td class="completed-date">${today()}</td>
+  `;
+  completedBody.appendChild(newRow);
+  document.getElementById('empty-note').style.display = 'none';
+
+  // 元の行をフェードアウトして削除
+  tr.style.transition = 'opacity 0.4s';
+  tr.style.opacity = '0';
+  setTimeout(() => {
+    tr.remove();
+    updateBadges();
+    // セクション内のタスクが0になったらセクション非表示
+    document.querySelectorAll('.member-section').forEach(sec => {
+      if (sec.querySelectorAll('tbody tr').length === 0) {
+        sec.style.display = 'none';
+      }
+    });
+  }, 400);
+}
+
+// カウント更新
+function updateCounts() {
+  const allBtns = document.querySelectorAll('#active-tasks .status-btn');
+  let todo = 0, doing = 0;
+  allBtns.forEach(b => {
+    if (b.classList.contains('todo')) todo++;
+    if (b.classList.contains('doing')) doing++;
+  });
+  const done = document.querySelectorAll('#completed-body tr').length;
+  document.getElementById('total-count').textContent = todo + doing + done;
+  document.getElementById('todo-count').textContent = todo;
+  document.getElementById('doing-count').textContent = doing;
+  document.getElementById('done-count').textContent = done;
+}
+
+// バッジ更新
+function updateBadges() {
+  document.querySelectorAll('.member-section').forEach(sec => {
+    const count = sec.querySelectorAll('tbody tr').length;
+    const badge = sec.querySelector('.badge');
+    if (badge) badge.textContent = count + '件';
+  });
+}
+
+// ログ描画
+function renderLog() {
+  const log = loadLog();
+  const container = document.getElementById('log-entries');
+  document.getElementById('log-empty').style.display = log.length ? 'none' : 'block';
+  // 既存エントリをクリア（empty-note以外）
+  container.querySelectorAll('.log-entry').forEach(e => e.remove());
+  log.slice(0, 30).forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.innerHTML = `<span class="log-time">${entry.time}</span> <span class="log-action">${entry.member}</span>: 「${entry.task.substring(0,30)}...」 ${entry.from} → ${entry.to}`;
+    container.appendChild(div);
+  });
+}
+
+// トースト通知
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ページ読み込み時に状態を復元
+function restoreState() {
+  const state = loadState();
+  const completedTasks = [];
+
+  document.querySelectorAll('#active-tasks tr[data-member]').forEach(tr => {
+    const taskId = getTaskId(tr);
+    if (state[taskId]) {
+      const s = states.find(st => st.key === state[taskId]);
+      if (s) {
+        const btn = tr.querySelector('.status-btn');
+        btn.className = 'status-btn ' + s.cls;
+        btn.textContent = s.label;
+        if (s.key === 'done') {
+          completedTasks.push(tr);
+        }
+      }
+    }
+  });
+
+  // 完了タスクを移動
+  completedTasks.forEach(tr => {
+    const member = tr.dataset.member;
+    const taskName = tr.querySelector('.task-name').textContent;
+    const mtgDate = tr.dataset.mtg;
+    const completedBody = document.getElementById('completed-body');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td>${mtgDate}</td>
+      <td class="task-name">${taskName}</td>
+      <td>${member}</td>
+      <td class="completed-date">（復元）</td>
+    `;
+    completedBody.appendChild(newRow);
+    document.getElementById('empty-note').style.display = 'none';
+    tr.remove();
+  });
+
+  // 空セクション非表示
+  document.querySelectorAll('.member-section').forEach(sec => {
+    if (sec.querySelectorAll('tbody tr').length === 0) {
+      sec.style.display = 'none';
+    }
+  });
+
+  updateCounts();
+  updateBadges();
+  renderLog();
+}
+
+// 初期化
+restoreState();
+</script>
+
+</body>
+</html>
