@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月次経営ダッシュボード｜糸貫グループ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:        #070b12;
+    --surface:   #0f1723;
+    --surface2:  #172031;
+    --border:    #1d2d42;
+    --text:      #dde4ef;
+    --text2:     #7a90a8;
+    --blue:      #38bdf8;
+    --green:     #4ade80;
+    --red:       #f87171;
+    --yellow:    #fbbf24;
+    --purple:    #a78bfa;
+    --orange:    #fb923c;
+    --teal:      #2dd4bf;
+
+    --c1: #38bdf8;  /* 糸貫工場 */
+    --c2: #4ade80;  /* 加工     */
+    --c3: #a78bfa;  /* 糸貫検査 */
+    --c4: #fbbf24;  /* 本社検査 */
+    --c5: #fb923c;  /* 物流検査 */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: linear-gradient(120deg, #0a1525 0%, #0f2040 60%, #0a1a30 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--blue), #0060c0);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .logo h1 { font-size: 17px; font-weight: 700; letter-spacing: .04em; }
+  .logo span { font-size: 11px; color: var(--text2); display: block; margin-top: 3px; }
+
+  .header-right { text-align: right; font-size: 12px; color: var(--text2); }
+  .header-right strong { display: block; color: var(--blue); font-size: 14px; }
+
+  /* ─── NAV ─── */
+  .nav-tabs {
+    display: flex; gap: 0;
+    padding: 14px 36px 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 9px 18px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ─── PAGE ─── */
+  .page { display: none; padding: 28px 36px; }
+  .page.active { display: block; }
+
+  /* ─── SECTION TITLE ─── */
+  .stitle {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stitle::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ─── KPI GRID ─── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px; margin-bottom: 28px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 14px;
+    position: relative; overflow: hidden;
+    transition: transform .15s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); }
+  .kpi-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+  }
+  .kpi-card.c1::before { background: var(--c1); }
+  .kpi-card.c2::before { background: var(--c2); }
+  .kpi-card.c3::before { background: var(--c3); }
+  .kpi-card.c4::before { background: var(--c4); }
+  .kpi-card.c5::before { background: var(--c5); }
+  .kpi-card.warn::before { background: var(--red); }
+  .kpi-card.good::before { background: var(--green); }
+  .kpi-card.neutral::before { background: var(--text2); }
+
+  .kpi-label { font-size: 10px; color: var(--text2); margin-bottom: 7px; letter-spacing: .03em; }
+  .kpi-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: var(--text2); margin-top: 6px; }
+  .badge {
+    display: inline-block; font-size: 10px;
+    padding: 2px 7px; border-radius: 20px;
+    font-weight: 600; margin-top: 5px;
+  }
+  .badge-up   { background: rgba(74,222,128,.12); color: var(--green); }
+  .badge-down { background: rgba(248,113,113,.12); color: var(--red); }
+  .badge-warn { background: rgba(251,191,36,.12);  color: var(--yellow); }
+
+  /* ─── CHART LAYOUTS ─── */
+  .chart-grid   { display: grid; grid-template-columns: 1fr 1fr;     gap: 18px; margin-bottom: 24px; }
+  .chart-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+  .chart-full   { margin-bottom: 20px; }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .chart-card h3 {
+    font-size: 12px; font-weight: 600;
+    color: var(--text2); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  .canvas-sm  { position: relative; height: 200px; }
+  .canvas-md  { position: relative; height: 260px; }
+  .canvas-lg  { position: relative; height: 320px; }
+
+  /* ─── TABLE ─── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th {
+    background: var(--surface2); color: var(--text2);
+    font-size: 10px; font-weight: 500; letter-spacing: .04em;
+    padding: 9px 12px; text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table th:first-child { text-align: left; }
+  .data-table td {
+    padding: 9px 12px; text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace; font-size: 12px;
+  }
+  .data-table td:first-child {
+    text-align: left; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px; color: var(--text2);
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,.02); }
+  .data-table .subtotal td { background: rgba(56,189,248,.06); color: var(--blue); font-weight: 600; }
+  .data-table .total   td { background: rgba(56,189,248,.1);  color: var(--text); font-weight: 700; border-top: 1px solid var(--border); }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red);   }
+
+  /* ─── INSIGHT CARDS ─── */
+  .insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 12px; margin-bottom: 24px; }
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .insight.alert  { border-left: 3px solid var(--red);    }
+  .insight.warn   { border-left: 3px solid var(--yellow); }
+  .insight.good   { border-left: 3px solid var(--green);  }
+  .insight.info   { border-left: 3px solid var(--blue);   }
+  .insight-icon   { font-size: 20px; flex-shrink: 0; }
+  .insight-title  { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+  .insight-desc   { font-size: 10px; color: var(--text2); line-height: 1.6; }
+
+  /* ─── LEGEND DOTS ─── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    font-size: 11px; color: var(--text2); margin-bottom: 14px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🏭</div>
+    <div>
+      <h1>月次経営ダッシュボード｜糸貫グループ</h1>
+      <span>糸貫工場 / 加工 / 糸貫検査 / 本社検査 / 物流検査｜R7.10月〜R8.1月</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <strong>最新月：R8年1月</strong>
+    単位：円（税抜）
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showPage('overview',this)">📊 総合概況</div>
+  <div class="nav-tab" onclick="showPage('profit',this)">💹 売上・利益推移</div>
+  <div class="nav-tab" onclick="showPage('labor',this)">👥 人件費分析</div>
+  <div class="nav-tab" onclick="showPage('cost',this)">🏭 製造原価分析</div>
+  <div class="nav-tab" onclick="showPage('division',this)">🏢 部門別比較</div>
+</div>
+
+<!-- ══════════════════════ PAGE 1：総合概況 ══════════════════════ -->
+<div class="page active" id="page-overview">
+
+  <div class="stitle">KPI サマリー（グループ合計・R8.1月）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card good">
+      <div class="kpi-label">グループ 売上総合計</div>
+      <div class="kpi-value" style="color:var(--blue)">2.80億円</div>
+      <div class="kpi-sub">5部門合算（社内売上含む）</div>
+    </div>
+    <div class="kpi-card good">
+      <div class="kpi-label">グループ 売上総利益</div>
+      <div class="kpi-value" style="color:var(--green)">9,688万円</div>
+      <div class="kpi-sub">粗利率 34.6%</div>
+      <span class="badge badge-up">▲ 前月比 +118%</span>
+    </div>
+    <div class="kpi-card good">
+      <div class="kpi-label">グループ 営業利益</div>
+      <div class="kpi-value" style="color:var(--green)">9,688万円</div>
+      <div class="kpi-sub">R8.1月（11月赤字転落から回復）</div>
+      <span class="badge badge-up">▲ 大幅回復</span>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">製造人件費合計</div>
+      <div class="kpi-value" style="color:var(--yellow)">7,074万円</div>
+      <div class="kpi-sub">売上比 25.3%</div>
+      <span class="badge badge-warn">— 固定費が高水準</span>
+    </div>
+    <div class="kpi-card neutral">
+      <div class="kpi-label">製造原価（売上原価）</div>
+      <div class="kpi-value">1.82億円</div>
+      <div class="kpi-sub">原価率 65.4%</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">12月 グループ赤字</div>
+      <div class="kpi-value" style="color:var(--red)">▲3,736万円</div>
+      <div class="kpi-sub">売上急減・コスト固定の影響</div>
+      <span class="badge badge-down">要因分析が急務</span>
+    </div>
+  </div>
+
+  <div class="stitle">経営インサイト・課題</div>
+  <div class="insights">
+    <div class="insight alert">
+      <div class="insight-icon">🚨</div>
+      <div>
+        <div class="insight-title" style="color:var(--red)">12月の全体赤字（▲3,736万円）</div>
+        <div class="insight-desc">糸貫工場・糸貫検査・本社検査の3部門で12月に赤字転落。売上が激減する中で固定的な製造コスト（人件費・減価償却等）がフルに発生。特に糸貫検査は12月に▲1,270万円の売上総損失を計上しています。</div>
+      </div>
+    </div>
+    <div class="insight warn">
+      <div class="insight-icon">⚠️</div>
+      <div>
+        <div class="insight-title" style="color:var(--yellow)">糸貫工場の売上下落傾向</div>
+        <div class="insight-desc">糸貫工場の売上は10月2.0億円→11月1.7億円→12月1.3億円と3ヶ月連続で下落。12月は11,243万円の営業損失。1月は回復しているが、趨勢的な需要減なのか季節的なものか要確認が必要です。</div>
+      </div>
+    </div>
+    <div class="insight good">
+      <div class="insight-icon">✅</div>
+      <div>
+        <div class="insight-title" style="color:var(--green)">加工部門は安定した収益性</div>
+        <div class="insight-desc">加工部門は粗利率50%超（10月：50.2%、11月：44.2%）と高収益。12月はデータ未計上ですが、10月・11月は営業利益も2〜2.8億円と安定。グループの収益を支える柱です。</div>
+      </div>
+    </div>
+    <div class="insight info">
+      <div class="insight-icon">📌</div>
+      <div>
+        <div class="insight-title" style="color:var(--blue)">物流検査は安定黒字</div>
+        <div class="insight-desc">物流検査は4ヶ月を通じて安定した黒字（10月：387万円、1月：387万円）。12月も117万円の利益を確保。人件費管理がしっかりしており、小規模ながら経営安定性が高い部門です。</div>
+      </div>
+    </div>
+    <div class="insight warn">
+      <div class="insight-icon">💰</div>
+      <div>
+        <div class="insight-title" style="color:var(--yellow)">人件費率25%超が構造的課題</div>
+        <div class="insight-desc">グループの製造人件費率は約25%と高水準。糸貫工場は燃料費（月2,417〜2,779万円）が特に重く、エネルギーコスト削減が収益改善の鍵。電力料と燃料費の合計で月約4,400〜4,800万円が発生しています。</div>
+      </div>
+    </div>
+    <div class="insight alert">
+      <div class="insight-icon">🔴</div>
+      <div>
+        <div class="insight-title" style="color:var(--red)">本社検査の12月大幅赤字</div>
+        <div class="insight-desc">本社検査は12月に売上ゼロで▲1,359万円の営業損失。固定的な人件費（人件費計約1,090万円/月）が売上なしで丸々コストとなっています。12月の休業・業務停止の背景確認が必要です。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stitle">グループ合計 月次推移</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--blue)"></div>グループ合計 売上・利益トレンド</h3>
+      <div class="canvas-md"><canvas id="overviewTrend"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--yellow)"></div>収益性指標推移（粗利率・営業利益率）</h3>
+      <div class="canvas-md"><canvas id="overviewMargin"></canvas></div>
+    </div>
+  </div>
+
+  <div class="stitle">部門別 R8.1月 売上構成・利益比較</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--purple)"></div>売上構成比（R8.1月）</h3>
+      <div class="canvas-md"><canvas id="salesPie"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--green)"></div>部門別 営業利益比較（R8.1月）</h3>
+      <div class="canvas-md"><canvas id="opBar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE 2：売上・利益推移 ══════════════════════ -->
+<div class="page" id="page-profit">
+
+  <div class="stitle">グループ合計 売上・利益 二次軸グラフ</div>
+  <div class="chart-card chart-full">
+    <h3><div class="dot" style="background:var(--blue)"></div>売上総合計 ＋ 売上総利益・営業利益（棒グラフ＋折れ線・二次軸）</h3>
+    <div class="canvas-lg"><canvas id="dualAxisMain"></canvas></div>
+  </div>
+
+  <div class="stitle">部門別 売上・利益 月次推移（二次軸）</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--c1)"></div>糸貫工場</h3>
+      <div class="canvas-md"><canvas id="ch_ito"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--c2)"></div>加工</h3>
+      <div class="canvas-md"><canvas id="ch_kako"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--c3)"></div>糸貫検査</h3>
+      <div class="canvas-md"><canvas id="ch_itoken"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--c4)"></div>本社検査</h3>
+      <div class="canvas-md"><canvas id="ch_honken"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="chart-card" style="grid-column:1/2">
+      <h3><div class="dot" style="background:var(--c5)"></div>物流検査</h3>
+      <div class="canvas-md"><canvas id="ch_butsu"></canvas></div>
+    </div>
+    <div class="chart-card" style="grid-column:2/4">
+      <h3><div class="dot" style="background:var(--yellow)"></div>5部門 売上比較（折れ線）</h3>
+      <div class="canvas-md"><canvas id="allSalesLine"></canvas></div>
+    </div>
+  </div>
+
+  <div class="stitle">部門別 売上・利益 サマリーテーブル</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>部門</th>
+          <th>R7.10月 売上</th><th>R7.10月 営業利益</th>
+          <th>R7.11月 売上</th><th>R7.11月 営業利益</th>
+          <th>R7.12月 売上</th><th>R7.12月 営業利益</th>
+          <th>R8.1月 売上</th><th>R8.1月 営業利益</th>
+        </tr>
+      </thead>
+      <tbody id="profitTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE 3：人件費分析 ══════════════════════ -->
+<div class="page" id="page-labor">
+
+  <div class="stitle">人件費 KPI（グループ合計・R8.1月）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card c1">
+      <div class="kpi-label">糸貫工場 製造人件費</div>
+      <div class="kpi-value" style="color:var(--c1)">4,805万円</div>
+      <div class="kpi-sub">売上比 24.6%</div>
+    </div>
+    <div class="kpi-card c2">
+      <div class="kpi-label">加工 製造人件費</div>
+      <div class="kpi-value" style="color:var(--c2)">1,823万円</div>
+      <div class="kpi-sub">売上比 32.6%</div>
+    </div>
+    <div class="kpi-card c3">
+      <div class="kpi-label">糸貫検査 製造人件費</div>
+      <div class="kpi-value" style="color:var(--c3)">698万円</div>
+      <div class="kpi-sub">売上比 66.4%（高い！）</div>
+      <span class="badge badge-down">要注意</span>
+    </div>
+    <div class="kpi-card c4">
+      <div class="kpi-label">本社検査 製造人件費</div>
+      <div class="kpi-value" style="color:var(--c4)">505万円</div>
+      <div class="kpi-sub">売上比 100.5%</div>
+      <span class="badge badge-down">収益上回る</span>
+    </div>
+    <div class="kpi-card c5">
+      <div class="kpi-label">物流検査 製造人件費</div>
+      <div class="kpi-value" style="color:var(--c5)">843万円</div>
+      <div class="kpi-sub">売上比 68.0%</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">グループ 人件費率</div>
+      <div class="kpi-value" style="color:var(--yellow)">25.3%</div>
+      <div class="kpi-sub">製造人件費÷売上（R8.1月）</div>
+    </div>
+  </div>
+
+  <div class="stitle">製造人件費推移 ＋ 売上人件費率（二次軸）</div>
+  <div class="chart-card chart-full">
+    <h3><div class="dot" style="background:var(--yellow)"></div>グループ合計 製造人件費 ＋ 売上人件費率（二次軸）</h3>
+    <div class="canvas-lg"><canvas id="laborDual"></canvas></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--blue)"></div>部門別 人件費内訳（R8.1月）</h3>
+      <div class="canvas-md"><canvas id="laborStack"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--red)"></div>部門別 売上人件費率（R8.1月）</h3>
+      <div class="canvas-md"><canvas id="laborRate"></canvas></div>
+    </div>
+  </div>
+
+  <div class="stitle">人件費詳細テーブル（グループ合計）</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr><th>人件費項目</th><th>R7.10月</th><th>R7.11月</th><th>R7.12月</th><th>R8.1月</th></tr>
+      </thead>
+      <tbody id="laborTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE 4：製造原価分析 ══════════════════════ -->
+<div class="page" id="page-cost">
+
+  <div class="stitle">製造原価 KPI（グループ合計・R8.1月）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">売上原価（合計）</div>
+      <div class="kpi-value" style="color:var(--purple)">1.82億円</div>
+      <div class="kpi-sub">原価率 65.4%</div>
+    </div>
+    <div class="kpi-card c1">
+      <div class="kpi-label">燃料費（糸貫工場）</div>
+      <div class="kpi-value" style="color:var(--c1)">2,417万円</div>
+      <div class="kpi-sub">最大の単一コスト</div>
+    </div>
+    <div class="kpi-card c1">
+      <div class="kpi-label">電力料（糸貫工場）</div>
+      <div class="kpi-value" style="color:var(--c1)">2,052万円</div>
+      <div class="kpi-sub">光熱費合計：4,468万円/月</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">消耗品費（糸貫工場）</div>
+      <div class="kpi-value">1,610万円</div>
+      <div class="kpi-sub">加工：176万円</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">減価償却（糸貫工場）</div>
+      <div class="kpi-value">1,433万円</div>
+      <div class="kpi-sub">毎月固定で発生</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">12月 原価率（糸貫工場）</div>
+      <div class="kpi-value" style="color:var(--red)">108.6%</div>
+      <div class="kpi-sub">売上原価が売上を上回る</div>
+      <span class="badge badge-down">赤字構造</span>
+    </div>
+  </div>
+
+  <div class="stitle">製造原価推移 ＋ 原価率（二次軸）</div>
+  <div class="chart-card chart-full">
+    <h3><div class="dot" style="background:var(--purple)"></div>グループ合計 売上原価推移 ＋ 原価率（二次軸）</h3>
+    <div class="canvas-lg"><canvas id="costDual"></canvas></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--orange)"></div>糸貫工場 製造コスト内訳（R8.1月）</h3>
+      <div class="canvas-md"><canvas id="costPie"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--teal)"></div>糸貫工場 主要コスト月次推移</h3>
+      <div class="canvas-md"><canvas id="costLine"></canvas></div>
+    </div>
+  </div>
+
+  <div class="stitle">製造原価 詳細テーブル</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr><th>原価項目</th><th>R7.10月</th><th>R7.11月</th><th>R7.12月</th><th>R8.1月</th></tr>
+      </thead>
+      <tbody id="costTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE 5：部門別比較 ══════════════════════ -->
+<div class="page" id="page-division">
+
+  <div class="stitle">5部門 収益性ヒートマップ</div>
+  <div class="chart-card chart-full" id="heatmapCard" style="overflow-x:auto">
+    <h3><div class="dot" style="background:var(--blue)"></div>部門×月次 営業利益ヒートマップ（万円）</h3>
+    <div id="heatmap" style="margin-top:8px"></div>
+  </div>
+
+  <div class="stitle">部門別 売上・粗利・営業利益 積み上げ比較（R8.1月）</div>
+  <div class="chart-card chart-full">
+    <h3><div class="dot" style="background:var(--green)"></div>部門別 売上・粗利益・営業利益（R8.1月）</h3>
+    <div class="canvas-lg"><canvas id="divCompare"></canvas></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--green)"></div>部門別 粗利率（%）4ヶ月推移</h3>
+      <div class="canvas-md"><canvas id="grossMargin"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><div class="dot" style="background:var(--orange)"></div>部門別 原価率（%）4ヶ月推移</h3>
+      <div class="canvas-md"><canvas id="costRatio"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SCRIPT ══════════════════════ -->
+<script>
+// ────── RAW DATA ──────
+const M = ['R7.10月','R7.11月','R7.12月','R8.1月'];
+const Ms = ['10月','11月','12月','1月'];
+
+const D = {
+  糸貫工場: {
+    売上:   [195656503, 165731277, 130885560, 195656503],
+    原価:   [135951443, 138761802, 142129118, 135951443],
+    粗利:   [ 59705060,  26969475, -11243558,  59705060],
+    営業利益:[ 59705060,  26969475, -11243558,  59705060],
+    基本給: [ 30471650,  30760032,  30933257,  30471650],
+    時間外: [  3975215,   5003302,   5183297,   3975215],
+    雑給:   [        0,         0,   3363929,         0],
+    賞与引当:[  8636000,   8636000,  13861050,   8636000],
+    法定福利:[ 4976223,   7557834,   5183283,   4976223],
+    退職金: [        0,         0,          0,         0],
+    消耗品: [ 16103543,  14725238,  12873787,  16103543],
+    修繕費: [  4199505,    807971,   3947294,   4199505],
+    地代家賃:[  5122425,   5122425,   5122425,   5122425],
+    減価償却:[ 14330000,  14330000,  14330000,  14330000],
+    電力:   [ 20515962,  20202385,  16763647,  20515962],
+    燃料:   [ 24173044,  27793544,  26208527,  24173044],
+  },
+  加工: {
+    売上:   [ 55992748,  49154414,          0,  55992748],
+    原価:   [ 27895758,  27448759,          0,  27895758],
+    粗利:   [ 28096990,  21705655,          0,  28096990],
+    営業利益:[ 28096990,  21705655,          0,  28096990],
+    基本給: [  9391750,   9297528,          0,   9391750],
+    時間外: [   999500,   1133235,          0,    999500],
+    雑給:   [  4575683,   4077818,          0,   4575683],
+    賞与引当:[  1707000,   1707000,          0,   1707000],
+    法定福利:[  1565212,   2541029,          0,   1565212],
+    退職金: [        0,         0,          0,         0],
+    消耗品: [  1762104,   1601038,          0,   1762104],
+    減価償却:[  4010000,   4010000,          0,   4010000],
+    電力:   [  2353471,   2160006,          0,   2353471],
+    燃料:   [        0,         0,          0,         0],
+  },
+  糸貫検査: {
+    売上:   [ 10527168,   8115409, 122169503,  10527168],
+    原価:   [  7175773,   7471658, 134872382,   7175773],
+    粗利:   [  3351395,    643751, -12702879,   3351395],
+    営業利益:[  3351395,    643751, -12702879,   3351395],
+    基本給: [  2537321,   2552640,  28534621,   2537321],
+    時間外: [   201538,    179995,   5003302,    201538],
+    雑給:   [  3368989,   3240705,          0,   3368989],
+    賞与引当:[   587000,    587000,  13028350,    587000],
+    法定福利:[   385414,    814954,   4798171,    385414],
+    退職金: [        0,         0,          0,         0],
+    消耗品: [        0,         0,  12873787,          0],
+    減価償却:[        0,         0,  14330000,          0],
+    電力:   [        0,         0,  16763647,          0],
+    燃料:   [        0,         0,  26208527,          0],
+  },
+  本社検査: {
+    売上:   [  5022598,   4742815,          0,   5022598],
+    原価:   [  3073817,   3153164,  13535763,   3073817],
+    粗利:   [  1948781,   1589651, -13535763,   1948781],
+    営業利益:[  1948781,   1589651, -13593088,   1948781],
+    基本給: [   715878,    711066,   5552853,    715878],
+    時間外: [   102483,    105760,    791621,    102483],
+    雑給:   [  1968479,   1903665,   1751215,   1968479],
+    賞与引当:[   165000,    165000,   3139500,    165000],
+    法定福利:[    98833,    243768,    870301,     98833],
+    退職金: [        0,         0,          0,         0],
+    消耗品: [        0,         0,    387911,          0],
+    減価償却:[        0,         0,          0,         0],
+    電力:   [        0,         0,          0,         0],
+    燃料:   [        0,         0,          0,         0],
+  },
+  物流検査: {
+    売上:   [ 12400302,  10447607,   4594147,  12400302],
+    原価:   [  8521374,   8823118,   4476300,   8521374],
+    粗利:   [  3878928,   1624489,    117847,   3878928],
+    営業利益:[  3878928,   1624489,    117847,   3878928],
+    基本給: [  2919436,   2946872,    681801,   2919436],
+    時間外: [   562494,    535643,    105760,    562494],
+    雑給:   [  3426667,   3384198,   2572149,   3426667],
+    賞与引当:[   964000,    964000,    996500,    964000],
+    法定福利:[   520293,    863335,     95935,    520293],
+    退職金: [        0,         0,          0,         0],
+    消耗品: [        0,         0,          0,         0],
+    減価償却:[        0,         0,          0,         0],
+    電力:   [        0,         0,          0,         0],
+    燃料:   [        0,         0,          0,         0],
+  },
+};
+
+const DIVS = ['糸貫工場','加工','糸貫検査','本社検査','物流検査'];
+const COLS = { 糸貫工場:'#38bdf8', 加工:'#4ade80', 糸貫検査:'#a78bfa', 本社検査:'#fbbf24', 物流検査:'#fb923c' };
+
+// aggregate helpers
+function sum(key, idx) { return DIVS.reduce((a,d) => a + (D[d][key][idx]||0), 0); }
+function sumArr(key)   { return [0,1,2,3].map(i => sum(key,i)); }
+
+const grpSales  = sumArr('売上');
+const grpGross  = sumArr('粗利');
+const grpOp     = sumArr('営業利益');
+const grpCost   = sumArr('原価');
+
+// human-readable
+function fmt(v) { return v === 0 ? '—' : (v < 0 ? '▲' : '') + Math.abs(Math.round(v/1e4)).toLocaleString() + '万'; }
+function fmtPct(v, s) { return s > 0 ? (v/s*100).toFixed(1) + '%' : '—'; }
+
+// Chart defaults
+Chart.defaults.color = '#7a90a8';
+Chart.defaults.borderColor = '#1d2d42';
+Chart.defaults.font.family = "'DM Mono', 'Noto Sans JP', sans-serif";
+Chart.defaults.font.size = 11;
+
+const ttBase = {
+  backgroundColor: '#0f1723', borderColor: '#2a3d55', borderWidth: 1,
+  titleColor: '#dde4ef', bodyColor: '#7a90a8',
+};
+
+const scaleBase = {
+  x: { ticks: { color:'#7a90a8' }, grid: { color:'#1d2d42' } },
+  y: { ticks: { color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid: { color:'#1d2d42' } },
+};
+
+// ── PAGE 1 ──
+new Chart('overviewTrend', { type:'bar', data:{
+  labels: Ms,
+  datasets: [
+    { label:'売上総合計', data: grpSales, backgroundColor:'rgba(56,189,248,.2)', borderColor:'#38bdf8', borderWidth:2, borderRadius:4, order:1 },
+    { label:'売上原価',   data: grpCost,  backgroundColor:'rgba(167,139,250,.2)', borderColor:'#a78bfa', borderWidth:2, borderRadius:4, order:1 },
+    { label:'売上総利益', type:'line', data: grpGross, borderColor:'#4ade80', pointRadius:6, tension:.3, yAxisID:'y2', backgroundColor:'transparent', borderWidth:2.5, order:0 },
+    { label:'営業利益',   type:'line', data: grpOp,   borderColor:'#fbbf24', pointRadius:6, tension:.3, yAxisID:'y2', backgroundColor:'transparent', borderWidth:2.5, borderDash:[4,2], order:0 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', padding:12, font:{size:11} } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{
+    x: scaleBase.x,
+    y: { position:'left', ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{ color:'#1d2d42' } },
+    y2:{ position:'right', ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{ drawOnChartArea:false } },
+  }
+}});
+
+const grossPct = grpSales.map((s,i) => s>0 ? +(grpGross[i]/s*100).toFixed(1) : 0);
+const opPct    = grpSales.map((s,i) => s>0 ? +(grpOp[i]/s*100).toFixed(1) : 0);
+new Chart('overviewMargin', { type:'line', data:{
+  labels: Ms,
+  datasets:[
+    { label:'粗利率(%)', data:grossPct, borderColor:'#4ade80', backgroundColor:'rgba(74,222,128,.1)', fill:true, tension:.3, pointRadius:6 },
+    { label:'営業利益率(%)', data:opPct, borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,.1)', fill:true, tension:.3, pointRadius:6 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', padding:12 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+ctx.raw+'%' } } },
+  scales:{ x: scaleBase.x, y:{ ticks:{ color:'#7a90a8', callback: v => v+'%' }, grid:{ color:'#1d2d42' } } },
+}});
+
+new Chart('salesPie', { type:'doughnut', data:{
+  labels: DIVS,
+  datasets:[{ data: DIVS.map(d=>D[d].売上[3]), backgroundColor: DIVS.map(d=>COLS[d]), borderColor:'#070b12', borderWidth:3 }]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ position:'right', labels:{ color:'#7a90a8', font:{size:11}, padding:10 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.label+': '+fmt(ctx.raw)+' ('+fmtPct(ctx.raw,grpSales[3])+')' } } },
+}});
+
+new Chart('opBar', { type:'bar', data:{
+  labels: DIVS,
+  datasets:[{ label:'営業利益 R8.1月', data: DIVS.map(d=>D[d].営業利益[3]), backgroundColor: DIVS.map(d=>COLS[d]), borderRadius:6, borderSkipped:false }]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+fmt(ctx.raw) } } },
+  scales:{ x:{ ticks:{color:'#7a90a8'}, grid:{color:'#1d2d42'} }, y:{ ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{color:'#1d2d42'} } },
+}});
+
+// ── PAGE 2 ──
+new Chart('dualAxisMain', { type:'bar', data:{
+  labels: Ms,
+  datasets:[
+    { label:'売上総合計', data:grpSales, backgroundColor:'rgba(56,189,248,.2)',  borderColor:'#38bdf8', borderWidth:2, borderRadius:4, yAxisID:'y', order:1 },
+    { label:'売上原価',   data:grpCost,  backgroundColor:'rgba(167,139,250,.2)', borderColor:'#a78bfa', borderWidth:2, borderRadius:4, yAxisID:'y', order:1 },
+    { label:'売上総利益', type:'line', data:grpGross, borderColor:'#4ade80', backgroundColor:'transparent', tension:.3, pointRadius:7, borderWidth:2.5, yAxisID:'y2', order:0 },
+    { label:'営業利益',   type:'line', data:grpOp,   borderColor:'#fbbf24', backgroundColor:'transparent', tension:.3, pointRadius:7, borderWidth:2.5, borderDash:[4,2], yAxisID:'y2', order:0 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', padding:14, font:{size:11} } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{
+    x: scaleBase.x,
+    y: { position:'left', title:{display:true,text:'売上・原価（円）',color:'#7a90a8'}, ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{color:'#1d2d42'} },
+    y2:{ position:'right', title:{display:true,text:'利益（円）',color:'#7a90a8'}, ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{drawOnChartArea:false} },
+  }
+}});
+
+function makeDivChart(canvasId, div) {
+  const c = COLS[div];
+  new Chart(canvasId, { type:'bar', data:{
+    labels: Ms,
+    datasets:[
+      { label:'売上', data:D[div].売上, backgroundColor: c.replace(')',', .2)').replace('rgb','rgba'), borderColor:c, borderWidth:1.5, borderRadius:3, order:1 },
+      { label:'粗利益',  type:'line', data:D[div].粗利,    borderColor:'#4ade80', backgroundColor:'transparent', tension:.3, pointRadius:5, yAxisID:'y2', order:0 },
+      { label:'営業利益',type:'line', data:D[div].営業利益, borderColor:'#fbbf24', backgroundColor:'transparent', tension:.3, pointRadius:5, borderDash:[3,2], yAxisID:'y2', order:0 },
+    ]
+  }, options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:10}, padding:8 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+    scales:{
+      x:  { ticks:{color:'#7a90a8',font:{size:10}}, grid:{color:'#1d2d42'} },
+      y:  { position:'left',  ticks:{ color:'#7a90a8', font:{size:10}, callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{color:'#1d2d42'} },
+      y2: { position:'right', ticks:{ color:'#7a90a8', font:{size:10}, callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{drawOnChartArea:false} },
+    }
+  }});
+}
+makeDivChart('ch_ito',    '糸貫工場');
+makeDivChart('ch_kako',   '加工');
+makeDivChart('ch_itoken', '糸貫検査');
+makeDivChart('ch_honken', '本社検査');
+makeDivChart('ch_butsu',  '物流検査');
+
+new Chart('allSalesLine', { type:'line', data:{
+  labels: Ms,
+  datasets: DIVS.map(d => ({
+    label: d, data: D[d].売上, borderColor: COLS[d], backgroundColor:'transparent',
+    tension:.3, pointRadius:5, borderWidth:2,
+  }))
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:10 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{ x: scaleBase.x, y:{ ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{color:'#1d2d42'} } },
+}});
+
+// Profit table
+const ptbody = document.getElementById('profitTbody');
+DIVS.forEach(d => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${d}</td>` + [0,1,2,3].map(i => `
+    <td>${fmt(D[d].売上[i])}</td>
+    <td class="${D[d].営業利益[i]>=0?'pos':'neg'}">${fmt(D[d].営業利益[i])}</td>
+  `).join('');
+  ptbody.appendChild(tr);
+});
+const ptTotal = document.createElement('tr'); ptTotal.className = 'total';
+ptTotal.innerHTML = `<td>グループ合計</td>` + [0,1,2,3].map(i => `
+  <td>${fmt(grpSales[i])}</td>
+  <td class="${grpOp[i]>=0?'pos':'neg'}">${fmt(grpOp[i])}</td>
+`).join('');
+ptbody.appendChild(ptTotal);
+
+// ── PAGE 3 ──
+function laborTotal(d, i) {
+  return (D[d].基本給[i]||0)+(D[d].時間外[i]||0)+(D[d].雑給[i]||0)+(D[d].賞与引当[i]||0)+(D[d].法定福利[i]||0)+(D[d].退職金[i]||0);
+}
+const grpLabor = [0,1,2,3].map(i => DIVS.reduce((a,d) => a+laborTotal(d,i), 0));
+const laborPct = grpSales.map((s,i) => s>0 ? +(grpLabor[i]/s*100).toFixed(1) : 0);
+
+new Chart('laborDual', { type:'bar', data:{
+  labels: Ms,
+  datasets:[
+    ...DIVS.map(d => ({
+      label: d+' 人件費', data:[0,1,2,3].map(i=>laborTotal(d,i)),
+      backgroundColor: COLS[d]+'44', borderColor: COLS[d], borderWidth:1.5, borderRadius:3,
+      stack:'labor', order:1,
+    })),
+    { label:'売上人件費率(%)', type:'line', data:laborPct, borderColor:'#f87171', backgroundColor:'transparent', tension:.3, pointRadius:7, borderWidth:2.5, yAxisID:'y2', order:0 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:10 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ctx.datasetIndex<5 ? ' '+ctx.dataset.label+': '+fmt(ctx.raw) : ' '+ctx.dataset.label+': '+ctx.raw+'%' } } },
+  scales:{
+    x: scaleBase.x,
+    y: { stacked:true, position:'left', ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{color:'#1d2d42'} },
+    y2:{ position:'right', ticks:{ color:'#7a90a8', callback: v => v+'%' }, grid:{drawOnChartArea:false} },
+  }
+}});
+
+const laborItems = ['基本給','時間外','雑給','賞与引当','法定福利'];
+const liColors   = ['#38bdf8','#fbbf24','#a78bfa','#4ade80','#fb923c'];
+new Chart('laborStack', { type:'bar', data:{
+  labels: DIVS,
+  datasets: laborItems.map((k,ki) => ({
+    label: k,
+    data: DIVS.map(d => D[d][k][3]||0),
+    backgroundColor: liColors[ki]+'66', borderColor: liColors[ki], borderWidth:1.5, borderRadius:2, stack:'l',
+  }))
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:10}, padding:8 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{ x:{ stacked:true, ticks:{color:'#7a90a8',font:{size:10}}, grid:{color:'#1d2d42'} }, y:{ stacked:true, ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{color:'#1d2d42'} } },
+}});
+
+new Chart('laborRate', { type:'bar', data:{
+  labels: DIVS,
+  datasets:[{ label:'売上人件費率(%)', data: DIVS.map((d,di) => { const s=D[d].売上[3]; const l=laborTotal(d,3); return s>0 ? +(l/s*100).toFixed(1) : 0; }), backgroundColor: DIVS.map(d => COLS[d]+'66'), borderColor: DIVS.map(d => COLS[d]), borderWidth:2, borderRadius:6 }]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.raw+'%' } } },
+  scales:{ x:{ticks:{color:'#7a90a8'},grid:{color:'#1d2d42'}}, y:{ticks:{color:'#7a90a8',callback:v=>v+'%'},grid:{color:'#1d2d42'}} },
+}});
+
+// Labor table
+const ltbody = document.getElementById('laborTbody');
+['基本給（製造）','時間外手当','雑給（製造）','賞与引当金','法定福利費'].forEach((label, ki) => {
+  const keys = ['基本給','時間外','雑給','賞与引当','法定福利'];
+  const tr = document.createElement('tr');
+  const arr = [0,1,2,3].map(i => DIVS.reduce((a,d)=>a+(D[d][keys[ki]][i]||0),0));
+  tr.innerHTML = `<td>${label}</td>` + arr.map(v=>`<td>${fmt(v)}</td>`).join('');
+  ltbody.appendChild(tr);
+});
+const ltTotal = document.createElement('tr'); ltTotal.className = 'total';
+ltTotal.innerHTML = `<td>製造人件費 合計</td>` + grpLabor.map(v=>`<td>${fmt(v)}</td>`).join('');
+ltbody.appendChild(ltTotal);
+const ltRate = document.createElement('tr');
+ltRate.innerHTML = `<td>▶ 売上対 人件費率</td>` + laborPct.map(v=>`<td style="color:var(--yellow)">${v}%</td>`).join('');
+ltbody.appendChild(ltRate);
+
+// ── PAGE 4 ──
+const costRate = grpSales.map((s,i) => s>0 ? +(grpCost[i]/s*100).toFixed(1) : 0);
+new Chart('costDual', { type:'bar', data:{
+  labels: Ms,
+  datasets:[
+    { label:'売上総合計', data:grpSales, backgroundColor:'rgba(56,189,248,.15)', borderColor:'#38bdf8', borderWidth:1.5, borderRadius:4, yAxisID:'y', order:1 },
+    { label:'売上原価',   data:grpCost,  backgroundColor:'rgba(167,139,250,.25)', borderColor:'#a78bfa', borderWidth:1.5, borderRadius:4, yAxisID:'y', order:1 },
+    { label:'原価率(%)',  type:'line', data:costRate, borderColor:'#fb923c', backgroundColor:'transparent', tension:.3, pointRadius:7, borderWidth:2.5, yAxisID:'y2', order:0 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:12 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ctx.dataset.label.includes('%') ? ' '+ctx.raw+'%' : ' '+fmt(ctx.raw) } } },
+  scales:{
+    x: scaleBase.x,
+    y: { position:'left', ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{color:'#1d2d42'} },
+    y2:{ position:'right', ticks:{ color:'#7a90a8', callback: v => v+'%' }, grid:{drawOnChartArea:false} },
+  }
+}});
+
+// Cost pie for 糸貫工場 (R8.1月)
+const ito = D['糸貫工場'];
+new Chart('costPie', { type:'doughnut', data:{
+  labels:['燃料費','電力・光熱費','消耗品費','減価償却','修繕費','製造人件費','地代家賃','その他'],
+  datasets:[{ data:[24173044,20515962,16103543,14330000,4199505,laborTotal('糸貫工場',3),5122425,D['糸貫工場'].原価[3]-24173044-20515962-16103543-14330000-4199505-laborTotal('糸貫工場',3)-5122425], backgroundColor:['#f87171','#38bdf8','#a78bfa','#fbbf24','#fb923c','#4ade80','#2dd4bf','#64748b'], borderColor:'#070b12', borderWidth:3 }]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ position:'right', labels:{ color:'#7a90a8', font:{size:10}, padding:8 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.label+': '+fmt(ctx.raw) } } },
+}});
+
+new Chart('costLine', { type:'line', data:{
+  labels: Ms,
+  datasets:[
+    { label:'燃料費',   data:ito.燃料,   borderColor:'#f87171', backgroundColor:'transparent', tension:.3, pointRadius:5 },
+    { label:'電力・光熱費', data:ito.電力, borderColor:'#38bdf8', backgroundColor:'transparent', tension:.3, pointRadius:5 },
+    { label:'消耗品費', data:ito.消耗品, borderColor:'#a78bfa', backgroundColor:'transparent', tension:.3, pointRadius:5 },
+    { label:'減価償却', data:ito.減価償却, borderColor:'#fbbf24', backgroundColor:'transparent', tension:.3, pointRadius:5, borderDash:[3,2] },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:10 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{ x: scaleBase.x, y:{ ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{color:'#1d2d42'} } },
+}});
+
+// Cost table
+const ctbody = document.getElementById('costTbody');
+[
+  { label:'糸貫工場 燃料費',  vals:ito.燃料 },
+  { label:'糸貫工場 電力・光熱費', vals:ito.電力 },
+  { label:'糸貫工場 消耗品費',vals:ito.消耗品 },
+  { label:'糸貫工場 減価償却',vals:ito.減価償却 },
+  { label:'糸貫工場 修繕費',  vals:ito.修繕費 },
+  { label:'糸貫工場 地代家賃',vals:ito.地代家賃 },
+  { label:'加工 減価償却',    vals:D['加工'].減価償却 },
+  { label:'加工 電力・光熱費',vals:D['加工'].電力 },
+].forEach(item => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${item.label}</td>` + item.vals.map(v=>`<td>${fmt(v)}</td>`).join('');
+  ctbody.appendChild(tr);
+});
+const ctLabor = document.createElement('tr');
+ctLabor.innerHTML = `<td>製造人件費計（グループ）</td>` + grpLabor.map(v=>`<td>${fmt(v)}</td>`).join('');
+ctbody.appendChild(ctLabor);
+const ctTotal = document.createElement('tr'); ctTotal.className = 'total';
+ctTotal.innerHTML = `<td>売上原価（グループ合計）</td>` + grpCost.map(v=>`<td>${fmt(v)}</td>`).join('');
+ctbody.appendChild(ctTotal);
+const ctRate = document.createElement('tr');
+ctRate.innerHTML = `<td>▶ 売上原価率</td>` + costRate.map(v=>`<td style="color:var(--orange)">${v}%</td>`).join('');
+ctbody.appendChild(ctRate);
+
+// ── PAGE 5 ──
+// Heatmap
+(function() {
+  const heatmap = document.getElementById('heatmap');
+
+  // inject styles once
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    .hm-legend { display:flex; gap:16px; margin-bottom:14px; flex-wrap:wrap; }
+    .hm-legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:#7a90a8; }
+    .hm-legend-swatch { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+    .hm-table { width:100%; border-collapse:separate; border-spacing:5px; }
+    .hm-table th { color:#7a90a8; font-size:11px; font-weight:500; text-align:center; padding:4px 8px; }
+    .hm-table th.hm-th-div { text-align:left; width:90px; }
+    .hm-table td { height:46px; border-radius:7px; text-align:center; vertical-align:middle;
+                   font-family:'DM Mono',monospace; font-size:12px; font-weight:600;
+                   padding:0 8px; white-space:nowrap; }
+    .hm-table td.hm-td-div { color:#7a90a8; font-size:11px; font-weight:400;
+                              font-family:'Noto Sans JP',sans-serif; text-align:left;
+                              background:transparent !important; }
+    .hm-table tr.hm-total td { border:1px solid rgba(56,189,248,.25); font-weight:700; font-size:13px; }
+    .hm-table tr.hm-total td.hm-td-div { border:none; color:#38bdf8; font-weight:700; font-size:12px; font-family:'Noto Sans JP',sans-serif; }
+    .hm-note { font-size:10px; color:#4a6070; margin-top:10px; }
+  `;
+  document.head.appendChild(styleEl);
+
+  function cellBg(v) {
+    if (v === null)    return { bg:'rgba(255,255,255,.04)', fg:'#4a6070', label:'—' };
+    if (v >= 50000000) return { bg:'rgba(74,222,128,.75)', fg:'#030f07' };
+    if (v >= 20000000) return { bg:'rgba(74,222,128,.50)', fg:'#071a0e' };
+    if (v >= 5000000)  return { bg:'rgba(74,222,128,.28)', fg:'#dde4ef' };
+    if (v > 0)         return { bg:'rgba(74,222,128,.12)', fg:'#9ecfaa' };
+    if (v > -5000000)  return { bg:'rgba(251,191,36,.30)', fg:'#f5d67a' };
+    if (v > -15000000) return { bg:'rgba(248,113,113,.40)', fg:'#fce0e0' };
+    return               { bg:'rgba(248,113,113,.65)', fg:'#fff' };
+  }
+
+  // legend
+  const legendItems = [
+    { bg:'rgba(74,222,128,.75)', label:'5,000万円以上の黒字' },
+    { bg:'rgba(74,222,128,.28)', label:'黒字（500〜5,000万円）' },
+    { bg:'rgba(74,222,128,.12)', label:'小幅黒字（0〜500万円）' },
+    { bg:'rgba(251,191,36,.30)', label:'小幅赤字（0〜▲500万円）' },
+    { bg:'rgba(248,113,113,.40)', label:'赤字（▲500〜▲1,500万円）' },
+    { bg:'rgba(255,255,255,.04)', label:'データなし' },
+  ];
+  let html = `<div class="hm-legend">`;
+  legendItems.forEach(l => {
+    html += `<div class="hm-legend-item"><div class="hm-legend-swatch" style="background:${l.bg}"></div>${l.label}</div>`;
+  });
+  html += `</div>`;
+
+  // table header
+  html += `<table class="hm-table"><thead><tr>
+    <th class="hm-th-div">部門</th>
+    ${Ms.map(m => `<th>${m}</th>`).join('')}
+    <th>4ヶ月累計</th>
+  </tr></thead><tbody>`;
+
+  // rows
+  DIVS.forEach(d => {
+    const cumulative = [0,1,2,3].reduce((a,i) => a + (D[d].営業利益[i]||0), 0);
+    html += `<tr><td class="hm-td-div">${d}</td>`;
+    [0,1,2,3].forEach(i => {
+      const v = D[d].営業利益[i];
+      const isNoData = (D[d].売上[i] === 0 && D[d].原価[i] === 0);
+      const display = isNoData ? null : v;
+      const c = cellBg(display);
+      const label = display === null ? '—' : fmt(display);
+      // Show margin rate as sub-label
+      const rate = D[d].売上[i] > 0 ? (D[d].営業利益[i]/D[d].売上[i]*100).toFixed(1)+'%' : '';
+      html += `<td style="background:${c.bg};color:${c.fg}">
+        <div>${label}</div>
+        ${rate ? `<div style="font-size:9px;opacity:.7;margin-top:1px">${rate}</div>` : ''}
+      </td>`;
+    });
+    // cumulative
+    const cc = cellBg(cumulative);
+    html += `<td style="background:${cc.bg};color:${cc.fg};opacity:.8">${fmt(cumulative)}</td>`;
+    html += `</tr>`;
+  });
+
+  // total row
+  html += `<tr class="hm-total"><td class="hm-td-div">グループ合計</td>`;
+  [0,1,2,3].forEach(i => {
+    const v = grpOp[i];
+    const c = cellBg(v);
+    const rate = grpSales[i] > 0 ? (v/grpSales[i]*100).toFixed(1)+'%' : '';
+    html += `<td style="background:${c.bg};color:${c.fg}">
+      <div>${fmt(v)}</div>
+      ${rate ? `<div style="font-size:9px;opacity:.7;margin-top:1px">${rate}</div>` : ''}
+    </td>`;
+  });
+  const grpCum = [0,1,2,3].reduce((a,i) => a + grpOp[i], 0);
+  const cCum = cellBg(grpCum);
+  html += `<td style="background:${cCum.bg};color:${cCum.fg}">${fmt(grpCum)}</td>`;
+  html += `</tr></tbody></table>`;
+  html += `<div class="hm-note">※ 営業利益（万円）を表示。括弧内は営業利益率。▲はマイナス（赤字）。「—」はデータ未入力月。</div>`;
+
+  heatmap.innerHTML = html;
+})();
+
+new Chart('divCompare', { type:'bar', data:{
+  labels: DIVS,
+  datasets:[
+    { label:'売上', data:DIVS.map(d=>D[d].売上[3]), backgroundColor:DIVS.map(d=>COLS[d]+'33'), borderColor:DIVS.map(d=>COLS[d]), borderWidth:2, borderRadius:4, order:1 },
+    { label:'粗利益', data:DIVS.map(d=>D[d].粗利[3]), backgroundColor:DIVS.map(d=>COLS[d]+'66'), borderColor:DIVS.map(d=>COLS[d]), borderWidth:2, borderRadius:4, order:1 },
+    { label:'営業利益', type:'line', data:DIVS.map(d=>D[d].営業利益[3]), borderColor:'#fff', pointRadius:8, pointBackgroundColor:DIVS.map(d=>COLS[d]), backgroundColor:'transparent', borderWidth:1.5, yAxisID:'y2', order:0 },
+  ]
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:12 } }, tooltip:{ ...ttBase, callbacks:{ label: ctx => ' '+ctx.dataset.label+': '+fmt(ctx.raw) } } },
+  scales:{
+    x:  { ticks:{color:'#7a90a8',font:{size:11}}, grid:{color:'#1d2d42'} },
+    y:  { position:'left',  ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e8*10)/10+'億' }, grid:{color:'#1d2d42'} },
+    y2: { position:'right', ticks:{ color:'#7a90a8', callback: v => Math.round(v/1e4).toLocaleString()+'万' }, grid:{drawOnChartArea:false} },
+  }
+}});
+
+new Chart('grossMargin', { type:'line', data:{
+  labels: Ms,
+  datasets: DIVS.map(d => ({
+    label: d,
+    data: [0,1,2,3].map(i => D[d].売上[i]>0 ? +(D[d].粗利[i]/D[d].売上[i]*100).toFixed(1) : null),
+    borderColor: COLS[d], backgroundColor:'transparent', tension:.3, pointRadius:5, borderWidth:2,
+    spanGaps: true,
+  }))
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{
+    legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:10 } },
+    tooltip:{ ...ttBase, callbacks:{ label: ctx => ctx.raw !== null ? ' '+ctx.dataset.label+': '+ctx.raw+'%' : ' '+ctx.dataset.label+': 売上ゼロのため計算不能' } }
+  },
+  scales:{ x: scaleBase.x, y:{ ticks:{ color:'#7a90a8', callback: v => v+'%' }, grid:{color:'#1d2d42'} } },
+}});
+
+new Chart('costRatio', { type:'line', data:{
+  labels: Ms,
+  datasets: DIVS.map(d => ({
+    label: d,
+    data: [0,1,2,3].map(i => D[d].売上[i]>0 ? +(D[d].原価[i]/D[d].売上[i]*100).toFixed(1) : null),
+    borderColor: COLS[d], backgroundColor:'transparent', tension:.3, pointRadius:5, borderWidth:2, borderDash:[4,2],
+    spanGaps: true,
+  }))
+}, options:{
+  responsive:true, maintainAspectRatio:false,
+  plugins:{
+    legend:{ labels:{ color:'#7a90a8', font:{size:11}, padding:10 } },
+    tooltip:{ ...ttBase, callbacks:{ label: ctx => ctx.raw !== null ? ' '+ctx.dataset.label+': '+ctx.raw+'%' : ' '+ctx.dataset.label+': 売上ゼロのため計算不能' } }
+  },
+  scales:{ x: scaleBase.x, y:{ ticks:{ color:'#7a90a8', callback: v => v+'%' }, grid:{color:'#1d2d42'} } },
+}});
+
+// ── NAV ──
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

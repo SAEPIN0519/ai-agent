@@ -23,7 +23,10 @@
       "Read(//c/Users/npino/.claude/**)",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
       "Bash(start \"\" \"c:/Users/npino/ai-agent/02_clients/SIFTAI/プロプレミアムTEAM/会員管理/週次レポート/会員分析（日報）3月2日-3月8日.html\")",
-      "Bash(git add .claude/settings.json .gitignore \"02_clients/SIFTAI/プロプレミアムTEAM/README.md\" \"02_clients/SIFTAI/プロプレミアムTEAM/会員管理/週次レポート/会員分析（日報）3月2日-3月8日.md\" \"03_journal/2026-03/2026-03-13.md\" \"03_journal/2026-03/2026-03-14.md\" \"09_system/週次日報分析_discord.py\" \"02_clients/SIFTAI/プロプレミアムTEAM/MTG議事録/\" \"02_clients/SIFTAI/プロプレミアムTEAM/プロプレミアムTEAM手順書.md\" \"02_clients/SIFTAI/プロプレミアムTEAM/会員管理/週次レポート/会員分析（日報）3月2日-3月8日.html\" \"09_system/手順書自動更新.py\")"
+      "Bash(git add .claude/settings.json .gitignore \"02_clients/SIFTAI/プロプレミアムTEAM/README.md\" \"02_clients/SIFTAI/プロプレミアムTEAM/会員管理/週次レポート/会員分析（日報）3月2日-3月8日.md\" \"03_journal/2026-03/2026-03-13.md\" \"03_journal/2026-03/2026-03-14.md\" \"09_system/週次日報分析_discord.py\" \"02_clients/SIFTAI/プロプレミアムTEAM/MTG議事録/\" \"02_clients/SIFTAI/プロプレミアムTEAM/プロプレミアムTEAM手順書.md\" \"02_clients/SIFTAI/プロプレミアムTEAM/会員管理/週次レポート/会員分析（日報）3月2日-3月8日.html\" \"09_system/手順書自動更新.py\")",
+      "Read(//c/Apps//**)",
+      "Bash(ls \"C:\\\\Users\\\\matsuoka\\\\.claude\\\\projects\\\\c--Users-matsuoka-Desktop-ai-agent\\\\memory 2>/dev/null && echo --- && ls C:UsersmatsuokaOneDrive\")",
+      "Bash(python pl_agent.py)"
     ],
     "additionalDirectories": [
       "c:\\Users\\npino\\OneDrive\\デスクトップ\\Cloudcord",
