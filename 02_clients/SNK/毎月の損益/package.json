@@ -1,0 +1,13 @@
+{
+  "name": "pl-agent",
+  "version": "1.0.0",
+  "description": "SNK ダイカスト事業部 月次損益 AI エージェント",
+  "main": "pl_agent.js",
+  "type": "module",
+  "scripts": {
+    "start": "node pl_agent.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}
