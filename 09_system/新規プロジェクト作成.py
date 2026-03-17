@@ -14,7 +14,7 @@ if sys.platform == "win32":
 
 # パス設定
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CLIENTS_DIR = os.path.join(BASE_DIR, "02_clients")
+CLIENTS_DIR = os.path.join(BASE_DIR, "03_clients")
 TEMPLATE_PATH = os.path.join(BASE_DIR, "09_system", "config", "PROJECT_TEMPLATE.md")
 
 
@@ -62,7 +62,7 @@ def create_project():
     # クライアント選択
     clients = list_dirs(CLIENTS_DIR)
     if not clients:
-        print("エラー: 02_clients/ にクライアントフォルダがありません")
+        print("エラー: 03_clients/ にクライアントフォルダがありません")
         return
     client_name = select_from_list("クライアントを選択してください:", clients)
     client_dir = os.path.join(CLIENTS_DIR, client_name)

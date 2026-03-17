@@ -28,8 +28,8 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # パス設定
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-MANUAL_PATH = PROJECT_ROOT / "02_clients" / "SIFTAI" / "プロプレミアムTEAM" / "プロプレミアムTEAM手順書.md"
-MTG_DIR = PROJECT_ROOT / "02_clients" / "SIFTAI" / "プロプレミアムTEAM" / "MTG議事録"
+MANUAL_PATH = PROJECT_ROOT / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "プロプレミアムTEAM手順書.md"
+MTG_DIR = PROJECT_ROOT / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "MTG議事録"
 CONFIG_DIR = SCRIPT_DIR / "config"
 TOKEN_FILE = CONFIG_DIR / "slack_bot_token.txt"
 ANTHROPIC_KEY_FILE = CONFIG_DIR / "anthropic_api_key.txt"

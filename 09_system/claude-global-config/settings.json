@@ -1,11 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cmd.exe /c start \"\" \"c:\\\\Users\\\\npino\\\\ai-agent\\\\02_clients\\\\関ビズ\\\\projects\\\\配布物_FELOプロンプト.html\")",
-      "Bash(ls -la \"c:/Users/npino/ai-agent/02_clients/関ビズ/projects/\"*.pptx)",
+      "Bash(cmd.exe /c start \"\" \"c:\\\\Users\\\\npino\\\\ai-agent\\\\03_clients\\\\関ビズ\\\\projects\\\\配布物_FELOプロンプト.html\")",
+      "Bash(ls -la \"c:/Users/npino/ai-agent/03_clients/関ビズ/projects/\"*.pptx)",
       "Bash(pip install qrcode[pil])",
       "Bash(python generate_qr.py)",
-      "Bash(start \"\" \"c:\\\\Users\\\\npino\\\\ai-agent\\\\02_clients\\\\関ビズ\\\\projects\\\\講座準備_Googleドキュメント用.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\npino\\\\ai-agent\\\\03_clients\\\\関ビズ\\\\projects\\\\講座準備_Googleドキュメント用.html\")",
       "Bash(gh api repos/SAEPIN0519/ai-agent/pages -X POST -f source.branch=main -f source.path=/)",
       "Bash(gh api repos/SAEPIN0519/ai-agent/pages -X PUT -f source.branch=main -f source.path=/)",
       "Bash(gh api:*)",
@@ -61,7 +61,7 @@
       "Bash(git pull newworld main --no-rebase)",
       "Bash(python 09_system/週次日報分析_discord.py dry-run)",
       "Bash(grep -v \"^📊\\\\|^  モード\\\\|^$\\\\|^🔗\\\\|^📥\\\\|^🔍\\\\|^  →\\\\|^---\\\\|^💾\")",
-      "Bash(start \"\" \"c:/Users/npino/ai-agent/02_clients/SIFTAI/プロプレミアムTEAM/MTG議事録/ACTION_TRACKER.html\")",
+      "Bash(start \"\" \"c:/Users/npino/ai-agent/03_clients/SIFTAI/プロプレミアムTEAM/MTG議事録/ACTION_TRACKER.html\")",
       "Bash(pip show anthropic slack_sdk)"
     ],
     "additionalDirectories": [

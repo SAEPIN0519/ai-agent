@@ -1,11 +1,11 @@
 ---
-description: ジャーナル（03_journal/）への書き込みルール
-globs: 03_journal/**/*.md
+description: ジャーナル（04_journal/）への書き込みルール
+globs: 04_journal/**/*.md
 ---
 
 # ジャーナル記録ルール
 
-- パス形式: `03_journal/YYYY-MM/YYYY-MM-DD.md`
+- パス形式: `04_journal/YYYY-MM/YYYY-MM-DD.md`
 - やり取りで作業が発生したら、返答の最後に必ず当日のジャーナルを更新する（確認不要）
 - 同日に複数回作業した場合は同じファイルに追記する
 - 記録内容: 実施内容・決定事項・ユーザー発言の要点・次回への申し送り
