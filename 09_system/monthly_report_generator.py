@@ -26,7 +26,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # パス設定
 BASE_DIR = Path(__file__).parent.parent
-REPORT_DIR = BASE_DIR / "02_clients" / "SIFTAI" / "プロプレミアムTEAM" / "月活動報告"
+REPORT_DIR = BASE_DIR / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "月活動報告"
 SYSTEM_DIR = Path(__file__).parent
 
 # slack_reader.py を再利用

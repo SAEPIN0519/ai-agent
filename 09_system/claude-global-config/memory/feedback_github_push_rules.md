@@ -1,6 +1,6 @@
 ---
 name: GitHub push ルール（AIsoraCode / SAEPIN分離）
-description: newworld（AIsora-Code）にはAIsoraCode関連のみpush。それ以外は必ずorigin（SAEPIN0519）にpush。青嶋さんがAIsora-Codeに追加したものは02_clients/AIsoraCode/に取り込んでOK
+description: newworld（AIsora-Code）にはAIsoraCode関連のみpush。それ以外は必ずorigin（SAEPIN0519）にpush。青嶋さんがAIsora-Codeに追加したものは03_clients/AIsoraCode/に取り込んでOK
 type: feedback
 ---
 
@@ -11,12 +11,12 @@ type: feedback
 - クライアント情報、ジャーナル、社内システム等
 
 ### newworld（Aosy-Git/AIsora-Code）
-- `02_clients/AIsoraCode/` の中身**だけ**をpushしてよい
+- `03_clients/AIsoraCode/` の中身**だけ**をpushしてよい
 - それ以外のデータは絶対にpushしない
 
 ### 青嶋さんからの取り込み
 - 青嶋さんがAIsora-Code（GitHub上）に何かアップした場合
-- その内容を `02_clients/AIsoraCode/` に取り込んでOK
+- その内容を `03_clients/AIsoraCode/` に取り込んでOK
 
 ### 背景
 - 2026-03-15に、全データがAIsora-Codeに入っていたことが判明

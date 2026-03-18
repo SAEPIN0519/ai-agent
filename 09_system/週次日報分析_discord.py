@@ -45,7 +45,7 @@ except ImportError:
 # ==========================================
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_DIR = PROJECT_ROOT / "09_system" / "config"
-REPORTS_DIR = PROJECT_ROOT / "02_clients" / "SIFTAI" / "プロプレミアムTEAM" / "会員管理" / "週次レポート"
+REPORTS_DIR = PROJECT_ROOT / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "会員管理" / "週次レポート"
 
 # Google Sheets
 SPREADSHEET_ID = "1EHKgmE1d7T5N9GbT_QJV72Q8Dh91iNysHHkz6LEWJy4"
@@ -74,6 +74,9 @@ SLACK_WEBHOOK_URL = ""
 # 非アクティブ判定の閾値
 MIN_SUBMISSIONS = 3  # 週間提出がこの件数以下で非アクティブ判定
 
+# 運営メンバー（データ集計から除外）
+EXCLUDED_MEMBERS = ["安部友博"]
+
 # 感情分析キーワード
 POSITIVE_KEYWORDS = [
     "楽しい", "嬉しい", "できた", "理解できた", "進んだ", "成長",
@@ -93,10 +96,15 @@ TODAY_STR = TODAY.strftime("%Y-%m-%d")
 
 # 月曜〜日曜の週サイクルを計算
 # weekday(): 月=0, 火=1, ..., 日=6
+# --week-ago N で N週前を対象にできる（デフォルト: 1 = 先週）
+_week_ago = 1
+for i, arg in enumerate(sys.argv):
+    if arg == "--week-ago" and i + 1 < len(sys.argv):
+        _week_ago = int(sys.argv[i + 1])
 _current_weekday = TODAY.weekday()
 THIS_MONDAY = TODAY - timedelta(days=_current_weekday)
-LAST_MONDAY = THIS_MONDAY - timedelta(days=7)
-LAST_SUNDAY = THIS_MONDAY - timedelta(days=1)
+LAST_MONDAY = THIS_MONDAY - timedelta(days=7 * _week_ago)
+LAST_SUNDAY = LAST_MONDAY + timedelta(days=6)
 
 # ==========================================
 # Google Sheets 接続
@@ -154,8 +162,11 @@ def fetch_weekly_data(sheet):
                 continue
 
         if week_start <= row_date <= week_end:
+            name = str(row.get(COL_NAME, "")).strip()
+            if name in EXCLUDED_MEMBERS:
+                continue
             weekly_data.append({
-                "name": str(row.get(COL_NAME, "")).strip(),
+                "name": name,
                 "date": row_date,
                 "hours": str(row.get(COL_HOURS, "")).strip(),
                 "learning": str(row.get(COL_LEARNING, "")).strip(),
@@ -412,7 +423,7 @@ def fetch_monetize_data(spreadsheet):
             phase = str(row.get(COL_MONETIZE_PHASE, "")).strip()
             amount = parse_yen_amount(monetize_text)
 
-            if name and name != "テスト":
+            if name and name != "テスト" and name not in EXCLUDED_MEMBERS:
                 data.append({
                     "name": name,
                     "amount": amount,
@@ -673,6 +684,10 @@ def format_weekly_report(submissions, sentiment, weekly_data, fb_data=None, name
         for i, m in enumerate(submissions["top3"], 1)
     )
     lines.append(f"  {top3_str}")
+    # 提出者統計（ダッシュボードHTML用）
+    report_2plus = sum(1 for c in submissions["all_members"].values() if c >= 2)
+    lines.append(f"日報提出者：{submissions['unique_members']}名（提出{submissions['total_submissions']}件）")
+    lines.append(f"日報2回以上提出者：{report_2plus}名（提出率{round(report_2plus / 38 * 100)}%）")
     lines.append("")
 
     # ② 実践フィードバック会分析
@@ -745,7 +760,10 @@ def format_weekly_report(submissions, sentiment, weekly_data, fb_data=None, name
 
         if monetize_ranking["earners"] > 0:
             # サマリー統計
-            lines.append(f"週報提出者: {monetize_ranking['total_members']}名 / 収益報告者: {monetize_ranking['earners']}名")
+            weekly_sub_count = monetize_ranking['total_members']
+            weekly_rate_pct = round(weekly_sub_count / 38 * 100)
+            lines.append(f"週報提出者: {weekly_sub_count}名 / 収益報告者: {monetize_ranking['earners']}名")
+            lines.append(f"週報提出率: {weekly_rate_pct}%（{weekly_sub_count}/38名）")
             lines.append(f"合計マネタイズ額: {format_yen(monetize_ranking['total_amount'])}")
             lines.append("")
 
@@ -1066,8 +1084,11 @@ def fetch_fb_data(spreadsheet):
                 continue
 
         if LAST_MONDAY <= row_date <= LAST_SUNDAY:
+            name = str(row.get("お名前", "")).strip()
+            if name in EXCLUDED_MEMBERS:
+                continue
             fb_data.append({
-                "name": str(row.get("お名前", "")).strip(),
+                "name": name,
                 "discord": str(row.get("Discordアカウント名", "")).strip(),
                 "date": row_date,
             })
@@ -1198,209 +1219,597 @@ def format_award_message(weekly_data, fb_data, name_map):
     return "\n".join(lines)
 
 
-def format_html_report(md_report):
-    """MDレポートをHTML形式に変換"""
-    period_start = f"{LAST_MONDAY.month}月{LAST_MONDAY.day}日"
-    period_end = f"{LAST_SUNDAY.month}月{LAST_SUNDAY.day}日"
-
-    lines = md_report.split("\n")
-    body_parts = []
-    in_table = False
-    table_rows = []
-
-    for line in lines:
-        stripped = line.strip()
-
-        # テーブル行の処理
-        if stripped.startswith("|"):
-            if not in_table:
-                in_table = True
-                table_rows = []
-            table_rows.append(stripped)
-            continue
-        elif in_table:
-            # テーブル終了 → HTMLテーブルに変換
-            body_parts.append(_render_html_table(table_rows))
-            in_table = False
-            table_rows = []
-
-        # タイトル行
-        if stripped.rstrip() in ("週次報告書", "週次報告書　"):
-            body_parts.append('<h1 class="report-title">週次報告書</h1>')
-            continue
-        if stripped == "成功習慣行動率100％":
-            body_parts.append(f'<p class="subtitle">成功習慣行動率100％</p>')
-            continue
-
-        # セクション見出し（① 〜 ⑧）
-        if stripped and stripped[0] in "①②③④⑤⑥⑦⑧⑨":
-            body_parts.append(f'<h2 class="section-title">{_esc(stripped)}</h2>')
-            continue
-
-        # 警告・急降下マーク
-        if stripped.startswith("⚠️") or stripped.startswith("📉"):
-            cls = "alert-danger" if "⚠️" in stripped else "alert-warning"
-            body_parts.append(f'<div class="{cls}">{_esc(stripped)}</div>')
-            continue
-
-        # インデント付き行（2スペース以上）
-        if line.startswith("  ") and stripped:
-            body_parts.append(f'<p class="detail">{_esc(stripped)}</p>')
-            continue
-
-        # 空行
-        if not stripped:
-            continue
-
-        # 通常行
-        body_parts.append(f'<p>{_esc(stripped)}</p>')
-
-    # テーブルが末尾にある場合
-    if in_table and table_rows:
-        body_parts.append(_render_html_table(table_rows))
-
-    body_html = "\n".join(body_parts)
-
-    return f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>週次報告書 {period_start}〜{period_end}</title>
-<style>
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-body {{
-    font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
-    background: #f5f7fa;
-    color: #333;
-    line-height: 1.8;
-    padding: 20px;
-}}
-.container {{
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    padding: 40px;
-}}
-.report-title {{
-    font-size: 28px;
-    color: #1a365d;
-    border-bottom: 3px solid #2b6cb0;
-    padding-bottom: 12px;
-    margin-bottom: 4px;
-}}
-.subtitle {{
-    font-size: 16px;
-    color: #2b6cb0;
-    font-weight: bold;
-    margin-bottom: 30px;
-}}
-.section-title {{
-    font-size: 18px;
-    color: #fff;
-    background: linear-gradient(135deg, #2b6cb0, #3182ce);
-    padding: 10px 16px;
-    border-radius: 6px;
-    margin: 28px 0 12px 0;
-}}
-p {{
-    margin: 6px 0;
-    font-size: 14px;
-}}
-.detail {{
-    margin: 4px 0 4px 20px;
-    font-size: 14px;
-    color: #4a5568;
-}}
-table {{
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0;
-    font-size: 13px;
-}}
-th {{
-    background: #2b6cb0;
-    color: #fff;
-    padding: 8px 10px;
-    text-align: left;
-    font-weight: 600;
-    white-space: nowrap;
-}}
-td {{
-    padding: 6px 10px;
-    border-bottom: 1px solid #e2e8f0;
-}}
-tr:nth-child(even) td {{
-    background: #f7fafc;
-}}
-tr:hover td {{
-    background: #ebf8ff;
-}}
-.alert-danger {{
-    background: #fff5f5;
-    border-left: 4px solid #e53e3e;
-    padding: 10px 16px;
-    margin: 8px 0;
-    border-radius: 0 6px 6px 0;
-    font-size: 14px;
-    color: #c53030;
-}}
-.alert-warning {{
-    background: #fffaf0;
-    border-left: 4px solid #dd6b20;
-    padding: 10px 16px;
-    margin: 8px 0;
-    border-radius: 0 6px 6px 0;
-    font-size: 14px;
-    color: #c05621;
-}}
-.footer {{
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #e2e8f0;
-    color: #a0aec0;
-    font-size: 12px;
-}}
-</style>
-</head>
-<body>
-<div class="container">
-{body_html}
-<div class="footer">Generated by SAEPIN — AI Agent System</div>
-</div>
-</body>
-</html>"""
-
-
 def _esc(text):
     """HTMLエスケープ"""
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _render_html_table(rows):
-    """パイプ区切りテーブル行をHTMLテーブルに変換"""
-    html = ['<table>']
-    for i, row in enumerate(rows):
-        cells = [c.strip() for c in row.strip("|").split("|")]
-        if i == 0:
-            html.append("<thead><tr>")
-            for c in cells:
-                html.append(f"<th>{_esc(c)}</th>")
-            html.append("</tr></thead><tbody>")
-        else:
-            html.append("<tr>")
-            for c in cells:
-                html.append(f"<td>{_esc(c)}</td>")
-            html.append("</tr>")
-    html.append("</tbody></table>")
+def _build_week_body(md_text, week_monday, prev_md_text=None):
+    """1週分のダッシュボードbody HTMLを生成（タブコンテンツ用）"""
+    week_sunday = week_monday + timedelta(days=6)
+    period_start_str = f"{week_monday.month}月{week_monday.day}日"
+    period_end_str = f"{week_sunday.month}月{week_sunday.day}日"
+    weekday_names = ['月','火','水','木','金','土','日']
+    period_full = f"{week_monday.strftime('%Y年%m月%d日')}（{weekday_names[week_monday.weekday()]}）〜 {week_sunday.strftime('%m月%d日')}（{weekday_names[week_sunday.weekday()]}）"
+
+    d = _parse_md_report(md_text)
+    prev = _parse_md_report(prev_md_text) if prev_md_text else None
+
+    # --- 前週との比較 ---
+    def _delta(cur, prv, suffix="", fmt_func=None):
+        if prv is None:
+            return ""
+        diff = cur - prv
+        sign = "+" if diff > 0 else ""
+        val = fmt_func(diff) if fmt_func else f"{sign}{diff}"
+        if not fmt_func:
+            val = f"{sign}{diff}{suffix}"
+        return val
+
+    # --- 日報2回以上・週報データ（Google Sheetsから直接取得） ---
+    report_2plus_this = d.get("report_2plus", "—")
+    report_2plus_prev = prev.get("report_2plus", "—") if prev else "—"
+    report_rate_this = d.get("report_rate", "—")
+    report_rate_prev = prev.get("report_rate", "—") if prev else "—"
+    weekly_submitters_this = d.get("weekly_submitters", "—")
+    weekly_submitters_prev = prev.get("weekly_submitters", "—") if prev else "—"
+    weekly_rate_this = d.get("weekly_rate", "—")
+    weekly_rate_prev = prev.get("weekly_rate", "—") if prev else "—"
+
+    # --- 各セクションHTML ---
+    inactive_table_html = _parse_inactive_table(md_text)
+    alerts_html = _parse_alerts(md_text)
+    voices_html = _parse_voices(md_text)
+    proposals_html = _parse_proposals(md_text)
+    categories_html = _parse_categories_bars(md_text)
+    phases_html = _parse_phase_cards(md_text)
+    monetize_html = _parse_monetize(md_text)
+    fb_chart_html = _parse_fb_chart(md_text)
+    fb_top3_html = _parse_fb_top3(md_text)
+    hours_top3_html = _parse_hours_top3(md_text)
+    submit_top3_html = _parse_submit_top3(md_text)
+
+    # --- KPIカード ---
+    total_hours = d.get("total_hours", 0)
+    avg_hours = d.get("avg_hours", 0)
+    submitters = d.get("submitters", 0)
+    total_submissions = d.get("total_submissions", 0)
+    pos_ratio = d.get("pos_ratio", 0)
+    monetize_total = d.get("monetize_total", "—")
+    monetize_sub = d.get("monetize_sub", "")
+    inactive_count = d.get("inactive_count", 0)
+    total_pro = d.get("total_pro", 38)
+
+    prev_hours = prev.get("total_hours", None) if prev else None
+    prev_avg = prev.get("avg_hours", None) if prev else None
+    prev_pos = prev.get("pos_ratio", None) if prev else None
+    prev_inactive = prev.get("inactive_count", None) if prev else None
+
+    hours_change = f'+{round((total_hours/prev_hours-1)*100)}% (前週 {prev_hours}h)' if prev_hours and prev_hours > 0 else ""
+    avg_change = f'+{round((avg_hours/prev_avg-1)*100)}% (前週 {prev_avg}h)' if prev_avg and prev_avg > 0 else ""
+    pos_change = f'+{pos_ratio - prev_pos}pt (前週 {prev_pos}%)' if prev_pos is not None else ""
+    inactive_change = f'改善 (前週 {prev_inactive}名)' if prev_inactive is not None else ""
+
+    # 感情ゲージの前週比較
+    prev_neg = prev.get("neg_ratio", None) if prev else None
+    neg_ratio = d.get("neg_ratio", 0)
+    sentiment_compare = ""
+    if prev_pos is not None:
+        diff = pos_ratio - prev_pos
+        sentiment_compare = f"""
+        <div style="display:flex;gap:16px;margin-top:16px;">
+          <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:11px;color:#94a3b8;font-weight:600;">前週</div>
+            <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+              <span style="color:#16a34a;font-weight:700;font-size:18px;">{prev_pos}%</span>
+              <span style="color:#94a3b8;font-size:14px;">/</span>
+              <span style="color:#dc2626;font-weight:700;font-size:18px;">{prev_neg}%</span>
+            </div>
+          </div>
+          <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:11px;color:#94a3b8;font-weight:600;">今週</div>
+            <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+              <span style="color:#16a34a;font-weight:700;font-size:18px;">{pos_ratio}%</span>
+              <span style="color:#94a3b8;font-size:14px;">/</span>
+              <span style="color:#dc2626;font-weight:700;font-size:18px;">{neg_ratio}%</span>
+            </div>
+          </div>
+          <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:11px;color:#94a3b8;font-weight:600;">変化</div>
+            <div style="color:{'#16a34a' if diff >= 0 else '#dc2626'};font-weight:700;font-size:18px;margin-top:4px;">{'+' if diff >= 0 else ''}{diff}pt</div>
+          </div>
+        </div>"""
+
+    # 分析コメント
+    if pos_ratio >= 60:
+        sentiment_comment = "全体的にポジティブな反応が多く、コミュニティの健康状態は良好。"
+    elif pos_ratio >= 40:
+        sentiment_comment = "プラスとマイナスが拮抗。停滞会員へのフォロー強化が有効。"
+    else:
+        sentiment_comment = "マイナス傾向が目立つ。個別フォローと成功体験の共有を優先。"
+    if prev_pos is not None and pos_ratio > prev_pos:
+        sentiment_comment += "前週比でポジティブ率が改善。"
+
+    # --- 非アクティブ比較カード ---
+    active_rate = round((total_pro - inactive_count) / total_pro * 100) if total_pro > 0 else 0
+    prev_active_rate = round((total_pro - prev_inactive) / total_pro * 100) if prev_inactive is not None and total_pro > 0 else "—"
+
+    # body contentのみ返す（ページ外殻は generate_monthly_dashboard が担当）
+    return f"""<div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
+  <strong style="font-size:18px;color:var(--gray-800);">{period_full}</strong>
+</div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">{total_hours}h</div><div class="kpi-change up">{hours_change}</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">{avg_hours}h</div><div class="kpi-change up">{avg_change}</div></div>
+  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">{submitters}名</div><div class="kpi-sub">提出{total_submissions}件</div></div>
+  <div class="kpi-card"><div class="kpi-label">ポジティブ率</div><div class="kpi-value">{pos_ratio}%</div><div class="kpi-change up">{pos_change}</div></div>
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">{monetize_total}</div><div class="kpi-sub">{monetize_sub}</div></div>
+  <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">{inactive_count}名</div><div class="kpi-change up">{inactive_change}</div><div class="kpi-sub">PRO全体 {total_pro}名</div></div>
+</div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4>{hours_top3_html}
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4>{submit_top3_html}
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:4px;">曜日別参加者数</h4>{fb_chart_html}
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4>{fb_top3_html}
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div class="sentiment-gauge">
+    <div class="sentiment-pos" style="width:{pos_ratio}%;">{pos_ratio}%</div>
+    <div class="sentiment-neg" style="width:{neg_ratio}%;">{neg_ratio}%</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
+    <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
+  </div>
+  {sentiment_compare}
+  <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">{sentiment_comment}</p>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">4</span><span class="section-title">カテゴリー分析（意味分類）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">{categories_html}</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">5</span><span class="section-title">マネタイズフェーズ × 課題分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body">{phases_html}</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">▼</span>
+</div><div class="section-body">{monetize_html}</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">▼</span>
+</div><div class="section-body">{voices_html}</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">8</span><span class="section-title">運営への提言</span><span class="section-toggle">▼</span>
+</div><div class="section-body">{proposals_html}</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">9</span><span class="section-title">非アクティブPRO会員（過去4週傾向）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（{period_start_str}–{period_end_str}）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">{inactive_count}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">{active_rate}%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">{report_2plus_this}名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO {total_pro}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">{report_rate_this}%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">{weekly_submitters_this}名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO {total_pro}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">{weekly_rate_this}%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+      </div>
+    </div>
+    <div style="background:var(--gray-50);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-400);margin-bottom:12px;">前週</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{prev_inactive if prev_inactive is not None else '—'}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{prev_active_rate}%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{report_2plus_prev}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{report_rate_prev}%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{weekly_submitters_prev}名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">{weekly_rate_prev}%</div></div>
+      </div>
+    </div>
+  </div>
+  {inactive_table_html}
+  {alerts_html}
+</div></div>"""
+
+
+# ==========================================
+# MDレポートパーサー（ダッシュボード用）
+# ==========================================
+def _parse_md_report(md):
+    """MDレポートから主要数値を抽出"""
+    d = {}
+    for line in md.split("\n"):
+        l = line.strip()
+        # 総稼働時間
+        m = re.search(r"総稼働時間：([\d.]+)時間", l)
+        if m: d["total_hours"] = float(m.group(1))
+        # 平均稼働時間
+        m = re.search(r"平均稼働時間：([\d.]+)時間", l)
+        if m: d["avg_hours"] = float(m.group(1))
+        # ポジティブ率
+        m = re.search(r"プラス傾向率：(\d+)％", l)
+        if m: d["pos_ratio"] = int(m.group(1))
+        # ネガティブ率
+        m = re.search(r"マイナス傾向率：(\d+)％", l)
+        if m: d["neg_ratio"] = int(m.group(1))
+        # 非アクティブ
+        m = re.search(r"非アクティブ: (\d+)名 / PRO全体: (\d+)名", l)
+        if m:
+            d["inactive_count"] = int(m.group(1))
+            d["total_pro"] = int(m.group(2))
+        # マネタイズ合計
+        m = re.search(r"合計マネタイズ額: (.+)", l)
+        if m: d["monetize_total"] = m.group(1).strip()
+        # 週報提出者 / 収益報告者
+        m = re.search(r"週報提出者: (\d+)名 / 収益報告者: (\d+)名", l)
+        if m: d["monetize_sub"] = f"収益報告 {m.group(2)}名 / 週報 {m.group(1)}名"
+    # 提出者数・提出件数
+    for line in md.split("\n"):
+        l = line.strip()
+        m = re.search(r"日報提出者：(\d+)名（提出(\d+)件）", l)
+        if m:
+            d["submitters"] = int(m.group(1))
+            d["total_submissions"] = int(m.group(2))
+        m = re.search(r"日報2回以上提出者：(\d+)名（提出率(\d+)%）", l)
+        if m:
+            d["report_2plus"] = int(m.group(1))
+            d["report_rate"] = int(m.group(2))
+        m = re.search(r"週報提出率: (\d+)%（(\d+)/(\d+)名）", l)
+        if m:
+            d["weekly_rate"] = int(m.group(1))
+            d["weekly_submitters"] = int(m.group(2))
+    return d
+
+
+def _load_prev_week_data(path=None):
+    """前週レポートのMDファイルを読み込んでパース"""
+    if path and Path(path).exists():
+        md = Path(path).read_text(encoding="utf-8")
+        return _parse_md_report(md)
+    # 自動検索: 前週のMDファイルを探す
+    prev_mon = LAST_MONDAY - timedelta(days=7)
+    prev_sun = LAST_MONDAY - timedelta(days=1)
+    start_str = f"{prev_mon.month}月{prev_mon.day}日"
+    end_str = f"{prev_sun.month}月{prev_sun.day}日"
+    prev_path = REPORTS_DIR / f"会員分析（日報）{start_str}-{end_str}.md"
+    if prev_path.exists():
+        md = prev_path.read_text(encoding="utf-8")
+        return _parse_md_report(md)
+    return None
+
+
+
+
+def _parse_inactive_table(md):
+    """非アクティブテーブルをHTMLに変換"""
+    lines = md.split("\n")
+    table_lines = [l.strip() for l in lines if l.strip().startswith("|")]
+    if not table_lines:
+        return ""
+    html = ['<div style="overflow-x:auto;"><table><thead><tr>']
+    header = [c.strip() for c in table_lines[0].strip("|").split("|")]
+    for h in header:
+        html.append(f"<th>{_esc(h)}</th>")
+    html.append("</tr></thead><tbody>")
+    for row_str in table_lines[1:]:
+        cells = [c.strip() for c in row_str.strip("|").split("|")]
+        html.append("<tr>")
+        for c in cells:
+            cls = ""
+            if c in ("0/7", "0%", "0/0"):
+                cls = ' class="zero"'
+            elif "14%" in c or "29%" in c:
+                cls = ' class="low"'
+            html.append(f"<td{cls}>{_esc(c)}</td>")
+        html.append("</tr>")
+    html.append("</tbody></table></div>")
     return "\n".join(html)
 
 
+def _parse_alerts(md):
+    """アラート行をHTMLに変換"""
+    html = []
+    for line in md.split("\n"):
+        l = line.strip()
+        if l.startswith("⚠️"):
+            content = l.replace("⚠️ ", "").replace("⚠️", "")
+            html.append(f'<div class="alert danger"><span class="alert-icon">⚠️</span><div>{_esc(content)}</div></div>')
+        elif l.startswith("📉"):
+            content = l.replace("📉 ", "").replace("📉", "")
+            html.append(f'<div class="alert warning"><span class="alert-icon">📉</span><div>{_esc(content)}</div></div>')
+    return "\n".join(html)
+
+
+def _parse_voices(md):
+    """生の声セクションをHTMLカードに変換"""
+    lines = md.split("\n")
+    in_voices = False
+    pos_voices = []
+    neg_voices = []
+    current_list = None
+    for line in lines:
+        l = line.strip()
+        if "⑦" in l or "重要インサイト" in l:
+            in_voices = True
+            continue
+        if in_voices and l and l[0] in "⑧⑨":
+            break
+        if not in_voices:
+            continue
+        if "プラス傾向" in l:
+            current_list = pos_voices
+            continue
+        if "マイナス傾向" in l:
+            current_list = neg_voices
+            continue
+        if current_list is not None and line.startswith("  ") and "：「" in l:
+            parts = l.split("：「", 1)
+            name = parts[0].strip()
+            voice = parts[1].rstrip("」").rstrip("」") if len(parts) > 1 else ""
+            if len(voice) > 120:
+                voice = voice[:120] + "…"
+            current_list.append((name, voice))
+
+    pos_html = '<div class="voice-section-label pos">前進を支える声</div>\n'
+    for name, voice in pos_voices:
+        pos_html += f'<div class="voice-card pos"><div class="voice-name">{_esc(name)}</div>{_esc(voice)}</div>\n'
+    neg_html = '<div class="voice-section-label neg">停滞を招く声</div>\n'
+    seen = set()
+    for name, voice in neg_voices:
+        key = f"{name}:{voice[:30]}"
+        if key in seen:
+            continue
+        seen.add(key)
+        neg_html += f'<div class="voice-card neg"><div class="voice-name">{_esc(name)}</div>{_esc(voice)}</div>\n'
+
+    return f'<div class="voice-grid"><div>{pos_html}</div><div>{neg_html}</div></div>'
+
+
+def _parse_proposals(md):
+    """提言セクションをHTMLに変換"""
+    lines = md.split("\n")
+    in_proposals = False
+    follow_html = []
+    improve_html = []
+    current = None
+    for line in lines:
+        l = line.strip()
+        if "⑧" in l or "運営への提言" in l:
+            in_proposals = True
+            continue
+        if in_proposals and l and l[0] in "⑨":
+            break
+        if not in_proposals:
+            continue
+        if "個別フォロー" in l:
+            current = "follow"
+            continue
+        if "FB会" in l or "改善案" in l:
+            current = "improve"
+            continue
+        if current == "follow" and line.startswith("  ") and l:
+            follow_html.append(f'<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>{_esc(l)}</div></div>')
+        elif current == "improve" and line.startswith("  ") and l:
+            improve_html.append(f'<div class="proposal-item"><div class="proposal-icon improve">💡</div><div>{_esc(l)}</div></div>')
+
+    html = '<h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">個別フォロー推奨</h4>\n'
+    html += '<div class="proposal-list">' + "\n".join(follow_html) + '</div>\n'
+    html += '<h4 style="font-size:14px;color:var(--gray-600);margin:20px 0 8px;">FB会・サービス改善案</h4>\n'
+    html += '<div class="proposal-list">' + "\n".join(improve_html) + '</div>'
+    return html
+
+
+def _parse_categories_bars(md):
+    """カテゴリー分析をバーチャートHTMLに変換"""
+    colors = {"前進実感": "green", "スキル不足": "orange", "行動面": "blue", "時間・環境": "purple", "心理的": "red"}
+    bars = []
+    for line in md.split("\n"):
+        l = line.strip()
+        if not l or l[0] == "④":
+            continue
+        m = re.search(r"(.+?)：(\d+)人（(\d+)％）", l)
+        if m and ("④" in md.split(l)[0][-50:] if len(md.split(l)) > 1 else True):
+            label = m.group(1).strip()
+            count = m.group(2)
+            pct = int(m.group(3))
+            color = "blue"
+            for key, c in colors.items():
+                if key in label:
+                    color = c
+                    break
+            short_label = label[:8] if len(label) > 8 else label
+            bars.append(f'<div class="bar-row"><span class="bar-label">{_esc(short_label)}</span>'
+                       f'<div class="bar-track"><div class="bar-fill {color}" style="width:{pct}%;">{count}人</div></div>'
+                       f'<span class="bar-value">{pct}%</span></div>')
+    if not bars:
+        return "<p>（データなし）</p>"
+    return '<div class="bar-chart">' + "\n".join(bars) + '</div>'
+
+
+def _parse_phase_cards(md):
+    """フェーズ分析をカードHTMLに変換"""
+    cards = []
+    phase_classes = ["p1", "p2", "p3", "p4"]
+    idx = 0
+    for line in md.split("\n"):
+        l = line.strip()
+        m = re.search(r"フェーズ(\d)（(.+?)）：(\d+)人[\[［]該当[：:](.+?)[\]］]", l)
+        if m:
+            phase_num = m.group(1)
+            phase_name = m.group(2)
+            count = m.group(3)
+            members = m.group(4).strip()
+            cls = phase_classes[idx % 4]
+            cards.append(f'<div class="phase-card {cls}">'
+                        f'<div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE {phase_num}</div>'
+                        f'<div style="font-size:14px;font-weight:700;margin:2px 0;">{_esc(phase_name)}</div>'
+                        f'<div style="font-size:24px;font-weight:800;color:var(--primary);">{count}人</div>'
+                        f'<div style="font-size:12px;color:var(--gray-600);margin-top:4px;">{_esc(members)}</div></div>')
+            idx += 1
+    if not cards:
+        return "<p>（データなし）</p>"
+    return '<div class="phase-grid">' + "\n".join(cards) + '</div>'
+
+
+def _parse_monetize(md):
+    """マネタイズセクションをHTMLに変換"""
+    lines = md.split("\n")
+    in_section = False
+    ranking = []
+    total_amount = ""
+    avg_amount = ""
+    for line in lines:
+        l = line.strip()
+        if "⑥" in l:
+            in_section = True
+            continue
+        if in_section and l and l[0] in "⑦⑧⑨":
+            break
+        if not in_section:
+            continue
+        m = re.search(r"合計マネタイズ額: (.+)", l)
+        if m:
+            total_amount = m.group(1).strip()
+        m = re.search(r"平均: (.+)", l)
+        if m:
+            avg_amount = m.group(1).strip()
+        m = re.search(r"[🥇🥈🥉]\s*(.+?)\s*—\s*(.+)", l)
+        if m:
+            ranking.append((m.group(1).strip(), m.group(2).strip()))
+        m2 = re.search(r"\d+位\s+(.+?)\s*—\s*(.+)", l)
+        if m2:
+            ranking.append((m2.group(1).strip(), m2.group(2).strip()))
+
+    if not ranking:
+        return "<p>（今週は収益報告なし）</p>"
+
+    # 表彰台
+    podium = ""
+    if len(ranking) >= 3:
+        podium = f"""<div class="monetize-podium">
+          <div class="podium-item silver"><div class="podium-medal">🥈</div><div class="podium-name">{_esc(ranking[1][0])}</div><div class="podium-amount">{_esc(ranking[1][1])}</div></div>
+          <div class="podium-item gold"><div class="podium-medal">🥇</div><div class="podium-name">{_esc(ranking[0][0])}</div><div class="podium-amount">{_esc(ranking[0][1])}</div></div>
+          <div class="podium-item bronze"><div class="podium-medal">🥉</div><div class="podium-name">{_esc(ranking[2][0])}</div><div class="podium-amount">{_esc(ranking[2][1])}</div></div>
+        </div>"""
+
+    # 4位以下テーブル
+    rest_html = ""
+    if len(ranking) > 3:
+        rest_html = '<table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody>'
+        for i, (name, amount) in enumerate(ranking[3:], 4):
+            rest_html += f'<tr><td>{i}位</td><td>{_esc(name)}</td><td>{_esc(amount)}</td></tr>'
+        rest_html += '</tbody></table>'
+
+    return f"""<div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">{_esc(total_amount)}</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">{_esc(avg_amount)}</div>
+      </div>
+    </div>{podium}{rest_html}"""
+
+
+def _parse_fb_chart(md):
+    """FB会曜日別データをバーチャートHTMLに変換"""
+    for line in md.split("\n"):
+        m = re.search(r"曜日別参加者数：(.+)", line.strip())
+        if m:
+            parts = m.group(1).split("、")
+            days_data = []
+            for p in parts:
+                dm = re.search(r"(.)：(\d+)人", p)
+                if dm:
+                    days_data.append((dm.group(1), int(dm.group(2))))
+            if not days_data:
+                return ""
+            max_val = max(d[1] for d in days_data) or 1
+            total = sum(d[1] for d in days_data)
+            bars = ""
+            for day_name, count in days_data:
+                h = int(count / max_val * 100) if count > 0 else 0
+                style = f'height:{h}px;' if count > 0 else 'height:0px;background:#cbd5e1;'
+                bars += f'<div class="day-col"><div class="day-bar" style="{style}">{count if count > 0 else ""}</div><div class="day-label">{day_name}</div></div>\n'
+            return f'<div class="day-chart">{bars}</div><div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 {total}件</div>'
+    return ""
+
+
+def _parse_fb_top3(md):
+    """FB会TOP3をHTMLに変換"""
+    medals = ["🥇", "🥈", "🥉"]
+    items = []
+    in_fb = False
+    for line in md.split("\n"):
+        l = line.strip()
+        if "参加回数TOP3" in l:
+            in_fb = True
+            continue
+        if in_fb and line.startswith("  "):
+            # "1位：川西秀樹（7回）、2位：..." のような形式
+            for part in l.split("、"):
+                m = re.search(r"(\d)位[：:](.+?)（(\d+)回）", part)
+                if m:
+                    idx = int(m.group(1)) - 1
+                    medal = medals[idx] if idx < 3 else ""
+                    items.append(f'<div class="top3-item"><span class="rank">{medal}</span><div><div class="top3-name">{_esc(m.group(2))}</div><div class="top3-detail">{m.group(3)}回</div></div></div>')
+            break
+    return '<div class="top3">' + "\n".join(items) + '</div>' if items else ""
+
+
+def _parse_hours_top3(md):
+    """稼働時間TOP3をHTMLに変換"""
+    medals = ["🥇", "🥈", "🥉"]
+    items = []
+    in_section = False
+    for line in md.split("\n"):
+        l = line.strip()
+        if "稼働時間TOP3" in l:
+            in_section = True
+            continue
+        if in_section and "日報提出数" in l:
+            break
+        if in_section and line.startswith("  "):
+            m = re.search(r"(\d)位[：:](.+?)（総稼働時間[：:](.+?)h\s*/\s*平均[：:](.+?)h）", l)
+            if m:
+                idx = int(m.group(1)) - 1
+                medal = medals[idx] if idx < 3 else ""
+                items.append(f'<div class="top3-item"><span class="rank">{medal}</span><div>'
+                           f'<div class="top3-name">{_esc(m.group(2))}</div>'
+                           f'<div class="top3-detail">{m.group(3)}h（平均 {m.group(4)}h/日）</div></div></div>')
+    return '<div class="top3">' + "\n".join(items) + '</div>' if items else ""
+
+
+def _parse_submit_top3(md):
+    """日報提出TOP3をHTMLに変換"""
+    medals = ["🥇", "🥈", "🥉"]
+    items = []
+    for line in md.split("\n"):
+        l = line.strip()
+        if "日報提出数TOP3" in l:
+            continue
+        if line.startswith("  ") and "位：" in l and "回）" in l:
+            for part in l.split("、"):
+                m = re.search(r"(\d)位[：:](.+?)（(\d+)回）", part)
+                if m:
+                    idx = int(m.group(1)) - 1
+                    medal = medals[idx] if idx < 3 else ""
+                    items.append(f'<div class="top3-item"><span class="rank">{medal}</span><div>'
+                               f'<div class="top3-name">{_esc(m.group(2))}</div>'
+                               f'<div class="top3-detail">{m.group(3)}回</div></div></div>')
+            break
+    return '<div class="top3">' + "\n".join(items) + '</div>' if items else ""
+
+
 def save_report(report, report_type="weekly"):
-    """レポートをMD＋HTMLの両方で保存"""
+    """レポートをMDで保存し、月次ダッシュボードを自動更新"""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     start_str = f"{LAST_MONDAY.month}月{LAST_MONDAY.day}日"
     end_str = f"{LAST_SUNDAY.month}月{LAST_SUNDAY.day}日"
@@ -1411,13 +1820,257 @@ def save_report(report, report_type="weekly"):
     md_path.write_text(report, encoding="utf-8")
     print(f"💾 レポート保存(MD): {md_path}")
 
-    # HTML保存
-    html_path = REPORTS_DIR / f"{filename}.html"
-    html_content = format_html_report(report)
-    html_path.write_text(html_content, encoding="utf-8")
-    print(f"💾 レポート保存(HTML): {html_path}")
+    # 月次ダッシュボード（タブ切替式の単一HTMLページ）を自動更新
+    generate_monthly_dashboard(LAST_MONDAY.month, LAST_MONDAY.year)
 
     return md_path
+
+
+def generate_monthly_dashboard(month, year):
+    """月次ダッシュボード — 全週をタブ切替で表示する単一HTMLページ"""
+    from datetime import date
+
+    # 当月の週次MDファイルを全て探す
+    weeks = []  # [(monday_date, md_text), ...]
+    first_day = date(year, month, 1)
+    wd = first_day.weekday()
+    mon = first_day - timedelta(days=wd)
+    if mon.month != month and mon.day > 7:
+        mon += timedelta(days=7)
+
+    while True:
+        sun = mon + timedelta(days=6)
+        if mon.month > month:
+            break
+        start_str = f"{mon.month}月{mon.day}日"
+        end_str = f"{sun.month}月{sun.day}日"
+        md_path = REPORTS_DIR / f"会員分析（日報）{start_str}-{end_str}.md"
+        if md_path.exists():
+            md = md_path.read_text(encoding="utf-8")
+            weeks.append((mon, md))
+        mon += timedelta(days=7)
+        if mon.day > 28 and mon.month > month:
+            break
+
+    if not weeks:
+        return
+
+    # 各週のbodyコンテンツを生成
+    week_bodies = []
+    for i, (monday, md_text) in enumerate(weeks):
+        prev_md = weeks[i - 1][1] if i > 0 else None
+        body = _build_week_body(md_text, monday, prev_md)
+        sun = monday + timedelta(days=6)
+        label = f"W{i+1}: {monday.month}/{monday.day}–{sun.month}/{sun.day}"
+        week_bodies.append((label, body))
+
+    # 月間KPIサマリー用データ
+    weeks_parsed = [_parse_md_report(md) for _, md in weeks]
+    total_hours_sum = round(sum(w.get("total_hours", 0) for w in weeks_parsed), 1)
+    avg_pos = round(sum(w.get("pos_ratio", 0) for w in weeks_parsed) / len(weeks_parsed))
+    latest_inactive = weeks_parsed[-1].get("inactive_count", 0)
+
+    # 月間トレンドバー
+    max_hours = max((w.get("total_hours", 0) for w in weeks_parsed), default=1) or 1
+    max_inactive = max((w.get("inactive_count", 0) for w in weeks_parsed), default=1) or 1
+    trend_hours = ""
+    trend_pos = ""
+    trend_inactive = ""
+    for i, (monday, _) in enumerate(weeks):
+        sun = monday + timedelta(days=6)
+        lbl = f"{monday.month}/{monday.day}"
+        w = weeks_parsed[i]
+        h = w.get("total_hours", 0)
+        p = w.get("pos_ratio", 0)
+        ic = w.get("inactive_count", 0)
+        trend_hours += f'<div class="bar-row"><span class="bar-label">{lbl}</span><div class="bar-track"><div class="bar-fill blue" style="width:{int(h/max_hours*100)}%;">{h}h</div></div></div>\n'
+        trend_pos += f'<div class="bar-row"><span class="bar-label">{lbl}</span><div class="bar-track"><div class="bar-fill green" style="width:{p}%;">{p}%</div></div></div>\n'
+        trend_inactive += f'<div class="bar-row"><span class="bar-label">{lbl}</span><div class="bar-track"><div class="bar-fill red" style="width:{int(ic/max_inactive*100)}%;">{ic}名</div></div></div>\n'
+
+    # 週タブHTML
+    week_tabs_html = ""
+    for i, (label, _) in enumerate(week_bodies):
+        active = " active" if i == len(week_bodies) - 1 else ""
+        week_tabs_html += f'<div class="week-tab{active}" onclick="switchWeek({i})">{label}</div>\n'
+
+    # 週コンテンツHTML
+    week_contents_html = ""
+    for i, (_, body) in enumerate(week_bodies):
+        display = "block" if i == len(week_bodies) - 1 else "none"
+        week_contents_html += f'<div class="week-content" id="week-{i}" style="display:{display};">\n{body}\n</div>\n'
+
+    # 月間サマリータブ（常に先頭に表示）
+    summary_body = f"""<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">レポート週数</div><div class="kpi-value">{len(weeks)}週</div></div>
+  <div class="kpi-card"><div class="kpi-label">月間総稼働</div><div class="kpi-value">{total_hours_sum}h</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均ポジティブ率</div><div class="kpi-value">{avg_pos}%</div></div>
+  <div class="kpi-card"><div class="kpi-label">最新非アクティブ</div><div class="kpi-value">{latest_inactive}名</div></div>
+</div>
+<div class="section"><div class="section-header"><span class="section-title">総稼働時間トレンド</span></div>
+<div class="section-body"><div class="bar-chart">{trend_hours}</div></div></div>
+<div class="section"><div class="section-header"><span class="section-title">ポジティブ率トレンド</span></div>
+<div class="section-body"><div class="bar-chart">{trend_pos}</div></div></div>
+<div class="section"><div class="section-header"><span class="section-title">非アクティブ数トレンド</span></div>
+<div class="section-body"><div class="bar-chart">{trend_inactive}</div></div></div>"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO PREMIUM TEAM {month}月 ダッシュボード</title>
+<style>
+:root {{
+  --primary: #1e3a5f; --accent: #2b6cb0; --accent-light: #ebf4ff;
+  --success: #16a34a; --warning: #d97706; --danger: #dc2626;
+  --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+}}
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif; background:var(--gray-100); color:var(--gray-800); line-height:1.7; }}
+.header {{ background:linear-gradient(135deg,var(--primary),var(--accent)); color:#fff; padding:24px 40px 0; }}
+.header h1 {{ font-size:24px; font-weight:700; }}
+.header .subtitle {{ font-size:13px; opacity:0.85; margin-top:2px; }}
+.tab-bar {{ display:flex; gap:0; margin-top:16px; overflow-x:auto; }}
+.tab-bar .tab {{ padding:10px 20px; cursor:pointer; font-size:13px; font-weight:600; color:rgba(255,255,255,0.7); border-bottom:3px solid transparent; white-space:nowrap; transition:all 0.2s; }}
+.tab-bar .tab:hover {{ color:#fff; background:rgba(255,255,255,0.1); }}
+.tab-bar .tab.active {{ color:#fff; border-bottom-color:#fff; background:rgba(255,255,255,0.1); }}
+.week-nav {{ background:#fff; border-bottom:1px solid var(--gray-200); padding:0 40px; display:flex; gap:0; overflow-x:auto; }}
+.week-tab {{ padding:12px 20px; cursor:pointer; font-size:13px; font-weight:600; color:var(--gray-400); border-bottom:3px solid transparent; white-space:nowrap; transition:all 0.2s; }}
+.week-tab:hover {{ color:var(--gray-800); background:var(--gray-50); }}
+.week-tab.active {{ color:var(--accent); border-bottom-color:var(--accent); }}
+.week-tab.disabled {{ color:var(--gray-300); cursor:default; }}
+.main {{ max-width:1100px; margin:0 auto; padding:28px 20px 60px; }}
+.kpi-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:28px; }}
+.kpi-card {{ background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); text-align:center; }}
+.kpi-label {{ font-size:11px; color:var(--gray-400); font-weight:600; text-transform:uppercase; }}
+.kpi-value {{ font-size:28px; font-weight:800; color:var(--primary); margin:4px 0; }}
+.kpi-change {{ font-size:11px; font-weight:600; }}
+.kpi-change.up {{ color:var(--success); }}
+.kpi-change.down {{ color:var(--danger); }}
+.kpi-sub {{ font-size:11px; color:var(--gray-400); }}
+.section {{ background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:20px; overflow:hidden; }}
+.section.collapsed .section-body {{ display:none; }}
+.section-header {{ padding:14px 24px; border-bottom:1px solid var(--gray-200); cursor:pointer; display:flex; align-items:center; gap:10px; }}
+.section-header:hover {{ background:var(--gray-50); }}
+.section-num {{ background:var(--accent); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }}
+.section-title {{ font-size:15px; font-weight:700; color:var(--gray-800); flex:1; }}
+.section-toggle {{ font-size:12px; color:var(--gray-400); }}
+.section-body {{ padding:20px 24px; }}
+.bar-row {{ display:flex; align-items:center; margin:5px 0; }}
+.bar-label {{ width:90px; font-size:12px; color:var(--gray-600); flex-shrink:0; }}
+.bar-track {{ flex:1; height:22px; background:var(--gray-100); border-radius:4px; overflow:hidden; }}
+.bar-fill {{ height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:11px; font-weight:600; color:#fff; min-width:fit-content; }}
+.bar-fill.blue {{ background:linear-gradient(90deg,#3b82f6,#2563eb); }}
+.bar-fill.green {{ background:linear-gradient(90deg,#22c55e,#16a34a); }}
+.bar-fill.red {{ background:linear-gradient(90deg,#ef4444,#dc2626); }}
+.bar-fill.orange {{ background:linear-gradient(90deg,#f59e0b,#d97706); }}
+.bar-fill.purple {{ background:linear-gradient(90deg,#8b5cf6,#7c3aed); }}
+.bar-value {{ width:50px; text-align:right; font-size:12px; font-weight:600; color:var(--gray-600); margin-left:8px; }}
+.sentiment-gauge {{ display:flex; height:32px; border-radius:6px; overflow:hidden; margin:8px 0; }}
+.sentiment-pos {{ background:linear-gradient(90deg,#22c55e,#16a34a); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; }}
+.sentiment-neg {{ background:linear-gradient(90deg,#ef4444,#dc2626); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; }}
+.voice-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }}
+.voice-section-label {{ font-size:13px; font-weight:700; margin-bottom:8px; }}
+.voice-section-label.pos {{ color:var(--success); }}
+.voice-section-label.neg {{ color:var(--danger); }}
+.voice-card {{ padding:12px; border-radius:8px; margin-bottom:8px; font-size:13px; line-height:1.6; }}
+.voice-card.pos {{ background:#f0fdf4; border-left:3px solid var(--success); }}
+.voice-card.neg {{ background:#fef2f2; border-left:3px solid var(--danger); }}
+.voice-name {{ font-weight:700; font-size:12px; color:var(--gray-600); margin-bottom:2px; }}
+.phase-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }}
+.phase-card {{ padding:16px; border-radius:8px; }}
+.phase-card.p1 {{ background:#f0fdf4; border-left:4px solid var(--success); }}
+.phase-card.p2 {{ background:#ebf4ff; border-left:4px solid var(--accent); }}
+.phase-card.p3 {{ background:#fffbeb; border-left:4px solid var(--warning); }}
+.phase-card.p4 {{ background:#fef2f2; border-left:4px solid var(--danger); }}
+.monetize-podium {{ display:flex; justify-content:center; gap:16px; margin:16px 0; align-items:flex-end; }}
+.podium-item {{ text-align:center; padding:12px; border-radius:8px; background:var(--gray-50); min-width:120px; }}
+.podium-item.gold {{ background:#fffbeb; border:2px solid #f59e0b; transform:scale(1.05); }}
+.podium-item.silver {{ background:#f8fafc; border:2px solid #94a3b8; }}
+.podium-item.bronze {{ background:#fff7ed; border:2px solid #d97706; }}
+.podium-medal {{ font-size:24px; }}
+.podium-name {{ font-weight:700; font-size:14px; margin:4px 0; }}
+.podium-amount {{ font-size:13px; color:var(--gray-600); }}
+.top3 {{ display:flex; gap:12px; }}
+.top3-item {{ display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--gray-50); border-radius:8px; flex:1; }}
+.rank {{ font-size:20px; }}
+.top3-name {{ font-weight:700; font-size:13px; }}
+.top3-detail {{ font-size:12px; color:var(--gray-600); }}
+.day-chart {{ display:flex; align-items:flex-end; gap:8px; height:120px; padding:10px 0; }}
+.day-col {{ flex:1; display:flex; flex-direction:column; align-items:center; }}
+.day-bar {{ width:100%; background:linear-gradient(180deg,#3b82f6,#2563eb); border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; color:#fff; font-size:11px; font-weight:700; padding-top:4px; min-height:2px; }}
+.day-label {{ font-size:12px; color:var(--gray-600); margin-top:4px; }}
+.proposal-list {{ margin-bottom:8px; }}
+.proposal-item {{ display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid var(--gray-100); font-size:13px; }}
+.proposal-icon {{ font-size:16px; flex-shrink:0; }}
+.alert {{ display:flex; align-items:flex-start; gap:8px; padding:12px 16px; border-radius:8px; margin-top:8px; font-size:13px; }}
+.alert.danger {{ background:#fef2f2; color:#991b1b; }}
+.alert.warning {{ background:#fffbeb; color:#92400e; }}
+.alert-icon {{ font-size:16px; flex-shrink:0; }}
+table {{ width:100%; border-collapse:collapse; font-size:13px; }}
+th {{ background:var(--gray-50); padding:8px 12px; text-align:left; font-weight:600; border-bottom:2px solid var(--gray-200); }}
+td {{ padding:8px 12px; border-bottom:1px solid var(--gray-100); }}
+td.zero {{ color:var(--danger); font-weight:700; }}
+td.low {{ color:var(--warning); font-weight:600; }}
+.float-top {{ position:fixed; bottom:24px; right:24px; background:var(--accent); color:#fff; border:none; width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:20px; box-shadow:0 2px 8px rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; z-index:100; }}
+.footer {{ text-align:center; padding:24px; color:var(--gray-400); font-size:12px; }}
+@media print {{ .week-nav,.float-top,.tab-bar {{ display:none; }} .main {{ padding:0; }} }}
+@media (max-width:768px) {{
+  .kpi-grid {{ grid-template-columns:repeat(2,1fr); }}
+  .voice-grid {{ grid-template-columns:1fr; }}
+  .header {{ padding:16px 20px 0; }}
+  .week-nav {{ padding:0 12px; }}
+  .main {{ padding:16px 12px 40px; }}
+}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>PRO PREMIUM TEAM ダッシュボード</h1>
+  <div class="subtitle">{year}年{month}月 — 週次分析レポート</div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchView('summary')">月間サマリー</div>
+    <div class="tab" onclick="switchView('weekly')">週次詳細</div>
+  </div>
+</div>
+<div class="week-nav" id="weekNav" style="display:none;">
+  {week_tabs_html}
+</div>
+<div class="main">
+  <div id="view-summary">
+    {summary_body}
+  </div>
+  <div id="view-weekly" style="display:none;">
+    {week_contents_html}
+  </div>
+</div>
+<button class="float-top" onclick="scrollTo({{top:0,behavior:'smooth'}})">↑</button>
+<div class="footer">Generated by SAEPIN — PRO PREMIUM TEAM AI Agent System</div>
+<script>
+function switchView(view) {{
+  document.getElementById('view-summary').style.display = view === 'summary' ? 'block' : 'none';
+  document.getElementById('view-weekly').style.display = view === 'weekly' ? 'block' : 'none';
+  document.getElementById('weekNav').style.display = view === 'weekly' ? 'flex' : 'none';
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t) {{ t.classList.remove('active'); }});
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t) {{
+    if ((view === 'summary' && t.textContent.includes('月間')) || (view === 'weekly' && t.textContent.includes('週次'))) t.classList.add('active');
+  }});
+  scrollTo({{top:0,behavior:'smooth'}});
+}}
+function switchWeek(idx) {{
+  document.querySelectorAll('.week-content').forEach(function(el) {{ el.style.display = 'none'; }});
+  document.getElementById('week-' + idx).style.display = 'block';
+  document.querySelectorAll('.week-tab').forEach(function(t) {{ t.classList.remove('active'); }});
+  document.querySelectorAll('.week-tab')[idx].classList.add('active');
+  scrollTo({{top:0,behavior:'smooth'}});
+}}
+</script>
+</body></html>"""
+
+    dashboard_path = REPORTS_DIR / f"dashboard_{month}月.html"
+    dashboard_path.write_text(html, encoding="utf-8")
+    print(f"💾 月次ダッシュボード保存: {dashboard_path}")
 
 
 # ==========================================

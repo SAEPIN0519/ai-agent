@@ -11,6 +11,8 @@ venv/
 
 # Google API認証情報（絶対にコミットしない）
 **/google_service_account.json
+**/google_oauth_client.json
+**/google_oauth_token.pickle
 
 # 依存パッケージ（GitHubには上げない）
 node_modules/

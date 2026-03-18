@@ -31,7 +31,7 @@ TODAY_STR = TODAY.strftime("%Y-%m-%d")
 def collect_sekibiz_tasks():
     """関ビズ タスク管理.htmlからタスクを抽出"""
     tasks = []
-    html_path = PROJECT_ROOT / "02_clients" / "関ビズ" / "projects" / "20260423_集客ロードマップ作り講座" / "タスク管理.html"
+    html_path = PROJECT_ROOT / "03_clients" / "関ビズ" / "projects" / "20260423_集客ロードマップ作り講座" / "タスク管理.html"
 
     if not html_path.exists():
         return tasks
@@ -89,7 +89,7 @@ def collect_siftai_tasks():
     tasks = []
 
     # report_analyzer.md の未確認事項
-    analyzer_path = PROJECT_ROOT / "02_clients" / "SIFTAI" / "プロプレミアムTEAM" / "AIエージェント" / "report_analyzer.md"
+    analyzer_path = PROJECT_ROOT / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "AIエージェント" / "report_analyzer.md"
     if analyzer_path.exists():
         content = analyzer_path.read_text(encoding="utf-8")
         # [ ] パターンで未完了タスクを抽出
@@ -111,7 +111,7 @@ def collect_journal_tasks():
     tasks = []
 
     # 最新のジャーナルファイルを探す
-    journal_dir = PROJECT_ROOT / "03_journal"
+    journal_dir = PROJECT_ROOT / "04_journal"
     latest_file = None
 
     for month_dir in sorted(journal_dir.glob("????-??"), reverse=True):
