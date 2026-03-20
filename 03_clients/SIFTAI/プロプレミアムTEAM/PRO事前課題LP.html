@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>PRO事前課題 | SHIFT AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ========================
+       CSS Variables
+    ======================== */
+    :root {
+      --primary: #2D3CDE;
+      --primary-dark: #1929B7;
+      --accent: #FF6D00;
+      --bg: #F8F9FF;
+      --white: #FFFFFF;
+      --text: #1A1A2E;
+      --text-muted: #6B7280;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --video-color: #2563EB;
+      --task-color: #D97706;
+      --report-color: #059669;
+      --choose-color: #7C3AED;
+    }
+
+    /* ========================
+       Reset & Base
+    ======================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, video { max-width: 100%; display: block; }
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; }
+    h3 { font-size: clamp(1rem, 2vw, 1.2rem); font-weight: 600; }
+    p  { font-size: 1rem; line-height: 1.8; }
+    .section-inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 80px 0; }
+
+    /* ========================
+       Scroll Progress Bar
+    ======================== */
+    .scroll-indicator {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--accent);
+      z-index: 200; width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ========================
+       Navigation
+    ======================== */
+    #mainNav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    #mainNav.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+    .nav-logo {
+      display: flex; align-items: center;
+    }
+    .nav-logo-img {
+      height: 30px; width: auto; display: block;
+      filter: brightness(0) invert(1);
+      transition: filter 0.3s;
+    }
+    #mainNav.scrolled .nav-logo-img { filter: none; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.8);
+      font-weight: 500; font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    #mainNav.scrolled .nav-links a { color: var(--text-muted); }
+    #mainNav.scrolled .nav-links a:hover { color: var(--primary); }
+    .nav-cta {
+      background: var(--accent); color: #fff;
+      padding: 10px 22px; border-radius: 50px;
+      font-weight: 700; font-size: 0.85rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,109,0,0.4); }
+
+    /* ========================
+       Hero
+    ======================== */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      background: linear-gradient(135deg, #0F1035 0%, #16213E 55%, #0F3460 100%);
+      position: relative; overflow: hidden;
+      padding-top: 80px;
+    }
+    .hero-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.12;
+      animation: float 8s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.05); }
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.75);
+      padding: 5px 16px; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 500;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    .hero h1 { color: var(--white); margin-bottom: 18px; }
+    .hero h1 .accent { color: var(--accent); }
+    .hero-lead {
+      color: rgba(255,255,255,0.65);
+      font-size: 1rem;
+      margin-bottom: 32px;
+      line-height: 1.9;
+    }
+    .hero-stats {
+      display: flex; gap: 28px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-size: 1.9rem; font-weight: 700;
+      color: var(--accent); line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 5px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 15px 32px; border-radius: 50px;
+      background: var(--accent); color: #fff;
+      font-size: 1rem; font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(255,109,0,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255,109,0,0.45);
+    }
+
+    /* ========================
+       Video in Hero
+    ======================== */
+    .hero-video-wrap {
+      position: relative;
+    }
+    .hero-video-label {
+      position: absolute;
+      top: -14px; left: 20px;
+      background: var(--accent);
+      color: #fff;
+      padding: 4px 16px; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 700;
+      z-index: 1;
+      box-shadow: 0 2px 8px rgba(255,109,0,0.35);
+    }
+    .hero-video-wrap video {
+      width: 100%;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ========================
+       Wave Divider
+    ======================== */
+    .wave { line-height: 0; }
+    .wave svg { display: block; width: 100%; height: 80px; }
+
+    /* ========================
+       Section Headers
+    ======================== */
+    .section-eyebrow {
+      display: inline-block;
+      color: var(--primary);
+      font-size: 0.8rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .section-title { margin-bottom: 14px; }
+    .section-title .accent { color: var(--primary); }
+    .section-lead {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 580px;
+      margin-bottom: 48px;
+    }
+    .section-header { margin-bottom: 48px; }
+
+    /* ========================
+       Overview Stats
+    ======================== */
+    .overview { background: var(--white); }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .stat-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .stat-card .material-icons {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .stat-num {
+      font-size: 2.4rem; font-weight: 700;
+      color: var(--primary); line-height: 1;
+    }
+    .stat-num span { font-size: 1.1rem; }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ========================
+       Curriculum
+    ======================== */
+    #curriculum { background: var(--bg); }
+    .curriculum-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .hour-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .hour-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 28px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--white);
+    }
+    .hour-badge {
+      background: rgba(255,255,255,0.18);
+      border-radius: 50px;
+      padding: 4px 16px;
+      font-size: 0.82rem; font-weight: 700;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .hour-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      opacity: 0.88;
+      flex: 1;
+    }
+    .hour-duration {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.88rem; font-weight: 700;
+      background: rgba(255,255,255,0.15);
+      padding: 5px 14px;
+      border-radius: 50px;
+      white-space: nowrap;
+    }
+    .hour-duration .material-icons { font-size: 0.95rem; }
+
+    .task-list { padding: 4px 0; }
+    .task-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-item:hover { background: #F8F9FF; }
+
+    .task-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 11px; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 700;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .task-badge .material-icons { font-size: 0.85rem; }
+    .badge-video  { background: #EFF6FF; color: var(--video-color); }
+    .badge-task   { background: #FFF7ED; color: var(--task-color); }
+    .badge-report { background: #ECFDF5; color: var(--report-color); }
+    .badge-choose { background: #F5F3FF; color: var(--choose-color); }
+
+    .task-title {
+      flex: 1;
+      font-size: 0.93rem;
+      font-weight: 500;
+      min-width: 0;
+    }
+    .task-title a {
+      color: var(--text);
+      transition: color 0.2s;
+    }
+    .task-title a:hover { color: var(--primary); text-decoration: underline; }
+
+    .task-time {
+      display: flex; align-items: center; gap: 3px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+    .task-time .material-icons { font-size: 0.9rem; }
+
+    .task-link {
+      display: flex; align-items: center;
+      color: var(--primary);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .task-link:hover { transform: translateX(3px); }
+    .task-link .material-icons { font-size: 1.15rem; }
+
+    .task-no-link {
+      color: rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .task-no-link .material-icons { font-size: 1.15rem; }
+
+    /* ========================
+       Legend
+    ======================== */
+    .legend {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .legend-item {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    /* ========================
+       CTA Section
+    ======================== */
+    .cta-section {
+      background: linear-gradient(135deg, #0F1035 0%, #0F3460 100%);
+      text-align: center;
+    }
+    .cta-section .section-eyebrow { color: rgba(255,255,255,0.5); }
+    .cta-section h2 { color: var(--white); margin-bottom: 14px; }
+    .cta-section p {
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 40px;
+      max-width: 480px;
+      margin-left: auto; margin-right: auto;
+    }
+
+    /* ========================
+       Footer
+    ======================== */
+    footer {
+      background: #080814;
+      padding: 28px 0;
+      text-align: center;
+    }
+    footer p { color: rgba(255,255,255,0.35); font-size: 0.82rem; }
+
+    /* ========================
+       Scroll Animations
+    ======================== */
+    .fi {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fi.visible { opacity: 1; transform: translateY(0); }
+    .fi.delay-1 { transition-delay: 0.1s; }
+    .fi.delay-2 { transition-delay: 0.2s; }
+    .fi.delay-3 { transition-delay: 0.3s; }
+    .fi.delay-4 { transition-delay: 0.4s; }
+
+    /* ========================
+       Responsive
+    ======================== */
+    @media (max-width: 860px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-video-wrap { order: -1; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      section { padding: 56px 0; }
+      #mainNav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .task-item { gap: 10px; }
+      .hour-header { flex-wrap: wrap; gap: 10px; }
+    }
+    @media (max-width: 480px) {
+      .hero-stats { gap: 20px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .task-item { padding: 12px 16px; }
+      .hour-header { padding: 16px 20px; }
+      .task-list .task-item { padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div class="scroll-indicator" id="scrollBar"></div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/gP7UiVNmyYKec1QOcnDeLswnHwrZZ5ujSrBSdqgR.png" alt="SHIFT AI" class="nav-logo-img">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#overview">概要</a></li>
+    <li><a href="#curriculum">カリキュラム</a></li>
+    <li><a href="#report">日報</a></li>
+  </ul>
+  <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" class="nav-cta" target="_blank">日報を書く</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-blob" style="width:500px;height:500px;background:#3D5AFE;top:-120px;right:-80px;animation-delay:0s;"></div>
+  <div class="hero-blob" style="width:320px;height:320px;background:#FF6D00;bottom:-60px;left:-40px;animation-delay:3s;"></div>
+  <div class="section-inner" style="width:100%;">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <span class="hero-eyebrow">PRO受講者限定</span>
+        <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/23wWcDLJE9CAOC79zzgxrnXRk8ElwwsuhQ1aC99k.png" alt="SHIFT AI PRO" style="height:44px;width:auto;margin-bottom:16px;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">
+        <h1>事前課題を<br><span class="accent">完了</span>させよう</h1>
+        <p class="hero-lead">
+          本講座が始まる前に、以下の事前課題を完了させてください。<br>
+          全5ユニットの動画視聴・ワーク・日報記入が含まれます。
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">5</div>
+            <div class="hero-stat-label">ユニット</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">約5h</div>
+            <div class="hero-stat-label">総学習時間</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">14</div>
+            <div class="hero-stat-label">動画本数</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">5</div>
+            <div class="hero-stat-label">日報記入</div>
+          </div>
+        </div>
+        <a href="#curriculum" class="btn-primary">
+          <span class="material-icons">play_arrow</span>
+          課題をはじめる
+        </a>
+      </div>
+      <div class="hero-video-wrap">
+        <span class="hero-video-label">まず見てね</span>
+        <video controls preload="metadata" src="video2204418092.mp4"></video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Hero(dark) → Overview(white) -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,5 720,40 C960,75 1200,15 1440,38 L1440,0 L0,0 Z" fill="#0F3460"/>
+  </svg>
+</div>
+
+<!-- Overview -->
+<section id="overview" class="overview">
+  <div class="section-inner">
+    <div class="section-header fi">
+      <p class="section-eyebrow">Overview</p>
+      <h2 class="section-title">事前課題の<span class="accent">全体像</span></h2>
+      <p class="section-lead">本課題を完了することで、PROカリキュラムをスムーズにスタートできます。</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card fi delay-1">
+        <span class="material-icons">play_circle</span>
+        <div class="stat-num">14<span>本</span></div>
+        <div class="stat-label">視聴動画数</div>
+      </div>
+      <div class="stat-card fi delay-2">
+        <span class="material-icons">build</span>
+        <div class="stat-num">4<span>個</span></div>
+        <div class="stat-label">作業タスク</div>
+      </div>
+      <div class="stat-card fi delay-3">
+        <span class="material-icons">edit_note</span>
+        <div class="stat-num">5<span>回</span></div>
+        <div class="stat-label">日報記入</div>
+      </div>
+      <div class="stat-card fi delay-4">
+        <span class="material-icons">schedule</span>
+        <div class="stat-num">約5<span>h</span></div>
+        <div class="stat-label">総学習時間</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Overview(white) → Curriculum(bg) -->
+<div class="wave" style="background: var(--bg);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,5 720,40 C960,75 1200,15 1440,38 L1440,80 L0,80 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- Curriculum -->
+<section id="curriculum">
+  <div class="section-inner">
+    <div class="section-header fi">
+      <p class="section-eyebrow">Curriculum</p>
+      <h2 class="section-title">時間別<span class="accent">カリキュラム</span></h2>
+      <p class="section-lead">各時間ごとにタスクをこなしていきましょう。リンクをクリックすると直接ページへ移動できます。</p>
+    </div>
+
+    <!-- 凡例 -->
+    <div class="legend fi">
+      <span class="legend-item">
+        <span class="task-badge badge-video" style="pointer-events:none;"><span class="material-icons">play_circle</span>動画</span>
+        動画を見よう
+      </span>
+      <span class="legend-item">
+        <span class="task-badge badge-task" style="pointer-events:none;"><span class="material-icons">build</span>作業</span>
+        取り組もう
+      </span>
+      <span class="legend-item">
+        <span class="task-badge badge-choose" style="pointer-events:none;"><span class="material-icons">touch_app</span>選ぼう</span>
+        選択タスク
+      </span>
+      <span class="legend-item">
+        <span class="task-badge badge-report" style="pointer-events:none;"><span class="material-icons">edit_note</span>日報</span>
+        日報記入
+      </span>
+    </div>
+
+    <div class="curriculum-grid">
+
+      <!-- 1時間目 -->
+      <div class="hour-card fi">
+        <div class="hour-header">
+          <span class="hour-badge">1時間目</span>
+          <span class="hour-title">サービスの基本を知ろう</span>
+          <span class="hour-duration"><span class="material-icons">schedule</span>50分</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/nsWiOkYkcOLp" target="_blank">手に入れるべき4つの要素　ダイジェスト版</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>20分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/nsWiOkYkcOLp" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/MrvVG1zANUwW" target="_blank">マンツーマンサポート</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>10分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/MrvVG1zANUwW" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-task"><span class="material-icons">build</span>作業</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/KlSIklwc0ZC2" target="_blank">マンツーマンAIキャリアサポートの予約をしよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/KlSIklwc0ZC2" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/DwuL4USYR8r3" target="_blank">なんでも相談室</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>10分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/WfoQkzMbaIt7/lesson/DwuL4USYR8r3" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-report"><span class="material-icons">edit_note</span>日報</span>
+            <span class="task-title"><a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank">日報を書こう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2時間目 -->
+      <div class="hour-card fi">
+        <div class="hour-header">
+          <span class="hour-badge">2時間目</span>
+          <span class="hour-title">マイページを作成して目標を設定しよう</span>
+          <span class="hour-duration"><span class="material-icons">schedule</span>55分</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/IKsoeUv78O4C" target="_blank">会員限定マイページ・SHIFT AIの歩き方</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/IKsoeUv78O4C" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-task"><span class="material-icons">build</span>作業</span>
+            <span class="task-title">会員限定マイページを作成しよう</span>
+            <span class="task-time"><span class="material-icons">schedule</span>15分</span>
+            <span class="task-no-link"><span class="material-icons">lock_outline</span></span>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-task"><span class="material-icons">build</span>作業</span>
+            <span class="task-title">目標設定</span>
+            <span class="task-time"><span class="material-icons">schedule</span>30分</span>
+            <span class="task-no-link"><span class="material-icons">lock_outline</span></span>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-report"><span class="material-icons">edit_note</span>日報</span>
+            <span class="task-title"><a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank">日報を書こう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3時間目 -->
+      <div class="hour-card fi">
+        <div class="hour-header">
+          <span class="hour-badge">3時間目</span>
+          <span class="hour-title">STEP UPワークを実践しよう</span>
+          <span class="hour-duration"><span class="material-icons">schedule</span>60分</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/Jdl028voyBIx" target="_blank">「STEP UP」ワークを実践しましょう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/W3BZFgpzGX3D/lesson/Jdl028voyBIx" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-task"><span class="material-icons">build</span>作業</span>
+            <span class="task-title">マイページのワーク①、②をしよう</span>
+            <span class="task-time"><span class="material-icons">schedule</span>50分</span>
+            <span class="task-no-link"><span class="material-icons">lock_outline</span></span>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-report"><span class="material-icons">edit_note</span>日報</span>
+            <span class="task-title"><a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank">日報を書こう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4時間目 -->
+      <div class="hour-card fi">
+        <div class="hour-header">
+          <span class="hour-badge">4時間目</span>
+          <span class="hour-title">AIキャリア講座でAIを学ぼう</span>
+          <span class="hour-duration"><span class="material-icons">schedule</span>61分</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl" target="_blank">AIキャリア講座のページにいこう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>1分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/r5HdQGzuUKiO" target="_blank">「AI人材になるべき理由」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>20分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/r5HdQGzuUKiO" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/E5Ny75oGKjsz" target="_blank">「AIを使うと何が変わるのか」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>10分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/E5Ny75oGKjsz" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/n4BKPodPYo5B" target="_blank">「AIを使いこなす2つのシーン」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/n4BKPodPYo5B" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/KL6YY8QOMYhZ" target="_blank">「AIを仕事で使いこなす」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>15分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/KL6YY8QOMYhZ" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/D6y8Dy23fnwe" target="_blank">「AIを日常で使いこなす」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/D6y8Dy23fnwe" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-report"><span class="material-icons">edit_note</span>日報</span>
+            <span class="task-title"><a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank">日報を書こう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5時間目 -->
+      <div class="hour-card fi">
+        <div class="hour-header">
+          <span class="hour-badge">5時間目</span>
+          <span class="hour-title">次の学習を自分で選ぼう</span>
+          <span class="hour-duration"><span class="material-icons">schedule</span>70分</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/Zsn8ZQjmkOHL" target="_blank">「あなたに合った講座を選ぼう」をみよう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>10分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/Zsn8ZQjmkOHL" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-choose"><span class="material-icons">touch_app</span>選ぼう</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/qzTfzYv7YtUc" target="_blank">あなたの次の学習を選ぼう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/qzTfzYv7YtUc" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-video"><span class="material-icons">play_circle</span>動画</span>
+            <span class="task-title"><a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/qzTfzYv7YtUc" target="_blank">選んだ講座を見よう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>50分</span>
+            <a href="https://learning.shift-ai.co.jp/members/mjTPK2PDxwQZ/course/zQlsnSoXZgOl/lesson/qzTfzYv7YtUc" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="task-item">
+            <span class="task-badge badge-report"><span class="material-icons">edit_note</span>日報</span>
+            <span class="task-title"><a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank">日報を書こう</a></span>
+            <span class="task-time"><span class="material-icons">schedule</span>5分</span>
+            <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="task-link"><span class="material-icons">arrow_forward</span></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Curriculum(bg) → CTA(dark) -->
+<div class="wave" style="background: #0F1035;">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,5 720,40 C960,75 1200,15 1440,38 L1440,80 L0,80 Z" fill="#F8F9FF"/>
+  </svg>
+</div>
+
+<!-- CTA / Daily Report -->
+<section id="report" class="cta-section">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Daily Report</p>
+    <h2 class="fi">毎日、日報を記入しよう</h2>
+    <p class="fi">各時間の学習が終わったら、必ず日報を記入してください。<br>日々の振り返りが成長を加速させます。</p>
+    <div class="fi">
+      <a href="https://discord.com/channels/1390567808148045907/1466265924930637869" target="_blank" class="btn-primary">
+        <span class="material-icons">edit_note</span>
+        日報を書く
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="section-inner">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/gP7UiVNmyYKec1QOcnDeLswnHwrZZ5ujSrBSdqgR.png" alt="SHIFT AI" style="height:22px;width:auto;filter:brightness(0) invert(1);opacity:0.55;">
+      <p style="margin:0;">PRO事前課題 &copy; 2025 SHIFT AI. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll Progress Bar
+const scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', () => {
+  const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  scrollBar.style.width = scrolled + '%';
+}, { passive: true });
+
+// Navigation scroll effect
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// Scroll Animations
+document.addEventListener('DOMContentLoaded', () => {
+  const items = Array.from(document.querySelectorAll('.fi'));
+  const show = el => el.classList.add('visible');
+  if (!('IntersectionObserver' in window)) { items.forEach(show); return; }
+  const io = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { show(entry.target); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.06 });
+  items.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) show(el);
+    else io.observe(el);
+  });
+});
+</script>
+</body>
+</html>
