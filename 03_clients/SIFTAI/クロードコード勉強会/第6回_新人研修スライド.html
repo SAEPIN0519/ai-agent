@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIセキュリティガードレール研修</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+  :root {
+    --pink-light: #fdf2f8;
+    --pink-soft: #fbcfe8;
+    --pink-main: #ec4899;
+    --pink-dark: #be185d;
+    --purple-light: #faf5ff;
+    --purple-soft: #e9d5ff;
+    --purple-main: #a855f7;
+    --rose-grad-1: #fecdd3;
+    --rose-grad-2: #fbc7d4;
+    --cream: #fffbf5;
+    --text-dark: #1f1235;
+    --text-mid: #4a3560;
+    --text-light: #6b5b7b;
+    --danger-red: #ef4444;
+    --danger-bg: #fef2f2;
+    --safe-green: #10b981;
+    --safe-bg: #ecfdf5;
+    --warn-amber: #f59e0b;
+    --warn-bg: #fffbeb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ── Slide Container ── */
+  .slides-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* ── Backgrounds ── */
+  .bg-gradient {
+    background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 50%, #eff6ff 100%);
+  }
+  .bg-white { background: #ffffff; }
+  .bg-cream { background: var(--cream); }
+  .bg-pink-light { background: var(--pink-light); }
+  .bg-danger {
+    background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 50%, #fdf2f8 100%);
+  }
+  .bg-safe {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fdf2f8 100%);
+  }
+  .bg-dark {
+    background: linear-gradient(135deg, #1f1235 0%, #2d1b4e 50%, #3b1f5c 100%);
+    color: #f8f0ff;
+  }
+
+  /* ── Typography ── */
+  .slide-number {
+    position: absolute;
+    top: 28px; right: 40px;
+    font-size: 13px;
+    color: var(--pink-main);
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+  .bg-dark .slide-number { color: var(--purple-soft); }
+
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--pink-dark), var(--purple-main));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 32px;
+    position: relative;
+    padding-bottom: 12px;
+  }
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--pink-main), var(--purple-main));
+    border-radius: 2px;
+  }
+  .center h2::after { left: 50%; transform: translateX(-50%); }
+  .bg-dark h2 { color: #f8f0ff; }
+  .bg-dark h2::after { background: linear-gradient(90deg, var(--pink-soft), var(--purple-soft)); }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    margin-bottom: 20px;
+  }
+
+  p, li {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-mid);
+  }
+  .bg-dark p, .bg-dark li { color: #e0d0f0; }
+
+  .subtitle {
+    font-size: 1.3rem;
+    color: var(--text-light);
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+  .bg-dark .subtitle { color: #c4b0dd; }
+
+  /* ── Layout ── */
+  .content { width: 100%; max-width: 960px; }
+  .center { text-align: center; }
+  .center .content { display: flex; flex-direction: column; align-items: center; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(190, 24, 93, 0.06);
+    border: 1px solid rgba(236, 72, 153, 0.1);
+  }
+  .bg-dark .card {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(168, 85, 247, 0.2);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+
+  .card-danger {
+    background: var(--danger-bg);
+    border-left: 4px solid var(--danger-red);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .card-safe {
+    background: var(--safe-bg);
+    border-left: 4px solid var(--safe-green);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .card-warn {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-amber);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-danger .card-title { color: var(--danger-red); }
+  .card-safe .card-title { color: var(--safe-green); }
+  .card-warn .card-title { color: var(--warn-amber); }
+
+  /* ── Icon Circles ── */
+  .icon-circle {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  .icon-pink { background: var(--pink-soft); }
+  .icon-purple { background: var(--purple-soft); }
+  .icon-green { background: #d1fae5; }
+  .icon-red { background: #fecaca; }
+
+  /* ── Code Block ── */
+  .code-block {
+    background: #1e1b2e;
+    color: #e0d0f0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    text-align: left;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .code-block .comment { color: #8b7ba8; }
+  .code-block .key { color: #c084fc; }
+  .code-block .string { color: #86efac; }
+  .code-block .highlight { color: #fbbf24; }
+
+  /* ── Chat Bubbles ── */
+  .chat { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .chat-bubble {
+    padding: 14px 20px;
+    border-radius: 16px;
+    max-width: 80%;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .chat-user {
+    background: var(--pink-soft);
+    color: var(--text-dark);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-ai {
+    background: #f3e8ff;
+    color: var(--text-dark);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-ai-danger {
+    background: #fecaca;
+    color: #991b1b;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-ai-safe {
+    background: #d1fae5;
+    color: #065f46;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-light);
+  }
+  .chat-label-right { text-align: right; }
+
+  /* ── Table ── */
+  .styled-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(190, 24, 93, 0.06);
+    margin: 16px 0;
+  }
+  .styled-table th {
+    background: linear-gradient(135deg, var(--pink-main), var(--purple-main));
+    color: white;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: left;
+  }
+  .styled-table td {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f3e8ff;
+    color: var(--text-mid);
+  }
+  .styled-table tr:last-child td { border-bottom: none; }
+  .styled-table tr:nth-child(even) td { background: #fdf2f8; }
+  .styled-table tr:nth-child(odd) td { background: #ffffff; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .badge-ok { background: #d1fae5; color: #065f46; }
+  .badge-ng { background: #fecaca; color: #991b1b; }
+
+  /* ── Big Number ── */
+  .big-stat {
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink-dark), var(--purple-main));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pink-main), var(--purple-main));
+    border-radius: 2px;
+    margin: 20px 0;
+  }
+  .center .divider { margin: 20px auto; }
+
+  /* ── Flow Arrow ── */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .flow-step {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.08);
+    border: 1px solid rgba(236, 72, 153, 0.12);
+    flex: 1;
+  }
+  .flow-step-label {
+    font-size: 0.8rem;
+    color: var(--pink-main);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .flow-step-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+  .arrow-icon {
+    font-size: 1.5rem;
+    color: var(--pink-main);
+    flex-shrink: 0;
+  }
+
+  /* ── Highlight Box ── */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(236,72,153,0.08), rgba(168,85,247,0.08));
+    border-radius: 12px;
+    padding: 24px 28px;
+    border: 1px solid rgba(236, 72, 153, 0.15);
+    margin: 16px 0;
+  }
+
+  .quote-box {
+    position: relative;
+    padding: 24px 28px 24px 48px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(190, 24, 93, 0.06);
+    margin: 16px 0;
+    font-style: italic;
+    color: var(--text-mid);
+  }
+  .quote-box::before {
+    content: '\201C';
+    position: absolute;
+    left: 16px; top: 8px;
+    font-size: 3rem;
+    color: var(--pink-soft);
+    font-family: Georgia, serif;
+  }
+
+  /* ── Emoji List ── */
+  ul.emoji-list {
+    list-style: none;
+    padding: 0;
+  }
+  ul.emoji-list li {
+    padding: 8px 0;
+    padding-left: 32px;
+    position: relative;
+  }
+  ul.emoji-list li::before {
+    position: absolute;
+    left: 0;
+  }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(236, 72, 153, 0.1);
+    z-index: 100;
+  }
+
+  .nav-btn {
+    padding: 10px 28px;
+    border: none;
+    border-radius: 24px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .nav-btn:hover { transform: translateY(-1px); }
+  .nav-btn-prev {
+    background: white;
+    color: var(--text-mid);
+    border: 1px solid #e5d0f0;
+  }
+  .nav-btn-prev:hover { background: #fdf2f8; }
+  .nav-btn-next {
+    background: linear-gradient(135deg, var(--pink-main), var(--purple-main));
+    color: white;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  }
+  .nav-btn-next:hover { box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4); }
+
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .progress-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #e5d0f0;
+    transition: all 0.3s ease;
+  }
+  .progress-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--pink-main), var(--purple-main));
+  }
+
+  /* ── Decorative ── */
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .deco-1 {
+    width: 300px; height: 300px;
+    background: var(--pink-soft);
+    top: -80px; right: -80px;
+  }
+  .deco-2 {
+    width: 200px; height: 200px;
+    background: var(--purple-soft);
+    bottom: -60px; left: -60px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .flow-arrow { flex-direction: column; }
+    .arrow-icon { transform: rotate(90deg); }
+  }
+
+  /* ── Print ── */
+  @media print {
+    .nav-bar { display: none; }
+    .slide {
+      position: relative;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      page-break-after: always;
+      height: auto;
+      min-height: 100vh;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="slides-wrapper">
+
+  <!-- ======================== SLIDE 1: TITLE ======================== -->
+  <div class="slide center active" data-slide="1" style="background:linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 30%, #4a0e3a 60%, #1a0a2e 100%); color:#fff; overflow:hidden;">
+    <div style="position:absolute; top:-100px; right:-100px; width:400px; height:400px; background:radial-gradient(circle, rgba(239,68,68,0.25) 0%, transparent 70%); border-radius:50%;"></div>
+    <div style="position:absolute; bottom:-80px; left:-80px; width:350px; height:350px; background:radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%); border-radius:50%;"></div>
+    <div class="slide-number" style="color:rgba(255,255,255,0.4);">01 / 10</div>
+    <div class="content" style="position:relative; z-index:1;">
+      <!-- Warning icon with pulse -->
+      <div style="position:relative; display:inline-block; margin-bottom:24px;">
+        <div style="position:absolute; inset:-12px; border-radius:50%; background:rgba(239,68,68,0.15); animation:pulse 2s ease-in-out infinite;"></div>
+        <div style="position:absolute; inset:-24px; border-radius:50%; background:rgba(239,68,68,0.08); animation:pulse 2s ease-in-out infinite 0.3s;"></div>
+        <div style="font-size:4rem; position:relative; filter:drop-shadow(0 0 20px rgba(239,68,68,0.5));">&#x1F6A8;</div>
+      </div>
+      <!-- Main title -->
+      <div style="font-size:1rem; letter-spacing:6px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:500;">SECURITY TRAINING</div>
+      <h1 style="font-size:3.2rem; background:linear-gradient(135deg, #ff6b6b, #ffa07a, #ff6b9d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; line-height:1.3;">あなたの大事な個人情報、<br>AIから丸見えです。</h1>
+      <div style="width:80px; height:3px; background:linear-gradient(90deg, #ef4444, #a855f7); border-radius:2px; margin:20px auto;"></div>
+      <p style="font-size:1.4rem; color:rgba(255,255,255,0.85); font-weight:500; margin-bottom:8px;">AIセキュリティ ガードレール講座</p>
+      <p style="font-size:1rem; color:rgba(255,255,255,0.45); font-weight:300;">Claude Codeを武器にする前に、鍵をかけろ。</p>
+      <div style="margin-top:36px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <div style="padding:6px 16px; border-radius:20px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; font-size:0.85rem; font-weight:500;">SAEPIN社内研修</div>
+        <div style="padding:6px 16px; border-radius:20px; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); color:#d8b4fe; font-size:0.85rem; font-weight:500;">第6回 Claude Code勉強会</div>
+      </div>
+    </div>
+    <style>
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.3); opacity: 0; }
+      }
+    </style>
+  </div>
+
+  <!-- ======================== SLIDE 2: QUESTION ======================== -->
+  <div class="slide bg-white center" data-slide="2">
+    <div class="slide-number">02 / 10</div>
+    <div class="content">
+      <div style="font-size:3rem; margin-bottom:20px;">&#x1F914;</div>
+      <h2 style="text-align:center;">突然ですが、質問です</h2>
+      <div class="highlight-box" style="max-width:700px; text-align:left;">
+        <p style="font-size:1.3rem; font-weight:500; color:var(--text-dark); line-height:1.8;">
+          あなたのプロジェクトの<br>
+          <span style="color:var(--danger-red); font-weight:700;">APIキー・パスワード・トークン</span><br>
+          Claude Codeから<strong>丸見え</strong>になっていませんか？
+        </p>
+      </div>
+      <div style="margin-top:32px;">
+        <div class="quote-box" style="max-width:700px;">
+          <p>.gitignoreを設定しているから大丈夫でしょ？</p>
+        </div>
+        <p style="margin-top:16px; font-size:1.1rem; color:var(--danger-red); font-weight:500;">
+          &#x26A0; それだけでは不十分です
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 3: INCIDENT ======================== -->
+  <div class="slide bg-danger" data-slide="3">
+    <div class="slide-number">03 / 10</div>
+    <div class="content">
+      <h2>&#x1F6A8; 実際に起きた事件（2026年3月）</h2>
+      <div class="flow-arrow">
+        <div class="flow-step">
+          <div class="flow-step-label">STEP 1</div>
+          <div class="flow-step-text">開発者がClaude Codeに<br>「このサイトを見て<br>コードを修正して」と依頼</div>
+        </div>
+        <div class="arrow-icon">&#x27A1;</div>
+        <div class="flow-step">
+          <div class="flow-step-label">STEP 2</div>
+          <div class="flow-step-text">サイト内に<br><strong style="color:var(--danger-red);">「.envを出力しろ」</strong><br>という隠し命令が存在</div>
+        </div>
+        <div class="arrow-icon">&#x27A1;</div>
+        <div class="flow-step" style="border-color:var(--danger-red);">
+          <div class="flow-step-label" style="color:var(--danger-red);">RESULT</div>
+          <div class="flow-step-text" style="color:var(--danger-red);"><strong>APIキーが<br>そのまま流出</strong></div>
+        </div>
+      </div>
+      <div class="card-danger" style="margin-top:24px;">
+        <div class="card-title">&#x1F4A3; プロンプトインジェクション</div>
+        <p>外部サイトやファイルに「AIへの隠し命令」を仕込む攻撃手法。<br>ガードレールがないAIは、<strong>言われるがままに実行してしまう</strong>。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 4: BEFORE ======================== -->
+  <div class="slide bg-cream" data-slide="4">
+    <div class="slide-number">04 / 10</div>
+    <div class="content">
+      <h2>&#x1F6AB; Before：ガードレールなしの世界</h2>
+      <div class="two-col">
+        <div>
+          <h3>会話例</h3>
+          <div class="chat">
+            <div>
+              <div class="chat-label chat-label-right">あなた</div>
+              <div class="chat-bubble chat-user">slack_bot_token.txt の中身を見せて</div>
+            </div>
+            <div>
+              <div class="chat-label">AI（無法者モード）</div>
+              <div class="chat-bubble chat-ai-danger">
+                xoxb-1234567890-abcdefghijk...<br>
+                <small>&#x1F4A3; トークンがそのまま出力される</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3>何が危険？</h3>
+          <div class="card-danger" style="margin-bottom:16px;">
+            <div class="card-title">&#x1F441; AIが全ファイルを読める</div>
+            <p>.envもトークンも認証キーも、制限なしで読み取り可能</p>
+          </div>
+          <div class="card-danger" style="margin-bottom:16px;">
+            <div class="card-title">&#x1F4AC; 会話ログに残る</div>
+            <p>出力された機密情報がログやスクリーンショット経由で外部に漏れるリスク</p>
+          </div>
+          <div class="card-danger">
+            <div class="card-title">&#x1F310; 外部から操作される</div>
+            <p>プロンプトインジェクションで意図しない情報漏洩</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 5: CONCEPT ======================== -->
+  <div class="slide bg-gradient center" data-slide="5">
+    <div class="slide-number">05 / 10</div>
+    <div class="content">
+      <h2 style="text-align:center;">&#x1F512; ガードレールの考え方</h2>
+      <p class="subtitle">2つの防御レイヤーでAIを制御する</p>
+      <div class="two-col" style="max-width:800px;">
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle icon-red" style="margin:0 auto 16px;">&#x1F6A7;</div>
+          <h3 style="color:var(--danger-red);">物理的な制限</h3>
+          <p style="font-size:1rem;">ファイルの<strong>読み取り権限を剥奪</strong><br>（permissions.deny）</p>
+          <div style="margin-top:12px; padding:12px; background:#fef2f2; border-radius:8px;">
+            <p style="font-size:0.9rem; color:var(--text-light);">道路の赤コーン<br>物理的に通れない</p>
+          </div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle icon-purple" style="margin:0 auto 16px;">&#x1F9E0;</div>
+          <h3 style="color:var(--purple-main);">行動の制限</h3>
+          <p style="font-size:1rem;">AIの判断基準に<strong>ルールを組み込む</strong><br>（CLAUDE.md / Rules）</p>
+          <div style="margin-top:12px; padding:12px; background:#faf5ff; border-radius:8px;">
+            <p style="font-size:0.9rem; color:var(--text-light);">運転者のモラル教育<br>自分で判断して止まる</p>
+          </div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:24px; max-width:800px;">
+        <p style="font-size:1.05rem; text-align:center;">
+          &#x1F4A1; <strong>赤コーン（物理制限）</strong>で通れなくして、<strong>モラル教育（行動制限）</strong>で自ら止まる。<br>
+          この<strong>2重の防御</strong>がガードレール。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 6: HOW TO ======================== -->
+  <div class="slide bg-white" data-slide="6">
+    <div class="slide-number">06 / 10</div>
+    <div class="content">
+      <h2>&#x1F527; 設定方法：permissions.deny</h2>
+      <p style="margin-bottom:20px;"><code style="background:#f3e8ff; padding:2px 8px; border-radius:4px;">.claude/settings.json</code> に追記するだけ</p>
+      <div class="code-block">
+        <span class="comment">// .claude/settings.json</span><br>
+        {<br>
+        &nbsp;&nbsp;<span class="key">"permissions"</span>: {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"deny"</span>: [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(**/*.env)"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(**/*.key)"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(**/*.pem)"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(**/*.crt)"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">// &#x2193; プロジェクト固有のパターンを追加</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(09_system/config/*_token*)"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Read(09_system/config/google_oauth_*)"</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;]<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+      <div class="card-warn" style="margin-top:16px;">
+        <div class="card-title">&#x26A0; 注意点</div>
+        <p>汎用パターン（.env, .key等）だけでは不十分。<br>自分のプロジェクトの<strong>機密ファイルを棚卸し</strong>して、固有のパターンを追加すること。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 7: AFTER ======================== -->
+  <div class="slide bg-safe" data-slide="7">
+    <div class="slide-number">07 / 10</div>
+    <div class="content">
+      <h2>&#x2705; After：ガードレールありの世界</h2>
+      <div class="two-col">
+        <div>
+          <h3>会話例</h3>
+          <div class="chat">
+            <div>
+              <div class="chat-label chat-label-right">あなた</div>
+              <div class="chat-bubble chat-user">slack_bot_token.txt の中身を見せて</div>
+            </div>
+            <div>
+              <div class="chat-label">AI（プロモード）</div>
+              <div class="chat-bubble chat-ai-safe">
+                &#x1F6E1; セキュリティポリシーにより、機密情報へのアクセスは保護されています。<br>
+                代わりにSlack連携の設定手順を案内します。
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3>何が変わった？</h3>
+          <div class="card-safe" style="margin-bottom:16px;">
+            <div class="card-title">&#x1F512; 読み取り自体がブロック</div>
+            <p>permissions.denyにより、AIがファイルを開こうとしても権限がない</p>
+          </div>
+          <div class="card-safe" style="margin-bottom:16px;">
+            <div class="card-title">&#x1F4A1; 代替案を提示</div>
+            <p>ただ断るのではなく、安全に作業を進められる方法を提案</p>
+          </div>
+          <div class="card-safe">
+            <div class="card-title">&#x1F6E1; インジェクション耐性</div>
+            <p>外部からの隠し命令があっても、権限レベルでブロック</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 8: COMPARISON ======================== -->
+  <div class="slide bg-cream" data-slide="8">
+    <div class="slide-number">08 / 10</div>
+    <div class="content">
+      <h2>&#x1F4CA; .gitignore vs permissions.deny</h2>
+      <p style="margin-bottom:24px;">「.gitignoreがあるから安心」は<span style="color:var(--danger-red); font-weight:700;">半分だけ正解</span></p>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>.gitignore</th>
+            <th>permissions.deny</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>守る対象</strong></td>
+            <td>GitHubへのアップロード</td>
+            <td>AIからの読み取り</td>
+          </tr>
+          <tr>
+            <td><strong>守るタイミング</strong></td>
+            <td>git add / git push 時</td>
+            <td>AIがファイルを参照する時</td>
+          </tr>
+          <tr>
+            <td><strong>守れない場面</strong></td>
+            <td style="color:var(--danger-red);">ローカルでAIが読むのは防げない</td>
+            <td style="color:var(--danger-red);">Gitへのpushは防げない</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="highlight-box" style="text-align:center; margin-top:24px;">
+        <p style="font-size:1.2rem; font-weight:500;">
+          &#x1F449; <strong>両方設定して初めて完全防御</strong><br>
+          <span style="font-size:0.95rem; color:var(--text-light);">.gitignore = 対人間の防御 ／ permissions.deny = 対AIの防御</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 9: CHECKLIST ======================== -->
+  <div class="slide bg-pink-light" data-slide="9">
+    <div class="slide-number">09 / 10</div>
+    <div class="content">
+      <h2>&#x2705; 今日やること チェックリスト</h2>
+      <div class="three-col">
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle icon-red" style="margin:0 auto 16px;">1</div>
+          <h3 style="font-size:1.1rem;">機密ファイルの棚卸し</h3>
+          <div class="divider" style="margin:12px auto;"></div>
+          <p style="font-size:0.95rem;">プロジェクト内の<br>.env、トークン、APIキー、<br>認証ファイルを全てリストアップ</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle icon-pink" style="margin:0 auto 16px;">2</div>
+          <h3 style="font-size:1.1rem;">settings.json に deny 追加</h3>
+          <div class="divider" style="margin:12px auto;"></div>
+          <p style="font-size:0.95rem;">汎用パターン<br>（.env, .key, .pem等）<br>＋ プロジェクト固有パターン</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle icon-green" style="margin:0 auto 16px;">3</div>
+          <h3 style="font-size:1.1rem;">動作確認</h3>
+          <div class="divider" style="margin:12px auto;"></div>
+          <p style="font-size:0.95rem;">Claude Codeで<br>機密ファイルの読み取りを<br>試してブロックされることを確認</p>
+        </div>
+      </div>
+      <div class="card-warn" style="margin-top:32px;">
+        <div class="card-title">&#x1F4DD; よくある落とし穴</div>
+        <p>汎用テンプレートを貼っただけで安心してしまうこと。<br>
+        <strong>.txt拡張子のトークン</strong>や<strong>.json拡張子の認証情報</strong>など、プロジェクト固有のファイルは自分で追加が必要！</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SLIDE 10: CLOSING ======================== -->
+  <div class="slide bg-dark center" data-slide="10">
+    <div class="slide-number">10 / 10</div>
+    <div class="content">
+      <div style="font-size:3rem; margin-bottom:20px;">&#x1F680;</div>
+      <h2 style="text-align:center;">まとめ</h2>
+      <div class="divider"></div>
+      <div style="max-width:700px; margin-top:20px;">
+        <div class="card" style="margin-bottom:20px; text-align:left;">
+          <p style="font-size:1.15rem; line-height:2; color:var(--text-dark);">
+            &#x1F6E1; <strong>ガードレール = 物理制限 + 行動制限</strong> の2層構造<br>
+            &#x1F512; <strong>.gitignore</strong> は対人間、<strong>permissions.deny</strong> は対AI<br>
+            &#x26A0; テンプレートだけでは不十分、<strong>自プロジェクトの棚卸し</strong>が必須<br>
+            &#x1F4A1; ガードレールがあって初めて<strong>全力でAIを活用</strong>できる
+          </p>
+        </div>
+      </div>
+      <div class="quote-box" style="max-width:700px; margin-top:16px; background:rgba(255,255,255,0.08); color:#e0d0f0; border:1px solid rgba(168,85,247,0.2);">
+        <p style="color:#e0d0f0;">ブレーキをしっかり設定してこそ、アクセルを全開で踏み込める。</p>
+      </div>
+      <p style="margin-top:32px; font-size:0.9rem; color:#8b7ba8;">SAEPIN社内研修資料 &#x2014; 2026.03</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Navigation Bar ── -->
+<div class="nav-bar">
+  <button class="nav-btn nav-btn-prev" onclick="prevSlide()">&#x2190; Back</button>
+  <div class="progress-bar" id="progressBar"></div>
+  <button class="nav-btn nav-btn-next" onclick="nextSlide()">Next &#x2192;</button>
+</div>
+
+<script>
+  const totalSlides = document.querySelectorAll('.slide').length;
+  let current = 1;
+
+  // Build progress dots
+  const progressBar = document.getElementById('progressBar');
+  for (let i = 1; i <= totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i === 1 ? ' active' : '');
+    dot.dataset.slide = i;
+    dot.addEventListener('click', () => goToSlide(i));
+    dot.style.cursor = 'pointer';
+    progressBar.appendChild(dot);
+  }
+
+  function goToSlide(n) {
+    if (n < 1 || n > totalSlides) return;
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+    document.querySelectorAll('.progress-dot').forEach(d => {
+      d.classList.toggle('active', parseInt(d.dataset.slide) === n);
+    });
+    current = n;
+  }
+
+  function nextSlide() { goToSlide(current + 1); }
+  function prevSlide() { goToSlide(current - 1); }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+</script>
+</body>
+</html>

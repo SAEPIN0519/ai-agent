@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>日報未提出フォロー 現状分析レポート</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.6; }
+
+/* ヘッダー */
+.header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; padding: 40px 32px 32px; }
+.header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.header .subtitle { font-size: 14px; color: #a0aec0; }
+.header .date { font-size: 13px; color: #718096; margin-top: 4px; }
+
+/* KPIカード */
+.kpi-row { display: flex; gap: 16px; padding: 24px 32px; margin-top: -20px; }
+.kpi-card { flex: 1; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
+.kpi-card .label { font-size: 12px; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-card .value { font-size: 36px; font-weight: 800; margin: 8px 0 4px; }
+.kpi-card .sub { font-size: 12px; color: #a0aec0; }
+.kpi-red .value { color: #e53e3e; }
+.kpi-orange .value { color: #dd6b20; }
+.kpi-yellow .value { color: #d69e2e; }
+.kpi-green .value { color: #38a169; }
+
+/* セクション */
+.container { padding: 0 32px 32px; }
+.section { background: #fff; border-radius: 12px; padding: 24px; margin-top: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.section h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #edf2f7; }
+.section h3 { font-size: 15px; font-weight: 700; margin: 20px 0 12px; color: #2d3748; }
+
+/* タブ */
+.tab-container { display: flex; gap: 4px; margin-bottom: 20px; background: #edf2f7; border-radius: 8px; padding: 4px; }
+.tab { flex: 1; padding: 10px 16px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; transition: all 0.2s; }
+.tab.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* テーブル */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #f7fafc; padding: 10px 12px; text-align: left; font-weight: 600; color: #4a5568; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 10px 12px; border-bottom: 1px solid #edf2f7; }
+tr:hover { background: #f7fafc; }
+
+/* バッジ */
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge-red { background: #fed7d7; color: #c53030; }
+.badge-orange { background: #feebc8; color: #c05621; }
+.badge-yellow { background: #fefcbf; color: #975a16; }
+.badge-green { background: #c6f6d5; color: #276749; }
+.badge-gray { background: #e2e8f0; color: #4a5568; }
+
+/* プランラベル */
+.plan { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.plan-pro { background: #ebf4ff; color: #2b6cb0; }
+.plan-pre { background: #faf5ff; color: #6b46c1; }
+
+/* アラートバー */
+.alert { padding: 16px 20px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+.alert-red { background: #fff5f5; border-left: 4px solid #e53e3e; }
+.alert-blue { background: #ebf8ff; border-left: 4px solid #3182ce; }
+
+/* 比較表 */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; }
+.compare-card h4 { font-size: 14px; color: #4a5568; margin-bottom: 12px; }
+.week-label { font-size: 12px; color: #718096; font-weight: 600; margin-bottom: 8px; }
+
+/* フロー図 */
+.flow { display: flex; align-items: center; gap: 0; margin: 16px 0; }
+.flow-step { flex: 1; text-align: center; padding: 16px 8px; border-radius: 8px; position: relative; }
+.flow-step .day { font-size: 24px; font-weight: 800; }
+.flow-step .action { font-size: 12px; margin-top: 4px; }
+.flow-step .who { font-size: 11px; color: #718096; margin-top: 2px; }
+.flow-arrow { font-size: 20px; color: #cbd5e0; margin: 0 -4px; z-index: 1; }
+.flow-3 { background: #fefcbf; }
+.flow-5 { background: #feebc8; }
+.flow-8 { background: #fed7d7; }
+
+/* サマリーバー */
+.summary-bar { display: flex; height: 32px; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+.bar-segment { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.bar-red { background: #e53e3e; }
+.bar-orange { background: #dd6b20; }
+.bar-green { background: #38a169; }
+
+/* 印刷 */
+@media print {
+  body { background: #fff; }
+  .header { padding: 24px; }
+  .kpi-row { padding: 16px 24px; }
+  .container { padding: 0 24px 24px; }
+  .section { box-shadow: none; border: 1px solid #e2e8f0; }
+  .tab-container { display: none; }
+  .tab-content { display: block !important; }
+}
+
+@media (max-width: 768px) {
+  .kpi-row { flex-wrap: wrap; padding: 16px; }
+  .kpi-card { min-width: calc(50% - 8px); }
+  .compare-grid { grid-template-columns: 1fr; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>日報未提出フォロー 現状分析レポート</h1>
+  <div class="subtitle">PRO / PREMIUM 会員別 — 連続未提出 &amp; 週次累計の2パターン分析</div>
+  <div class="date">データ期間: 3/2〜3/15（2週分） ｜ 作成日: 2026年3月19日 ｜ 対象: 入会10日以上の2月期会員</div>
+</div>
+
+<!-- KPIカード -->
+<div class="kpi-row">
+  <div class="kpi-card kpi-red">
+    <div class="label">8日超え（面談対象）</div>
+    <div class="value">14</div>
+    <div class="sub">PRO 7名 + PREMIUM 7名</div>
+  </div>
+  <div class="kpi-card kpi-orange">
+    <div class="label">3〜8日（要フォロー）</div>
+    <div class="value">1</div>
+    <div class="sub">PRO 1名</div>
+  </div>
+  <div class="kpi-card kpi-green">
+    <div class="label">先週→今週 改善</div>
+    <div class="value">4</div>
+    <div class="sub">PRO 4名が復活</div>
+  </div>
+  <div class="kpi-card kpi-yellow">
+    <div class="label">PRO全体 提出率</div>
+    <div class="value">87<span style="font-size:18px">%</span></div>
+    <div class="sub">KPI目標 80% — 達成中</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- アラート -->
+  <div class="alert alert-red">
+    <strong>課題:</strong> 中間層（3日・5日）がほぼゼロ。出す人は出す、出さない人は完全にゼロという<strong>二極化</strong>が発生。早期検知の仕組みがなく、全員が8日超えに到達してから発見される状態。
+  </div>
+
+  <!-- 運用ルール -->
+  <div class="section">
+    <h2>段階的フォロー運用ルール（案）</h2>
+    <div class="flow">
+      <div class="flow-step flow-3">
+        <div class="day">3日</div>
+        <div class="action">警戒 → リマインドDM</div>
+        <div class="who">PRO: 秘書チーム / PRE: コンシェルジュ</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step flow-5">
+        <div class="day">5日</div>
+        <div class="action">要フォロー → 個別メッセージ</div>
+        <div class="who">PRO: 岩間さん(エルメ) / PRE: コンシェルジュ</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step flow-8">
+        <div class="day">8日</div>
+        <div class="action">一時停止 → 15分面談</div>
+        <div class="who">月曜MTG報告 → コンシェルジュ・PROコーチ</div>
+      </div>
+    </div>
+    <div class="alert alert-blue">
+      <strong>検知方法:</strong> 毎朝カルテ同期（7:30）で自動検知 → Slackの運営チャンネルに該当者リストを自動投稿。担当者がSlackを見て対応する運用。
+    </div>
+  </div>
+
+  <!-- タブ切替: 連続 vs 累計 -->
+  <div class="section">
+    <h2>未提出者 詳細分析</h2>
+
+    <div class="tab-container">
+      <div class="tab active" onclick="switchTab('continuous')">パターン1: 連続未提出日数</div>
+      <div class="tab" onclick="switchTab('weekly')">パターン2: 週次累計ベース</div>
+    </div>
+
+    <!-- パターン1: 連続 -->
+    <div id="tab-continuous" class="tab-content active">
+
+      <h3>PRO会員（2月期）</h3>
+      <table>
+        <thead>
+          <tr><th>名前</th><th>推定連続日数</th><th>ルール該当</th><th>根拠</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>中澤みどり</td><td><strong>30日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>4週連続ゼロ</td></tr>
+          <tr><td>山田真由美</td><td><strong>30日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>4週連続ゼロ</td></tr>
+          <tr><td>道下明和</td><td><strong>30日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>4週連続ゼロ</td></tr>
+          <tr><td>島田英敏</td><td><strong>17〜24日</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>2/23週に提出後ゼロ</td></tr>
+          <tr><td>片寄孝康</td><td><strong>17日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>2週連続ゼロ</td></tr>
+          <tr><td>立田素子</td><td><strong>17日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>2週連続ゼロ</td></tr>
+          <tr><td>内藤友香子</td><td><strong>17日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>2週連続ゼロ</td></tr>
+          <tr style="background:#fffff0"><td>伊藤紘二</td><td><strong>3〜9日</strong></td><td><span class="badge badge-orange">3-5日 要注意</span></td><td>今週1/7（最終提出日不明）</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px; font-size:13px; color:#718096;">PRO 8日超: <strong>7名</strong> / 3-5日: <strong>1名</strong></div>
+
+      <h3>PREMIUM会員</h3>
+      <table>
+        <thead>
+          <tr><th>名前</th><th>推定連続日数</th><th>ルール該当</th><th>根拠</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>河野徹</td><td><strong>入会以来</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>累計0回</td></tr>
+          <tr><td>田村耕太郎</td><td><strong>30日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>02/15入会・累計0回</td></tr>
+          <tr><td>石渡一雄</td><td><strong>30日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>02/17入会・累計0回</td></tr>
+          <tr><td>廣瀬亘</td><td><strong>入会以来</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>累計0回</td></tr>
+          <tr><td>南山絵里</td><td><strong>入会以来</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>累計0回</td></tr>
+          <tr><td>岡本拓哉</td><td><strong>20日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>02/22入会・累計1回</td></tr>
+          <tr><td>天野雅喜</td><td><strong>20日以上</strong></td><td><span class="badge badge-red">8日超 面談</span></td><td>02/15入会・累計2回</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px; font-size:13px; color:#718096;">PREMIUM 8日超: <strong>7名</strong></div>
+
+      <h3>改善した人（先週→今週で復活）</h3>
+      <table>
+        <thead>
+          <tr><th>名前</th><th>プラン</th><th>変化</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>谷山真一</td><td><span class="plan plan-pro">PRO</span></td><td><span class="badge badge-green">復活</span> 先週0/7 → 今週リスト脱出</td></tr>
+          <tr><td>村上真樹子</td><td><span class="plan plan-pro">PRO</span></td><td><span class="badge badge-green">改善</span> 先週1/7 → 今週リスト脱出</td></tr>
+          <tr><td>吉田比奈</td><td><span class="plan plan-pro">PRO</span></td><td><span class="badge badge-green">改善</span> 先週2/7 → 今週リスト脱出</td></tr>
+          <tr><td>築山優希</td><td><span class="plan plan-pro">PRO</span></td><td><span class="badge badge-green">改善</span> 先週2/7 → 今週リスト脱出</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- パターン2: 週次累計 -->
+    <div id="tab-weekly" class="tab-content">
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>先週（3/2〜3/8）PRO 2月期</h4>
+          <div class="summary-bar">
+            <div class="bar-segment bar-red" style="width:67%">8名</div>
+            <div class="bar-segment bar-orange" style="width:33%">4名</div>
+          </div>
+          <table>
+            <thead><tr><th>名前</th><th>提出</th><th>分類</th></tr></thead>
+            <tbody>
+              <tr><td>中澤みどり</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>内藤友香子</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>山田真由美</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>島田英敏</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>片寄孝康</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>立田素子</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>谷山真一</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>道下明和</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>伊藤紘二</td><td>1/7</td><td><span class="badge badge-orange">5日未提出</span></td></tr>
+              <tr><td>村上真樹子</td><td>1/7</td><td><span class="badge badge-orange">5日未提出</span></td></tr>
+              <tr><td>吉田比奈</td><td>2/7</td><td><span class="badge badge-orange">5日未提出</span></td></tr>
+              <tr><td>築山優希</td><td>2/7</td><td><span class="badge badge-orange">5日未提出</span></td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:8px; font-size:13px; color:#718096;">合計: <strong>12名</strong>（7日未提出8名 + 5日未提出4名）</div>
+        </div>
+
+        <div class="compare-card">
+          <h4>今週（3/9〜3/15）PRO 2月期</h4>
+          <div class="summary-bar">
+            <div class="bar-segment bar-red" style="width:88%">7名</div>
+            <div class="bar-segment bar-orange" style="width:12%">1名</div>
+          </div>
+          <table>
+            <thead><tr><th>名前</th><th>提出</th><th>分類</th></tr></thead>
+            <tbody>
+              <tr><td>中澤みどり</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>内藤友香子</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>山田真由美</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>島田英敏</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>片寄孝康</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>立田素子</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>道下明和</td><td>0/7</td><td><span class="badge badge-red">7日未提出</span></td></tr>
+              <tr><td>伊藤紘二</td><td>1/7</td><td><span class="badge badge-orange">5日未提出</span></td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:8px; font-size:13px; color:#718096;">合計: <strong>8名</strong>（7日未提出7名 + 5日未提出1名）<br><span style="color:#38a169">▲ 4名改善（谷山・村上・吉田・築山）</span></div>
+        </div>
+      </div>
+
+      <h3>PREMIUM会員（累計ベース）</h3>
+      <table>
+        <thead><tr><th>名前</th><th>入会日</th><th>累計日報</th><th>状態</th></tr></thead>
+        <tbody>
+          <tr><td>河野徹</td><td>不明</td><td>0回</td><td><span class="badge badge-red">一度も提出なし</span></td></tr>
+          <tr><td>田村耕太郎</td><td>02/15</td><td>0回</td><td><span class="badge badge-red">一度も提出なし</span></td></tr>
+          <tr><td>石渡一雄</td><td>02/17</td><td>0回</td><td><span class="badge badge-red">一度も提出なし</span></td></tr>
+          <tr><td>廣瀬亘</td><td>不明</td><td>0回</td><td><span class="badge badge-red">一度も提出なし</span></td></tr>
+          <tr><td>南山絵里</td><td>不明</td><td>0回</td><td><span class="badge badge-red">一度も提出なし</span></td></tr>
+          <tr><td>岡本拓哉</td><td>02/22</td><td>1回</td><td><span class="badge badge-orange">ほぼ停止</span></td></tr>
+          <tr><td>天野雅喜</td><td>02/15</td><td>2回</td><td><span class="badge badge-orange">ほぼ停止</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>週次比較サマリー（PRO 2月期）</h3>
+      <table>
+        <thead><tr><th>分類</th><th>先週</th><th>今週</th><th>増減</th></tr></thead>
+        <tbody>
+          <tr><td>7日間未提出（0/7）</td><td>8名</td><td>7名</td><td><span class="badge badge-green">-1</span></td></tr>
+          <tr><td>5日未提出（1〜2/7）</td><td>4名</td><td>1名</td><td><span class="badge badge-green">-3</span></td></tr>
+          <tr><td>3日未提出（3〜4/7）</td><td>0名</td><td>0名</td><td><span class="badge badge-gray">±0</span></td></tr>
+          <tr style="font-weight:700; background:#f7fafc"><td>合計</td><td>12名</td><td>8名</td><td><span class="badge badge-green">-4 改善</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 注記 -->
+  <div class="section" style="background:#fffff0; border: 1px solid #fefcbf;">
+    <h2 style="border-bottom-color:#fefcbf;">注意事項</h2>
+    <ul style="font-size:14px; padding-left:20px; color:#744210;">
+      <li><strong>連続日数は推定値</strong> — 現在のデータは週次単位のため、正確な「連続○日」は算出不可。日次検知の仕組み実装後に正確な数値になります。</li>
+      <li><strong>入会10日以内は除外</strong> — 3月期（3/15開始）の会員、PREMIUM手塚寿（3/10開始）は対象外。</li>
+      <li><strong>PREMIUM週次データなし</strong> — PREMIUMは累計ベースの推定のみ。日次検知で正確化予定。</li>
+      <li><strong>3日未提出の中間層がゼロ</strong> — 二極化が起きており、3日/5日ルールで早期キャッチする仕組みが急務。</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+function switchTab(type) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  if (type === 'continuous') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('tab-continuous').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('tab-weekly').classList.add('active');
+  }
+}
+</script>
+
+</body>
+</html>

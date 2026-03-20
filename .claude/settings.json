@@ -31,6 +31,19 @@
     "additionalDirectories": [
       "c:\\Users\\npino\\OneDrive\\デスクトップ\\Cloudcord",
       "C:\\Users\\npino\\AppData\\Roaming\\Code\\User"
+    ],
+    "deny": [
+      "Read(09_system/config/*_token*)",
+      "Read(09_system/config/google_oauth_*)",
+      "Read(09_system/config/google_service_account*)",
+      "Read(**/*.env)",
+      "Read(**/*.env.*)",
+      "Read(**/*.key)",
+      "Read(**/*.pem)",
+      "Read(**/*.crt)",
+      "Read(**/.ssh/**)",
+      "Read(**/.aws/**)",
+      "Read(**/.gcp/**)"
     ]
   }
 }
