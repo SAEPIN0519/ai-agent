@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B.C.B.Gマルシェ 4月</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Quicksand:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700;900&display=swap');
+
+  :root {
+    --primary: #f69a91;
+    --primary-dark: #d4716a;
+    --accent: #b39ad0;
+    --light: #fde6e3;
+    --bg: #fff9f7;
+    --text: #4a3333;
+    --text-muted: #9a7a7a;
+    --white: #ffffff;
+    --shadow: 0 4px 20px rgba(200, 120, 120, 0.12);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #e8ddd5;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+  }
+
+  .thumbnail {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(170deg, #fff5f2 0%, var(--light) 35%, #f8eef8 65%, #fff5f2 100%);
+  }
+
+  /* === 桜の花びら ひらひらアニメーション === */
+  .petal {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    animation: petal-fall linear infinite;
+  }
+  .petal svg { width: 100%; height: 100%; display: block; }
+
+  @keyframes petal-fall {
+    0%   { opacity: 0; transform: translateY(-30px) translateX(0) rotate(0deg) scale(1); }
+    8%   { opacity: 0.55; }
+    25%  { transform: translateY(250px) translateX(40px) rotate(180deg) scale(0.95); }
+    50%  { opacity: 0.4; transform: translateY(540px) translateX(-20px) rotate(360deg) scale(0.9); }
+    75%  { transform: translateY(800px) translateX(50px) rotate(540deg) scale(0.85); }
+    95%  { opacity: 0.15; }
+    100% { opacity: 0; transform: translateY(1120px) translateX(30px) rotate(720deg) scale(0.8); }
+  }
+
+  .p1  { left: 4%;  width: 18px; height: 18px; animation-duration: 9s;  animation-delay: 0s; }
+  .p2  { left: 14%; width: 13px; height: 13px; animation-duration: 11s; animation-delay: 1.2s; }
+  .p3  { left: 28%; width: 15px; height: 15px; animation-duration: 10s; animation-delay: 3.5s; }
+  .p4  { left: 40%; width: 11px; height: 11px; animation-duration: 12s; animation-delay: 0.8s; }
+  .p5  { left: 53%; width: 16px; height: 16px; animation-duration: 8.5s; animation-delay: 2.5s; }
+  .p6  { left: 65%; width: 12px; height: 12px; animation-duration: 11.5s; animation-delay: 4.5s; }
+  .p7  { left: 75%; width: 14px; height: 14px; animation-duration: 9.5s; animation-delay: 1.8s; }
+  .p8  { left: 88%; width: 17px; height: 17px; animation-duration: 8s; animation-delay: 3s; }
+  .p9  { left: 95%; width: 10px; height: 10px; animation-duration: 13s; animation-delay: 5.5s; }
+  .p10 { left: 48%; width: 12px; height: 12px; animation-duration: 10.5s; animation-delay: 6s; }
+
+  /* === ヘッダー === */
+  .header-catch {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding-top: 36px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* === メインタイトル === */
+  .main-title-area {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 6px 0 0;
+  }
+
+  .main-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: 8px;
+    line-height: 1.2;
+    word-break: keep-all;
+  }
+
+  .main-title span {
+    color: var(--primary);
+  }
+
+  .sub-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 6px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* === 日時・場所 === */
+  .info-row {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 12px 0 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .date-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .date-num {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .date-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .time-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 24px;
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  .location-row {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 4px 0 8px;
+  }
+
+  .location-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .location-name .material-icons {
+    font-size: 16px;
+    color: var(--primary);
+  }
+
+  /* === 装飾ライン === */
+  .deco-line {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0 8px;
+  }
+
+  .deco-line-bar {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+
+  .deco-line-bar:last-child {
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .deco-line-diamond {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+
+  /* === 出展者写真グリッド === */
+  .vendors-grid {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 0 52px;
+  }
+
+  .vendor-card {
+    text-align: center;
+  }
+
+  .vendor-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    position: relative;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 100% 100%;
+  }
+
+  .vendor-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+
+  .vendor-photo:hover img {
+    transform: scale(1.05);
+  }
+
+  /* CSS Maskで有機的な形に切り抜き */
+  .mask1 {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M934.9,934.9c-107.3,107.3-294.2,49.6-434.9,49.6s-327.5,57.7-434.9-49.6C-42.2,827.5,15.5,640.7,15.5,500S-42.2,172.5,65.1,65.1C172.5-42.2,359.3,15.5,500,15.5s327.5-57.7,434.9,49.6c107.3,107.3,49.6,294.2,49.6,434.9s57.7,327.5-49.6,434.9Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M934.9,934.9c-107.3,107.3-294.2,49.6-434.9,49.6s-327.5,57.7-434.9-49.6C-42.2,827.5,15.5,640.7,15.5,500S-42.2,172.5,65.1,65.1C172.5-42.2,359.3,15.5,500,15.5s327.5-57.7,434.9,49.6c107.3,107.3,49.6,294.2,49.6,434.9s57.7,327.5-49.6,434.9Z'/%3E%3C/svg%3E");
+  }
+
+  .mask2 {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M885.9,885.9c-52.7,57.7-122.9,82.5-189.6,96.8-67.7,13.7-132,17-196.2,17.3-64.3-.3-128.5-3.6-196.3-17.3-66.7-14.3-137-39.1-189.6-96.8-57.7-52.7-82.5-122.9-96.8-189.6C3.6,628.5.3,564.3,0,500c.3-64.3,3.6-128.5,17.3-196.3,14.3-66.7,39.1-137,96.8-189.6,52.7-57.7,122.9-82.5,189.6-96.8C371.5,3.6,435.7.3,500,0c64.3.3,128.5,3.6,196.3,17.3,66.7,14.3,137,39.1,189.6,96.8,57.7,52.7,82.5,122.9,96.8,189.6,13.7,67.7,17,132,17.3,196.2-.3,64.3-3.6,128.5-17.3,196.3-14.3,66.7-39.1,137-96.8,189.6h0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M885.9,885.9c-52.7,57.7-122.9,82.5-189.6,96.8-67.7,13.7-132,17-196.2,17.3-64.3-.3-128.5-3.6-196.3-17.3-66.7-14.3-137-39.1-189.6-96.8-57.7-52.7-82.5-122.9-96.8-189.6C3.6,628.5.3,564.3,0,500c.3-64.3,3.6-128.5,17.3-196.3,14.3-66.7,39.1-137,96.8-189.6,52.7-57.7,122.9-82.5,189.6-96.8C371.5,3.6,435.7.3,500,0c64.3.3,128.5,3.6,196.3,17.3,66.7,14.3,137,39.1,189.6,96.8,57.7,52.7,82.5,122.9,96.8,189.6,13.7,67.7,17,132,17.3,196.2-.3,64.3-3.6,128.5-17.3,196.3-14.3,66.7-39.1,137-96.8,189.6h0Z'/%3E%3C/svg%3E");
+  }
+
+  .mask3 {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M1000,494.5c0,68.1-11.8,136.6-36,195.8-25.2,61.4-73.5,110.1-119.3,156.3-45.7,46.2-96.8,88.2-157.5,113.7-58.5,24.5-123.5,39.7-190.9,39.7s-128.5-24.5-187-49c-60.7-25.4-121.4-52.2-167.2-98.4-45.7-46.2-76.4-105.9-101.5-167.2C16.3,626.1,0,562.6,0,494.5s18.7-130.7,42.9-189.9c25.2-61.4,54.9-120.5,100.6-166.8,45.7-46.2,102.4-80.9,163.1-106.3C365.2,7,429,0,496.3,0s131.9,5.1,190.5,29.6c60.7,25.4,119.6,59,165.3,105.2,45.7,46.2,75.2,107.3,100.4,168.7s47.5,122.9,47.5,191Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M1000,494.5c0,68.1-11.8,136.6-36,195.8-25.2,61.4-73.5,110.1-119.3,156.3-45.7,46.2-96.8,88.2-157.5,113.7-58.5,24.5-123.5,39.7-190.9,39.7s-128.5-24.5-187-49c-60.7-25.4-121.4-52.2-167.2-98.4-45.7-46.2-76.4-105.9-101.5-167.2C16.3,626.1,0,562.6,0,494.5s18.7-130.7,42.9-189.9c25.2-61.4,54.9-120.5,100.6-166.8,45.7-46.2,102.4-80.9,163.1-106.3C365.2,7,429,0,496.3,0s131.9,5.1,190.5,29.6c60.7,25.4,119.6,59,165.3,105.2,45.7,46.2,75.2,107.3,100.4,168.7s47.5,122.9,47.5,191Z'/%3E%3C/svg%3E");
+  }
+
+  .mask4 {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M909.8,500c244.8,361.6-48.3,654.7-409.8,409.8-361.6,244.8-654.7-48.3-409.8-409.8C-154.7,138.4,138.4-154.7,500,90.2c361.6-244.8,654.7,48.3,409.8,409.8Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='black' d='M909.8,500c244.8,361.6-48.3,654.7-409.8,409.8-361.6,244.8-654.7-48.3-409.8-409.8C-154.7,138.4,138.4-154.7,500,90.2c361.6-244.8,654.7,48.3,409.8,409.8Z'/%3E%3C/svg%3E");
+  }
+
+  .mask5 {
+    border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+  }
+
+  .mask6 {
+    border-radius: 55% 45% 40% 60% / 45% 60% 40% 55%;
+  }
+
+  .mask-round {
+    border-radius: var(--radius);
+  }
+
+  .vendor-label {
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+
+  .vendor-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* === フッター === */
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    padding: 14px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 11px;
+    color: var(--white);
+    letter-spacing: 2px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .footer-text .material-icons {
+    font-size: 14px;
+  }
+
+  .footer-center {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 3px;
+    font-weight: 400;
+  }
+
+  @media print {
+    body { background: none; }
+    .petal { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="thumbnail">
+
+  <!-- 桜の花びら ひらひらアニメーション -->
+  <div class="petal p1"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#f4b0b8"/></svg></div>
+  <div class="petal p2"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#e8a0c0"/></svg></div>
+  <div class="petal p3"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#fcc4ca"/></svg></div>
+  <div class="petal p4"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#d4a0d0"/></svg></div>
+  <div class="petal p5"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#f4b0b8"/></svg></div>
+  <div class="petal p6"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#fcc4ca"/></svg></div>
+  <div class="petal p7"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#e8a0c0"/></svg></div>
+  <div class="petal p8"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#f4b0b8"/></svg></div>
+  <div class="petal p9"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#d4a0d0"/></svg></div>
+  <div class="petal p10"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#fcc4ca"/></svg></div>
+
+  <!-- ヘッダー -->
+  <p class="header-catch">Food / Beauty / Health</p>
+
+  <!-- メインタイトル -->
+  <div class="main-title-area">
+    <h1 class="main-title"><span>春</span>のさくら<br>マルシェ</h1>
+    <p class="sub-label">CAFE'DE B.C.B.G</p>
+  </div>
+
+  <!-- 日時 -->
+  <div class="info-row">
+    <div class="date-block">
+      <span class="date-num">4/19</span>
+      <span class="date-day">日</span>
+    </div>
+    <div class="info-dot"></div>
+    <span class="time-text">10:00 - 16:00</span>
+  </div>
+
+  <!-- 場所 -->
+  <div class="location-row">
+    <p class="location-name"><span class="material-icons">place</span>岐阜市九重町3-2</p>
+  </div>
+
+  <!-- 装飾ライン -->
+  <div class="deco-line">
+    <span class="deco-line-bar"></span>
+    <span class="deco-line-diamond"></span>
+    <span class="deco-line-bar"></span>
+  </div>
+
+  <!-- 出展者写真6グリッド（CSS Mask切り抜き） -->
+  <div class="vendors-grid">
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/nob1.jpeg" alt="NOB">
+      </div>
+      <p class="vendor-label">ララアップ NOB</p>
+      <p class="vendor-sub">美容アクセサリー・耳つぼ</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/midori3.jpeg" alt="みどり">
+      </div>
+      <p class="vendor-label">和菓子加納みどり</p>
+      <p class="vendor-sub">いちご大福・桜餅</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/ibuchai.jpeg" alt="いぶちゃい">
+      </div>
+      <p class="vendor-label">口福おやつ いぶちゃい</p>
+      <p class="vendor-sub">グルテンフリーヴィーガンおやつ</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/stone.jpeg" alt="B.C.B.G STONE">
+      </div>
+      <p class="vendor-label">B.C.B.G STONE</p>
+      <p class="vendor-sub">パワーストーン</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/kitchen.jpeg" alt="B.C kitchen">
+      </div>
+      <p class="vendor-label">B.C kitchen</p>
+      <p class="vendor-sub">冷麺</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/start.jpeg" alt="START">
+      </div>
+      <p class="vendor-label">BODY MAKE GYM START</p>
+      <p class="vendor-sub">ラジオ波 x リンパ 20分 2,000円</p>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    <span class="footer-text"><span class="material-icons">storefront</span>CAFE'DE B.C.B.G</span>
+    <span class="footer-center">MONTHLY 3rd SUNDAY</span>
+    <span class="footer-text"><span class="material-icons">alternate_email</span>b.c.b.gcafe</span>
+  </div>
+
+</div>
+
+</body>
+</html>
