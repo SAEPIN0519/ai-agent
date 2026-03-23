@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO PREMIUM 週次レポート — 3月16日〜3月22日</title>
+<style>
+:root {
+  --primary: #1e3a5f; --accent: #2b6cb0; --accent-light: #ebf4ff;
+  --success: #16a34a; --warning: #d97706; --danger: #dc2626;
+  --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif; background:var(--gray-100); color:var(--gray-800); line-height:1.7; }
+.header { background:linear-gradient(135deg,var(--primary),var(--accent)); color:#fff; padding:32px 40px 24px; }
+.header-inner { max-width:1100px; margin:0 auto; }
+.header h1 { font-size:26px; font-weight:700; }
+.header .subtitle { font-size:14px; opacity:0.85; margin-top:4px; }
+.nav-bar { background:#fff; border-bottom:1px solid var(--gray-200); position:sticky; top:0; z-index:10; }
+.nav-inner { max-width:1100px; margin:0 auto; display:flex; }
+.month-tabs { display:flex; border-right:1px solid var(--gray-200); }
+.month-tab { padding:12px 20px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border-bottom:3px solid transparent; }
+.month-tab:hover { color:var(--accent); }
+.month-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.week-tabs { display:flex; flex:1; overflow-x:auto; }
+.week-tab { padding:12px 18px; font-size:13px; color:var(--gray-400); cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; }
+.week-tab:hover { color:var(--accent); }
+.week-tab.active { color:var(--accent); font-weight:600; border-bottom-color:var(--accent); }
+.week-tab.disabled { color:#cbd5e1; cursor:default; }
+.nav-top-btn { padding:12px 16px; font-size:12px; font-weight:700; color:var(--accent); cursor:pointer; border-left:1px solid var(--gray-200); white-space:nowrap; display:flex; align-items:center; }
+.nav-top-btn:hover { background:var(--accent-light); }
+.main { max-width:1100px; margin:0 auto; padding:28px 20px 60px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
+.kpi-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.kpi-label { font-size:12px; color:var(--gray-400); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.kpi-value { font-size:32px; font-weight:700; color:var(--primary); margin:4px 0; }
+.kpi-change { font-size:13px; font-weight:600; }
+.kpi-change.up { color:var(--success); }
+.kpi-change.down { color:var(--danger); }
+.kpi-sub { font-size:12px; color:var(--gray-400); margin-top:2px; }
+.section { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:24px; overflow:hidden; }
+.section-header { display:flex; align-items:center; gap:10px; padding:16px 24px; border-bottom:1px solid var(--gray-200); cursor:pointer; user-select:none; }
+.section-header:hover { background:var(--gray-50); }
+.section-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; background:var(--accent); color:#fff; border-radius:50%; font-size:13px; font-weight:700; flex-shrink:0; }
+.section-title { font-size:16px; font-weight:700; color:var(--gray-800); flex:1; }
+.section-toggle { font-size:18px; color:var(--gray-400); transition:transform 0.2s; }
+.section.collapsed .section-toggle { transform:rotate(-90deg); }
+.section.collapsed .section-body { display:none; }
+.section-body { padding:20px 24px; }
+.top3 { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; }
+.top3-item { display:flex; align-items:center; gap:8px; background:var(--gray-50); border-radius:8px; padding:10px 16px; flex:1; min-width:200px; }
+.rank { font-size:20px; width:32px; text-align:center; }
+.top3-name { font-weight:700; font-size:14px; }
+.top3-detail { font-size:12px; color:var(--gray-600); }
+.bar-chart { margin:12px 0; }
+.bar-row { display:flex; align-items:center; margin:6px 0; }
+.bar-label { width:120px; font-size:13px; color:var(--gray-600); flex-shrink:0; }
+.bar-track { flex:1; height:24px; background:var(--gray-100); border-radius:4px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:12px; font-weight:600; color:#fff; }
+.bar-fill.blue { background:linear-gradient(90deg,#3b82f6,#2563eb); }
+.bar-fill.green { background:linear-gradient(90deg,#22c55e,#16a34a); }
+.bar-fill.orange { background:linear-gradient(90deg,#f59e0b,#d97706); }
+.bar-fill.red { background:linear-gradient(90deg,#ef4444,#dc2626); }
+.bar-fill.purple { background:linear-gradient(90deg,#a78bfa,#7c3aed); }
+.bar-value { width:60px; text-align:right; font-size:13px; font-weight:600; color:var(--gray-600); flex-shrink:0; margin-left:8px; }
+.sentiment-gauge { display:flex; height:36px; border-radius:8px; overflow:hidden; margin:16px 0 8px; }
+.sentiment-pos { background:linear-gradient(90deg,#22c55e,#4ade80); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+.sentiment-neg { background:linear-gradient(90deg,#f87171,#ef4444); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+.phase-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:12px 0; }
+.phase-card { border:1px solid var(--gray-200); border-radius:8px; padding:14px 16px; position:relative; }
+.phase-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:8px 0 0 8px; }
+.phase-card.p1::before { background:#3b82f6; } .phase-card.p2::before { background:#f59e0b; }
+.phase-card.p3::before { background:#8b5cf6; } .phase-card.p4::before { background:#22c55e; }
+.phase-card.p5::before { background:#ef4444; }
+.monetize-podium { display:flex; gap:12px; justify-content:center; align-items:flex-end; margin:20px 0; }
+.podium-item { text-align:center; padding:16px 20px; border-radius:10px; min-width:140px; }
+.podium-item.gold { background:linear-gradient(135deg,#fef3c7,#fde68a); order:1; }
+.podium-item.silver { background:linear-gradient(135deg,#f1f5f9,#e2e8f0); order:0; }
+.podium-item.bronze { background:linear-gradient(135deg,#fed7aa,#fdba74); order:2; }
+.podium-medal { font-size:28px; } .podium-name { font-weight:700; font-size:15px; margin:4px 0; }
+.podium-amount { font-size:20px; font-weight:800; color:var(--primary); }
+.voice-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0; }
+@media (max-width:768px) { .voice-grid { grid-template-columns:1fr; } }
+.voice-section-label { font-size:13px; font-weight:700; margin-bottom:8px; padding:4px 10px; border-radius:4px; display:inline-block; }
+.voice-section-label.pos { background:#dcfce7; color:#166534; }
+.voice-section-label.neg { background:#fef2f2; color:#991b1b; }
+.voice-card { border-left:3px solid var(--gray-300); padding:10px 14px; margin:8px 0; background:var(--gray-50); border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.voice-card.pos { border-left-color:var(--success); } .voice-card.neg { border-left-color:var(--danger); }
+.voice-name { font-weight:700; font-size:13px; margin-bottom:4px; }
+.proposal-list { margin:12px 0; }
+.proposal-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--gray-100); font-size:14px; }
+.proposal-icon { flex-shrink:0; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; margin-top:2px; }
+.proposal-icon.follow { background:#dbeafe; color:#2563eb; } .proposal-icon.improve { background:#fef3c7; color:#d97706; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+th { background:var(--primary); color:#fff; padding:10px 12px; text-align:left; font-weight:600; font-size:12px; white-space:nowrap; }
+td { padding:8px 12px; border-bottom:1px solid var(--gray-200); }
+tr:nth-child(even) td { background:var(--gray-50); } tr:hover td { background:var(--accent-light); }
+.zero { color:var(--danger); font-weight:600; } .low { color:var(--warning); }
+.alert { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:8px; margin:8px 0; font-size:13px; line-height:1.6; }
+.alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.alert.danger { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+.alert.warning { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+.day-chart { display:flex; align-items:flex-end; gap:8px; height:140px; margin:16px 0 8px; padding:0 20px; }
+.day-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.day-bar { width:100%; max-width:50px; background:linear-gradient(180deg,#3b82f6,#2563eb); border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; font-size:12px; font-weight:700; color:#fff; }
+.day-label { font-size:12px; color:var(--gray-600); font-weight:600; }
+.footer { text-align:center; padding:24px; color:var(--gray-400); font-size:12px; }
+.float-top { position:fixed; bottom:24px; right:24px; width:48px; height:48px; background:var(--accent); color:#fff; border:none; border-radius:50%; font-size:20px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none; align-items:center; justify-content:center; z-index:100; }
+.float-top:hover { transform:scale(1.1); background:var(--primary); }
+@media print { .nav-bar { position:static; } .section.collapsed .section-body { display:block; } body { background:#fff; } }
+</style>
+</head>
+<body>
+<div class="header"><div class="header-inner">
+  <h1>PRO PREMIUM TEAM 週次レポート</h1>
+  <div class="subtitle">成功習慣行動率100% — 会員分析ダッシュボード</div>
+</div></div>
+
+<div class="nav-bar"><div class="nav-inner">
+  <div class="month-tabs">
+    <div class="month-tab" onclick="location.href='index_2月.html'">2月</div>
+    <div class="month-tab active" onclick="location.href='index_3月.html'">3月</div>
+  </div>
+  <div class="week-tabs">
+    <div class="week-tab" onclick="location.href='会員分析（日報）3月2日-3月8日.html'">W1: 3/2–3/8</div>
+    <div class="week-tab" onclick="location.href='会員分析（日報）3月9日-3月15日.html'">W2: 3/9–3/15</div>
+    <div class="week-tab active" onclick="scrollTo({top:0,behavior:'smooth'})">W3: 3/16–3/22</div>
+    <div class="week-tab disabled">W4: 3/23–3/29</div>
+    <div class="week-tab disabled">W5: 3/30–4/5</div>
+  </div>
+  <div class="nav-top-btn" onclick="scrollTo({top:0,behavior:'smooth'})" title="ページトップへ">▲ TOP</div>
+</div></div>
+
+<div class="main">
+  <div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
+    <strong style="font-size:18px;color:var(--gray-800);">2026年03月16日（月）〜 03月22日（日）</strong><br>集計日: 2026-03-24
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">812.9h</div><div class="kpi-change up">+12% (前週 729.0h)</div></div>
+    <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">23.2h</div><div class="kpi-change up">+12% (前週 20.8h)</div></div>
+    <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">35名</div><div class="kpi-sub">提出205件</div></div>
+    <div class="kpi-card"><div class="kpi-label">アクティブ傾向率</div><div class="kpi-value">72%</div><div class="kpi-change up">+5pt (前週 67%)</div></div>
+    <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">2.8万円</div><div class="kpi-change down">-22% (前週 3.6万円)</div><div class="kpi-sub">収益報告 9名 / 週報 23名</div></div>
+    <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">23名</div><div class="kpi-change down">悪化 (前週 13名)</div><div class="kpi-sub">PRO全体 48名</div></div>
+  </div>
+
+  <!-- ① 基本統計 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4>
+    <div class="top3">
+      <div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">90.4h（平均 11.3h/日）</div></div></div>
+      <div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">小川有紀</div><div class="top3-detail">48.0h（平均 12.0h/日）</div></div></div>
+      <div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">島田嵩</div><div class="top3-detail">43.0h（平均 7.2h/日）</div></div></div>
+    </div>
+    <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4>
+    <div class="top3">
+      <div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">押久保欽一</div><div class="top3-detail">9回</div></div></div>
+      <div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">白方勇生</div><div class="top3-detail">9回</div></div></div>
+      <div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">川西秀樹 / 萩原千晶</div><div class="top3-detail">8回</div></div></div>
+    </div>
+  </div></div>
+
+  <!-- ② FB会 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div class="day-chart">
+      <div class="day-col"><div class="day-bar" style="height:75px;">12</div><div class="day-label">月</div></div>
+      <div class="day-col"><div class="day-bar" style="height:75px;">12</div><div class="day-label">火</div></div>
+      <div class="day-col"><div class="day-bar" style="height:81px;">13</div><div class="day-label">水</div></div>
+      <div class="day-col"><div class="day-bar" style="height:75px;">12</div><div class="day-label">木</div></div>
+      <div class="day-col"><div class="day-bar" style="height:68px;">11</div><div class="day-label">金</div></div>
+      <div class="day-col"><div class="day-bar" style="height:75px;">12</div><div class="day-label">土</div></div>
+      <div class="day-col"><div class="day-bar" style="height:75px;">12</div><div class="day-label">日</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 84件 / 参加者 24名</div>
+    <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4>
+    <div class="top3">
+      <div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">池田勝典</div><div class="top3-detail">7回</div></div></div>
+      <div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">押久保欽一 / 関口大樹 / 萩原千晶 / 川西秀樹 / 坂井俊章</div><div class="top3-detail">6回</div></div></div>
+    </div>
+  </div></div>
+
+  <!-- ③ 感情分析 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div class="sentiment-gauge">
+      <div class="sentiment-pos" style="width:72%;">72%</div>
+      <div class="sentiment-neg" style="width:28%;">28%</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
+      <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:16px;">
+      <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;">前週</div>
+        <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+          <span style="color:#16a34a;font-weight:700;font-size:18px;">67%</span>
+          <span style="color:#94a3b8;font-size:14px;">/</span>
+          <span style="color:#dc2626;font-weight:700;font-size:18px;">33%</span>
+        </div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;">今週</div>
+        <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+          <span style="color:#16a34a;font-weight:700;font-size:18px;">72%</span>
+          <span style="color:#94a3b8;font-size:14px;">/</span>
+          <span style="color:#dc2626;font-weight:700;font-size:18px;">28%</span>
+        </div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;">変化</div>
+        <div style="color:#16a34a;font-weight:700;font-size:18px;margin-top:4px;">+5pt</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">前週比でアクティブ率がさらに改善。学びの定着と実践報告が増加傾向にある。</p>
+  </div></div>
+
+  <!-- ⑤ マネタイズフェーズ -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">5</span><span class="section-title">マネタイズフェーズ分析（週報ベース）</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div class="phase-grid">
+      <div class="phase-card p1">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 1</div>
+        <div style="font-size:14px;font-weight:700;margin:2px 0;">基礎学習・インプット段階</div>
+        <div style="font-size:24px;font-weight:800;color:var(--primary);">6名</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">白方勇生, 西田紀子, 西尾佳奈, 近藤英介, 野村すみれ, 早崎英里香</div>
+      </div>
+      <div class="phase-card p2">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 2</div>
+        <div style="font-size:14px;font-weight:700;margin:2px 0;">リサーチ・企画・設計段階</div>
+        <div style="font-size:24px;font-weight:800;color:var(--primary);">4名</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">岡松威宏, 池田勝典, 野尻幸樹実, 戸高富美代</div>
+      </div>
+      <div class="phase-card p3">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div>
+        <div style="font-size:14px;font-weight:700;margin:2px 0;">制作・構築・執筆段階</div>
+        <div style="font-size:24px;font-weight:800;color:var(--primary);">3名</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">森美恵子, 矢三やよい, 島田嵩</div>
+      </div>
+      <div class="phase-card p4">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div>
+        <div style="font-size:14px;font-weight:700;margin:2px 0;">出品・公開・営業段階（0→1）</div>
+        <div style="font-size:24px;font-weight:800;color:var(--primary);">2名</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">坂井俊章, 萩原千晶</div>
+      </div>
+      <div class="phase-card p5">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 5</div>
+        <div style="font-size:14px;font-weight:700;margin:2px 0;">収益発生・拡大段階（1→100）</div>
+        <div style="font-size:24px;font-weight:800;color:var(--primary);">7名</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">押久保欽一, 藤木智咲, 川西秀樹, 関口大樹, 甲村順子, 杉田守, 小倉愛美</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--gray-600);margin-top:8px;">週報提出者: 23名 / PRO基準48名（提出率 47%）</div>
+  </div></div>
+
+  <!-- ⑥ マネタイズ成果 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">2.8万円</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">3,146円</div>
+      </div>
+    </div>
+    <div class="monetize-podium">
+      <div class="podium-item silver"><div class="podium-medal">🥈</div><div class="podium-name">野尻幸樹実</div><div class="podium-amount">3,000円</div></div>
+      <div class="podium-item gold"><div class="podium-medal">🥇</div><div class="podium-name">押久保欽一</div><div class="podium-amount">20,000円</div></div>
+      <div class="podium-item bronze"><div class="podium-medal">🥉</div><div class="podium-name">早崎英里香</div><div class="podium-amount">1,599円</div></div>
+    </div>
+    <table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody>
+      <tr><td>4位</td><td>川西秀樹</td><td>1,000円</td></tr>
+      <tr><td>5位</td><td>甲村順子</td><td>1,000円</td></tr>
+      <tr><td>6位</td><td>小倉愛美</td><td>1,000円</td></tr>
+      <tr><td>7位</td><td>池田勝典</td><td>600円</td></tr>
+      <tr><td>8位</td><td>杉田守</td><td>81円</td></tr>
+      <tr><td>9位</td><td>萩原千晶</td><td>39円</td></tr>
+    </tbody></table>
+  </div></div>
+
+  <!-- ⑦ 生の声 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div class="voice-grid">
+      <div>
+        <div class="voice-section-label pos">前進を支える声</div>
+        <div class="voice-card pos"><div class="voice-name">坂井俊章</div>FB会のアーカイブは「質問特化型」の構成だったとのこと。質問起点で学び直すと、自分がレクチャーを受けた当時には"わかったつもり"だった部分の解像度が格段に上がる、という体験をされたのではないでしょうか。</div>
+        <div class="voice-card pos"><div class="voice-name">杉田守</div>マモル開発事業部（Mamoru Dev Studio）を新規立ち上げ、76ファイル・約8,500行の組織基盤を構築。検証レポートワークフローの整備も完了。</div>
+        <div class="voice-card pos"><div class="voice-name">西尾佳奈</div>SHIFT AIのゼミで得た最新AI情報が、コミュニティ外のAI活用者との対話でも「知らなかった」と言われる情報として機能し、会話の深みと信頼感につながった。</div>
+        <div class="voice-card pos"><div class="voice-name">金子有貴</div>美容クリニックのリール動画の制作・提出を行いました。修正の手戻りを防ぐため、制作前と制作途中の段階で先方へ確認を行い、認識のズレが起きないよう意識して進めました。</div>
+      </div>
+      <div>
+        <div class="voice-section-label neg">停滞を招く声</div>
+        <div class="voice-card neg"><div class="voice-name">矢三やよい</div>昨日今日と全然できなかった。応募2件。</div>
+        <div class="voice-card neg"><div class="voice-name">島田嵩</div>実務：Sonnet4.6は迷子になって戻ってこなくなることがある。副業：バイヤーとの値段交渉、生成画像作品のNFT化にチャレンジ。</div>
+        <div class="voice-card neg"><div class="voice-name">小倉愛美</div>ハンドメイド制作を行いながら、田中キリさんのYouTube動画で習慣化について学習。ライティングの添削ウェビナーに参加。</div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- ⑧ 提言 -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">8</span><span class="section-title">運営への提言</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">個別フォロー推奨</h4>
+    <div class="proposal-list">
+      <div class="proposal-item"><div class="proposal-icon follow">👤</div><div>矢三やよい様：行動停滞の兆候あり。応募活動への個別フォローが有効です。</div></div>
+      <div class="proposal-item"><div class="proposal-icon follow">👤</div><div>新規PRO会員（姥貝有子、松村翠、河又美智 等）：オンボーディング状況の確認が必要です。</div></div>
+    </div>
+    <h4 style="font-size:14px;color:var(--gray-600);margin:20px 0 8px;">サービス改善案</h4>
+    <div class="proposal-list">
+      <div class="proposal-item"><div class="proposal-icon improve">💡</div><div>非アクティブPRO会員が23名（48%）と前週13名から大幅増加。PRO全体48名への増員に伴う新規会員のオンボーディング強化を推奨します。</div></div>
+      <div class="proposal-item"><div class="proposal-icon improve">💡</div><div>週報提出率が47%と目標80%を大きく下回っています。週報提出リマインドの自動化を検討してください。</div></div>
+      <div class="proposal-item"><div class="proposal-icon improve">💡</div><div>マネタイズ額が前週比-22%。Phase 4（0→1挑戦中）の会員向けに、出品・営業の具体手順ワークショップが有効です。</div></div>
+    </div>
+  </div></div>
+
+  <!-- ⑨ 非アクティブ -->
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <span class="section-num">9</span><span class="section-title">非アクティブPRO会員（過去4週傾向）</span><span class="section-toggle">▼</span>
+  </div><div class="section-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（3月16日–3月22日）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">23名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--warning);">52%</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">32名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 48名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">66%</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">23名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 48名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--warning);">47%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+        </div>
+      </div>
+      <div style="background:var(--gray-50);border-radius:10px;padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--gray-400);margin-bottom:12px;">前週（3月9日–3月15日）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">13名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">66%</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">33名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">87%</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">22名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
+          <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">58%</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="overflow-x:auto;"><table><thead><tr>
+      <th>会員名</th><th>今週日報</th><th>提出率</th><th>今週FB</th><th>参加率</th><th>2/23週</th><th>3/2週</th><th>3/9週</th><th>3/16週</th>
+    </tr></thead><tbody>
+      <tr><td>村上真樹子</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>道下明和</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>中澤みどり</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>伊藤紘二</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>4/4</td><td>4/3</td><td>1/0</td><td class="zero">0/0</td></tr>
+      <tr><td>谷山真一</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>島田英敏</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>2/1</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>築山優希</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>片寄孝康</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td>1/1</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>立田素子</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>1/1</td><td>2/1</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>山田真由美</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>溝口和範</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>西口勇生</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>船引純</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>姥貝有子</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>—</td><td>—</td><td>—</td><td class="zero">0/0</td></tr>
+      <tr><td>松村翠</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>—</td><td>—</td><td>—</td><td class="zero">0/0</td></tr>
+      <tr><td>河又美智</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td>—</td><td>—</td><td>—</td><td class="zero">0/0</td></tr>
+      <tr><td>田口旭晃</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>辰野早苗</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>土屋貴裕</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>吉岡寿治</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>中島有季子</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>中澤健治</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+      <tr><td>浜畑悦子</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/7</td><td class="zero">0%</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td><td class="zero">0/0</td></tr>
+    </tbody></table></div>
+    <div class="alert danger"><span class="alert-icon">⚠️</span><div>完全未稼働（4週連続ゼロ）: 村上真樹子、道下明和、中澤みどり、谷山真一、築山優希、山田真由美、溝口和範、西口勇生、船引純、田口旭晃、辰野早苗、土屋貴裕、吉岡寿治、中島有季子、中澤健治、浜畑悦子</div></div>
+    <div class="alert warning"><span class="alert-icon">📉</span><div>急降下中: 伊藤紘二、島田英敏、立田素子、片寄孝康</div></div>
+    <div class="alert warning"><span class="alert-icon">🆕</span><div>新規会員（入会後初週ゼロ）: 姥貝有子、松村翠、河又美智 — オンボーディングフォロー推奨</div></div>
+  </div></div>
+</div>
+
+<div class="footer">Generated by SAEPIN — PRO PREMIUM TEAM AI Agent System<br>集計日: 2026-03-24</div>
+<button class="float-top" id="floatTop" onclick="scrollTo({top:0,behavior:'smooth'})">▲</button>
+<script>
+const btn=document.getElementById('floatTop');
+window.addEventListener('scroll',()=>{btn.style.display=window.scrollY>400?'flex':'none';});
+</script>
+</body></html>

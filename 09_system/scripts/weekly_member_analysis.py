@@ -612,7 +612,7 @@ def build_kpi_html(data, prev_data):
             diff = int((cur - prev) / prev * 100) if prev else 0
             cls = 'up' if diff >= 0 else 'down'
             sign = '+' if diff >= 0 else ''
-            return f'<div class="kpi-change {cls}">{sign}{diff}% (前週 {prev}{suffix})</div>'
+            return f'<div class="kpi-change {cls}">{sign}{diff}% (前週 {int(prev)}{suffix})</div>'
         elif fmt == 'pt':
             diff = cur - prev
             cls = 'up' if diff >= 0 else 'down'
@@ -629,12 +629,12 @@ def build_kpi_html(data, prev_data):
 
     p = prev_data
     d = data
-    money_display = f"{d['total_money']/10000:.1f}万円" if d['total_money'] >= 10000 else f"{d['total_money']:,}円"
-    p_money = f"{p['total_money']/10000:.1f}万円" if p and p['total_money'] >= 10000 else (f"{p['total_money']:,}円" if p else '')
+    money_display = f"{int(d['total_money']//10000)}万円" if d['total_money'] >= 10000 else f"{int(d['total_money']):,}円"
+    p_money = f"{int(p['total_money']//10000)}万円" if p and p['total_money'] >= 10000 else (f"{int(p['total_money']):,}円" if p else '')
 
     cards = f'''<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">{d['total_hours']:.1f}h</div>{change(d['total_hours'], p['total_hours'], suffix='h') if p else ''}</div>
-  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">{d['avg_hours']:.1f}h</div>{change(d['avg_hours'], p['avg_hours'], suffix='h') if p else ''}</div>
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">{int(d['total_hours'])}h</div>{change(d['total_hours'], p['total_hours'], suffix='h') if p else ''}</div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">{int(d['avg_hours'])}h</div>{change(d['avg_hours'], p['avg_hours'], suffix='h') if p else ''}</div>
   <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">{d['submitters']}名</div><div class="kpi-sub">提出{d['total_submissions']}件</div></div>
   <div class="kpi-card"><div class="kpi-label">アクティブ傾向率</div><div class="kpi-value">{d['active_rate']}%</div>{change(d['active_rate'], p['active_rate'], fmt='pt') if p else ''}</div>
   <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">{money_display}</div><div class="kpi-sub">収益報告 {len(d['monetize'])}名 / 週報 {d['weekly_submitters']}名</div></div>
@@ -659,7 +659,7 @@ def build_top3_html(items, show_detail=True):
         medal = medals[i] if i < 3 else ''
         if isinstance(item, tuple) and len(item) >= 3:
             name, val, count = item[0], item[1], item[2]
-            detail = f'{val:.1f}h（平均 {val/count:.1f}h/日）' if show_detail else f'{count}回'
+            detail = f'{int(val)}h（平均 {int(val//count)}h/日）' if show_detail else f'{count}回'
         elif isinstance(item, tuple) and len(item) == 2:
             name, val = item
             detail = f'{val}回'
@@ -678,7 +678,7 @@ def build_report_view_html(data):
     member_kpi = data.get('member_kpi', {})
 
     # ========== a. 成果サマリーKPI ==========
-    money_display = f"{data['total_money']/10000:.1f}万円" if data['total_money'] >= 10000 else f"{data['total_money']:,}円"
+    money_display = f"{int(data['total_money']//10000)}万円" if data['total_money'] >= 10000 else f"{int(data['total_money']):,}円"
     reporters = len(data['monetize'])
     avg_money_display = f"{data['avg_money']:,}円" if data['avg_money'] else '0円'
 
@@ -804,7 +804,7 @@ def build_report_view_html(data):
   </div>
   <div class="member-kpi-row">
     <div class="member-kpi"><div class="value">{mon_display}</div><div class="label">収益</div></div>
-    <div class="member-kpi"><div class="value">{hours:.0f}h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">{int(hours)}h</div><div class="label">稼働時間</div></div>
     <div class="member-kpi"><div class="value">{daily_count}件</div><div class="label">日報提出</div></div>
     <div class="member-kpi"><div class="value">{fb_count}回</div><div class="label">FB参加</div></div>
   </div>'''
@@ -939,7 +939,7 @@ def build_html_report(data, prev_data, weeks, current_idx):
     section5 = build_section_html(5, 'マネタイズフェーズ分析（週報ベース）', s5_body, plan)
 
     # ⑥ マネタイズ成果
-    money_display = f"{data['total_money']/10000:.1f}万円" if data['total_money'] >= 10000 else f"{data['total_money']:,}円"
+    money_display = f"{int(data['total_money']//10000)}万円" if data['total_money'] >= 10000 else f"{int(data['total_money']):,}円"
     s6_body = f'''<div style="display:flex;gap:16px;margin-bottom:16px;">
   <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
     <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
@@ -1097,17 +1097,17 @@ def build_slack_text(data):
     plan = d['plan_type']
     start = d['start_date']
     end = d['end_date']
-    money_display = f"約{d['total_money']/10000:.1f}万円" if d['total_money'] >= 10000 else f"{d['total_money']:,}円"
+    money_display = f"約{int(d['total_money']//10000)}万円" if d['total_money'] >= 10000 else f"{int(d['total_money']):,}円"
 
     lines = [
         f"【{plan}】週次報告書 — 成功習慣行動率100％",
         f"集計期間：{start.strftime('%Y年%m月%d日')}〜{end.strftime('%m月%d日')}",
         "",
-        f"① 基本統計: 総稼働{d['total_hours']:.1f}h / 平均{d['avg_hours']:.1f}h / 提出者{d['submitters']}名（{d['total_submissions']}件）",
+        f"① 基本統計: 総稼働{int(d['total_hours'])}h / 平均{int(d['avg_hours'])}h / 提出者{d['submitters']}名（{d['total_submissions']}件）",
     ]
     if d['hours_ranking']:
         top = d['hours_ranking'][:3]
-        lines.append("  稼働TOP: " + " / ".join(f"{n}({h:.1f}h)" for n, h, _ in top))
+        lines.append("  稼働TOP: " + " / ".join(f"{n}({int(h)}h)" for n, h, _ in top))
 
     lines.append(f"② FB会: {d['fb_total']}件 / {d['fb_participants']}名参加")
     lines.append(f"③ 感情: アクティブ{d['active_rate']}% / 停滞{d['stagnant_rate']}%")
