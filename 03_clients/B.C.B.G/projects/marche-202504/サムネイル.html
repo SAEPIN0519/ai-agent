@@ -224,10 +224,19 @@
   .vendors-grid {
     position: relative;
     z-index: 3;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    padding: 0 52px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 40px;
+  }
+
+  .vendors-grid .vendor-card {
+    width: calc((100% - 36px) / 4);
+  }
+
+  .vendors-grid .vendor-card:nth-child(-n+3) {
+    width: calc((100% - 24px) / 3);
   }
 
   .vendor-card {
@@ -346,9 +355,85 @@
     font-weight: 400;
   }
 
+  /* === 桜の木 背景装飾 === */
+  .sakura-tree {
+    position: absolute;
+    top: -40px;
+    right: -80px;
+    width: 620px;
+    height: 700px;
+    z-index: 1;
+    opacity: 0.35;
+    filter: blur(0.5px);
+  }
+
+  .sakura-tree-left {
+    position: absolute;
+    top: -40px;
+    left: -80px;
+    width: 550px;
+    height: 650px;
+    z-index: 1;
+    opacity: 0.3;
+    filter: blur(0.5px);
+  }
+
+  /* === 桜道 + 子どもシルエット === */
+  .sakura-road {
+    position: absolute;
+    bottom: 44px;
+    left: 0;
+    right: 0;
+    height: 220px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .children-run {
+    position: absolute;
+    bottom: 44px;
+    left: 0;
+    right: 0;
+    height: 180px;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* グロウエフェクト（光の粒） */
+  .glow-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .glow-dot {
+    position: absolute;
+    border-radius: 50%;
+    animation: glow-pulse ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.4); }
+  }
+
+  .g1  { width: 8px; height: 8px; top: 8%; left: 12%; background: radial-gradient(circle, #fcc4ca, transparent 70%); animation-duration: 3s; animation-delay: 0s; }
+  .g2  { width: 12px; height: 12px; top: 15%; right: 18%; background: radial-gradient(circle, #d4a0d0, transparent 70%); animation-duration: 4s; animation-delay: 1s; }
+  .g3  { width: 6px; height: 6px; top: 25%; left: 35%; background: radial-gradient(circle, #f4b0b8, transparent 70%); animation-duration: 3.5s; animation-delay: 0.5s; }
+  .g4  { width: 14px; height: 14px; top: 5%; right: 35%; background: radial-gradient(circle, #fde6e3, transparent 60%); animation-duration: 5s; animation-delay: 2s; }
+  .g5  { width: 10px; height: 10px; top: 32%; right: 8%; background: radial-gradient(circle, #e8a0c0, transparent 70%); animation-duration: 4.5s; animation-delay: 1.5s; }
+  .g6  { width: 7px; height: 7px; top: 18%; left: 55%; background: radial-gradient(circle, #fcc4ca, transparent 70%); animation-duration: 3.8s; animation-delay: 0.8s; }
+  .g7  { width: 16px; height: 16px; top: 10%; left: 75%; background: radial-gradient(circle, rgba(179,154,208,0.5), transparent 60%); animation-duration: 6s; animation-delay: 3s; }
+  .g8  { width: 5px; height: 5px; top: 40%; left: 8%; background: radial-gradient(circle, #f4b0b8, transparent 70%); animation-duration: 3.2s; animation-delay: 2.5s; }
+
   @media print {
     body { background: none; }
     .petal { display: none; }
+    .sakura-tree, .sakura-tree-left, .glow-particles { display: none; }
   }
 </style>
 </head>
@@ -368,8 +453,156 @@
   <div class="petal p9"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#d4a0d0"/></svg></div>
   <div class="petal p10"><svg viewBox="0 0 20 20"><path d="M10 0 C13 5, 18 8, 10 20 C2 8, 7 5, 10 0Z" fill="#fcc4ca"/></svg></div>
 
+  <!-- 桜の木（右上） -->
+  <svg class="sakura-tree" viewBox="0 0 600 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bloom1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f69a91" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#e8a0c0" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#d4a0d0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bloom2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fcc4ca" stop-opacity="0.85"/>
+        <stop offset="40%" stop-color="#f4b0b8" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#b39ad0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bloom3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff0ee" stop-opacity="0.95"/>
+        <stop offset="30%" stop-color="#fcc4ca" stop-opacity="0.7"/>
+        <stop offset="70%" stop-color="#e8a0c0" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#d4a0d0" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="sakura-glow">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+      <filter id="soft-glow">
+        <feGaussianBlur stdDeviation="15"/>
+      </filter>
+    </defs>
+    <!-- 幹 -->
+    <path d="M320 700 Q310 600 300 520 Q285 440 270 380 Q260 340 280 300 Q300 260 290 220 Q280 180 300 140" stroke="#8B6B5B" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M290 380 Q240 340 200 310 Q160 280 130 270" stroke="#8B6B5B" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.5"/>
+    <path d="M280 300 Q330 260 370 240 Q410 220 440 230" stroke="#8B6B5B" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.5"/>
+    <path d="M300 220 Q260 200 230 170 Q200 140 180 130" stroke="#8B6B5B" stroke-width="7" fill="none" stroke-linecap="round" opacity="0.45"/>
+    <path d="M300 180 Q340 150 380 130 Q420 110 450 120" stroke="#8B6B5B" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <!-- 花の塊（大きな丸いブルーム） -->
+    <circle cx="130" cy="250" r="90" fill="url(#bloom1)" filter="url(#sakura-glow)"/>
+    <circle cx="280" cy="140" r="110" fill="url(#bloom2)" filter="url(#sakura-glow)"/>
+    <circle cx="440" cy="200" r="85" fill="url(#bloom1)" filter="url(#sakura-glow)"/>
+    <circle cx="200" cy="160" r="75" fill="url(#bloom3)" filter="url(#sakura-glow)"/>
+    <circle cx="370" cy="110" r="95" fill="url(#bloom2)" filter="url(#sakura-glow)"/>
+    <circle cx="180" cy="310" r="60" fill="url(#bloom3)" filter="url(#sakura-glow)"/>
+    <circle cx="320" cy="260" r="55" fill="url(#bloom1)" filter="url(#sakura-glow)"/>
+    <circle cx="470" cy="140" r="65" fill="url(#bloom3)" filter="url(#sakura-glow)"/>
+    <circle cx="250" cy="80" r="70" fill="url(#bloom1)" filter="url(#sakura-glow)"/>
+    <circle cx="400" cy="60" r="80" fill="url(#bloom2)" filter="url(#sakura-glow)"/>
+    <!-- 光のハイライト -->
+    <circle cx="280" cy="130" r="40" fill="white" opacity="0.15" filter="url(#soft-glow)"/>
+    <circle cx="370" cy="100" r="30" fill="white" opacity="0.12" filter="url(#soft-glow)"/>
+    <circle cx="200" cy="180" r="25" fill="white" opacity="0.1" filter="url(#soft-glow)"/>
+  </svg>
+
+  <!-- 桜の木（左上） -->
+  <svg class="sakura-tree-left" viewBox="0 0 600 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bloom1b" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f69a91" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#e8a0c0" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#d4a0d0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bloom2b" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fcc4ca" stop-opacity="0.85"/>
+        <stop offset="40%" stop-color="#f4b0b8" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#b39ad0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bloom3b" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff0ee" stop-opacity="0.95"/>
+        <stop offset="30%" stop-color="#fcc4ca" stop-opacity="0.7"/>
+        <stop offset="70%" stop-color="#e8a0c0" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#d4a0d0" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="sakura-glow-b"><feGaussianBlur stdDeviation="8" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+    </defs>
+    <path d="M280 700 Q275 580 270 480 Q260 400 250 350 Q240 310 260 270 Q280 230 270 190 Q260 150 280 110" stroke="#8B6B5B" stroke-width="16" fill="none" stroke-linecap="round" opacity="0.55"/>
+    <path d="M260 350 Q210 310 170 290 Q140 275 110 270" stroke="#8B6B5B" stroke-width="9" fill="none" stroke-linecap="round" opacity="0.45"/>
+    <path d="M260 270 Q310 240 350 220 Q380 210 400 215" stroke="#8B6B5B" stroke-width="7" fill="none" stroke-linecap="round" opacity="0.45"/>
+    <path d="M270 190 Q230 160 200 140 Q170 120 150 115" stroke="#8B6B5B" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="110" cy="250" r="80" fill="url(#bloom1b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="260" cy="120" r="100" fill="url(#bloom2b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="400" cy="190" r="70" fill="url(#bloom1b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="180" cy="140" r="70" fill="url(#bloom3b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="340" cy="100" r="80" fill="url(#bloom2b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="150" cy="290" r="55" fill="url(#bloom3b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="300" cy="230" r="50" fill="url(#bloom1b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="220" cy="70" r="65" fill="url(#bloom2b)" filter="url(#sakura-glow-b)"/>
+    <circle cx="260" cy="120" r="35" fill="white" opacity="0.12" filter="url(#sakura-glow-b)"/>
+  </svg>
+
+  <!-- 桜道（パース付きの小道） -->
+  <svg class="sakura-road" viewBox="0 0 1080 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="road-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="transparent"/>
+        <stop offset="30%" stop-color="#f8e8e0" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#eeddd5" stop-opacity="0.5"/>
+      </linearGradient>
+      <radialGradient id="road-bloom" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fcc4ca" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#fcc4ca" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- 奥に続く道 -->
+    <path d="M380 0 Q420 50 440 100 Q460 140 480 180 Q490 200 500 220 L580 220 Q570 200 560 180 Q540 140 520 100 Q500 50 540 0 Z" fill="#e8d5cc" opacity="0.35"/>
+    <path d="M380 0 Q420 50 440 100 Q460 140 480 180 Q490 200 500 220" stroke="#d4b8a8" stroke-width="1" fill="none" opacity="0.3"/>
+    <path d="M540 0 Q500 50 520 100 Q540 140 560 180 Q570 200 580 220" stroke="#d4b8a8" stroke-width="1" fill="none" opacity="0.3"/>
+    <!-- 道沿いの桜の花びら散り -->
+    <circle cx="400" cy="30" r="12" fill="url(#road-bloom)"/>
+    <circle cx="530" cy="25" r="10" fill="url(#road-bloom)"/>
+    <circle cx="450" cy="80" r="14" fill="url(#road-bloom)"/>
+    <circle cx="520" cy="90" r="11" fill="url(#road-bloom)"/>
+    <circle cx="470" cy="140" r="16" fill="url(#road-bloom)"/>
+    <circle cx="550" cy="150" r="13" fill="url(#road-bloom)"/>
+    <circle cx="490" cy="190" r="18" fill="url(#road-bloom)"/>
+    <circle cx="350" cy="60" r="8" fill="url(#road-bloom)"/>
+    <circle cx="560" cy="50" r="9" fill="url(#road-bloom)"/>
+  </svg>
+
+  <!-- 子どもたちのシルエット（楽しそうに走る） -->
+  <svg class="children-run" viewBox="0 0 1080 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 子ども1: 両手を広げて走る女の子 -->
+    <g transform="translate(380, 60) scale(0.55)" opacity="0.2">
+      <circle cx="25" cy="8" r="10" fill="#8B6B5B"/>
+      <path d="M25 18 L25 50 M25 30 L5 20 M25 30 L48 22 M25 50 L10 75 M25 50 L40 75" stroke="#8B6B5B" stroke-width="5" stroke-linecap="round"/>
+      <!-- スカートの三角 -->
+      <path d="M18 40 L25 50 L32 40 Z" fill="#8B6B5B"/>
+    </g>
+    <!-- 子ども2: 手をつないで走る男の子 -->
+    <g transform="translate(440, 50) scale(0.6)" opacity="0.22">
+      <circle cx="25" cy="8" r="9" fill="#8B6B5B"/>
+      <path d="M25 17 L25 48 M25 28 L8 18 M25 28 L42 20 M25 48 L12 72 M25 48 L38 72" stroke="#8B6B5B" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <!-- 子ども3: 小さい子（前を向いて腕を振る） -->
+    <g transform="translate(510, 65) scale(0.45)" opacity="0.18">
+      <circle cx="25" cy="8" r="9" fill="#8B6B5B"/>
+      <path d="M25 17 L25 45 M25 26 L10 38 M25 26 L45 15 M25 45 L13 68 M25 45 L37 68" stroke="#8B6B5B" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <!-- 光の粒パーティクル -->
+  <div class="glow-particles">
+    <div class="glow-dot g1"></div>
+    <div class="glow-dot g2"></div>
+    <div class="glow-dot g3"></div>
+    <div class="glow-dot g4"></div>
+    <div class="glow-dot g5"></div>
+    <div class="glow-dot g6"></div>
+    <div class="glow-dot g7"></div>
+    <div class="glow-dot g8"></div>
+  </div>
+
   <!-- ヘッダー -->
-  <p class="header-catch">Food / Beauty / Health</p>
+  <p class="header-catch">Food / Beauty / Health / Art</p>
 
   <!-- メインタイトル -->
   <div class="main-title-area">
@@ -411,10 +644,10 @@
 
     <div class="vendor-card">
       <div class="vendor-photo mask-round">
-        <img src="images/midori3.jpeg" alt="みどり">
+        <img src="images/midori2.jpeg" alt="みどり">
       </div>
       <p class="vendor-label">和菓子加納みどり</p>
-      <p class="vendor-sub">いちご大福・桜餅</p>
+      <p class="vendor-sub">桜餅・いちご大福</p>
     </div>
 
     <div class="vendor-card">
@@ -447,6 +680,14 @@
       </div>
       <p class="vendor-label">BODY MAKE GYM START</p>
       <p class="vendor-sub">ラジオ波 x リンパ 20分 2,000円</p>
+    </div>
+
+    <div class="vendor-card">
+      <div class="vendor-photo mask-round">
+        <img src="images/パステルアート.jpg" alt="atelier spica">
+      </div>
+      <p class="vendor-label">atelier spica</p>
+      <p class="vendor-sub">パステルアート体験</p>
     </div>
   </div>
 
