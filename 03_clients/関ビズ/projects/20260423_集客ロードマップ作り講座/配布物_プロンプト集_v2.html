@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集客プラン作成講座 — Feloプロンプト集</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    color: #333;
+    line-height: 1.7;
+    font-size: 16px;
+    background: #f5f5f5;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: linear-gradient(135deg, #FF5757, #8C52FF);
+    color: #fff;
+    padding: 24px 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .header p {
+    font-size: 14px;
+    margin-top: 8px;
+    opacity: 0.9;
+  }
+
+  /* 使い方ガイド */
+  .guide {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .guide h2 {
+    font-size: 17px;
+    color: #A51E6D;
+    margin-bottom: 12px;
+  }
+  .guide-list {
+    list-style: none;
+    font-size: 15px;
+  }
+  .guide-list li {
+    padding: 6px 0;
+    padding-left: 28px;
+    position: relative;
+  }
+  .guide-list li::before {
+    content: attr(data-num);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    background: #A51E6D;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* ステップカード */
+  .step-card {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .step-header {
+    padding: 16px 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .step-header.step1 { background: #A51E6D; }
+  .step-header.step2 { background: #B74B8A; }
+  .step-header.step3 { background: #039578; }
+  .step-header.bonus { background: #8C52FF; }
+  .step-num {
+    font-size: 28px;
+    font-weight: 700;
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .step-info h3 {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .step-info p {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+  .step-body {
+    padding: 16px 20px;
+  }
+
+  /* 入力エリア（書き換え部分） */
+  .input-area {
+    background: #FFF8E1;
+    border: 2px solid #FFA000;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .input-area-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #E65100;
+    margin-bottom: 10px;
+  }
+  .input-field {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .input-field .fill {
+    color: #E65100;
+    font-weight: 700;
+    background: #FFF3E0;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border-bottom: 2px solid #E65100;
+  }
+  .input-field .example {
+    color: #999;
+    font-size: 13px;
+  }
+
+  /* プロンプトエリア（指示部分） */
+  .prompt-area {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .prompt-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  .prompt-text {
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  /* コピーボタン */
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: #A51E6D;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .copy-btn:active {
+    background: #8a1a5c;
+  }
+  .copy-btn.copied {
+    background: #039578;
+  }
+  .copy-btn.step3-btn { background: #039578; }
+  .copy-btn.step3-btn:active { background: #027a62; }
+  .copy-btn.step3-btn.copied { background: #026b56; }
+  .copy-btn.bonus-btn { background: #8C52FF; }
+  .copy-btn.bonus-btn:active { background: #7a45e0; }
+  .copy-btn.bonus-btn.copied { background: #039578; }
+
+  /* 出力イメージ */
+  .output-preview {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .output-preview-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 8px;
+  }
+  .output-preview-content {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    border: 1px dashed #bfdbfe;
+  }
+  .output-preview-content .highlight {
+    color: #A51E6D;
+    font-weight: 700;
+  }
+
+  /* ヒント */
+  .tip {
+    background: #E6F4F2;
+    border-left: 4px solid #039578;
+    padding: 12px 14px;
+    margin-top: 12px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .tip strong { color: #039578; }
+
+  /* 注意 */
+  .note {
+    background: #FFF8E1;
+    border-left: 4px solid #FFA000;
+    padding: 12px 14px;
+    margin-top: 12px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .note strong { color: #E65100; }
+
+  /* ステップ間の矢印 */
+  .step-arrow {
+    text-align: center;
+    font-size: 24px;
+    color: #A51E6D;
+    margin: -8px 0;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 13px;
+    color: #999;
+    padding: 20px 0 40px;
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 480px) {
+    .container { padding: 12px; }
+    .header { padding: 20px 16px; }
+    .header h1 { font-size: 20px; }
+    .step-body { padding: 14px 16px; }
+    .input-area { padding: 14px; }
+    .prompt-area { padding: 14px; }
+    .prompt-text { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <h1>集客プラン作成講座<br>Feloプロンプト集</h1>
+    <p>スマホでコピーして、Feloに貼り付けるだけ！</p>
+  </div>
+
+  <!-- 使い方ガイド -->
+  <div class="guide">
+    <h2>使い方</h2>
+    <ul class="guide-list">
+      <li data-num="1">黄色い枠の<strong>「書き換え部分」だけ</strong>自分のお店の情報に変える</li>
+      <li data-num="2"><strong>「まるごとコピー」</strong>ボタンをタップ</li>
+      <li data-num="3">Feloに貼り付けて送信！</li>
+    </ul>
+    <div class="note" style="margin-top: 12px;">
+      <strong>ステップ1 → 2 → 3 は同じチャット画面のまま</strong>続けてください。前の回答をAIが覚えているので、どんどん精度が上がります！
+    </div>
+  </div>
+
+  <!-- ===== ステップ1 ===== -->
+  <div class="step-card">
+    <div class="step-header step1">
+      <div class="step-num">01</div>
+      <div class="step-info">
+        <h3>お客様の「1日」を見える化する</h3>
+        <p>理想のお客様の生活パターンと集客の改善点を分析</p>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="input-area">
+        <div class="input-area-label">&#9997; ここだけ書き換えてください</div>
+        <div class="input-field" id="input1">【私のお店の情報】
+・業種：<span class="fill">〇〇</span> <span class="example">（例：パン屋、美容室、整体院）</span>
+・場所：<span class="fill">岐阜県〇〇市</span> <span class="example">（例：関市〇〇町周辺）</span>
+・理想のお客様：<span class="fill">〇〇</span> <span class="example">（例：30代共働きの女性）</span>
+・そのお客様の悩み：<span class="fill">〇〇</span> <span class="example">（例：夕食の準備が大変）</span>
+
+【今やっている集客】
+・使っているSNS：<span class="fill">〇〇</span> <span class="example">（例：Instagram、LINE公式、なし）</span>
+・投稿の頻度：<span class="fill">〇〇</span> <span class="example">（例：週1回、ほぼ放置）</span>
+・発信している内容：<span class="fill">〇〇</span> <span class="example">（例：新メニューの写真、日替わりランチ）</span>
+・SNS以外の集客：<span class="fill">〇〇</span> <span class="example">（例：チラシ、口コミ、看板）</span></div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-label">&#128301; 指示（このまま使えます）</div>
+        <div class="prompt-text" id="prompt1">【指示】
+あなたは地方の小規模店舗に特化した消費者行動の専門家です。
+上記の店舗情報をもとに、「理想のお客様」の1日と今の集客の改善点を分析してください。
+
+まず、最も重要な発見を冒頭3行にまとめ、そのあと以下を出力してください。
+・理想のお客様の1日のスケジュール（朝・昼・夕・夜の行動と気分）
+・スマホを見る「隙間時間」はいつか
+・私のお店のことを「思い出す」可能性が高いタイミング
+・今の集客方法への辛口診断 ＋ 改善アイデア
+・おすすめハッシュタグ10個 ＋ 投稿ベスト時間帯
+・同じ業種で集客に成功している実例</div>
+      </div>
+
+      <button class="copy-btn" onclick="copyStep(1)">まるごとコピー</button>
+
+      <div class="output-preview">
+        <div class="output-preview-label">こんな結果が出ます</div>
+        <div class="output-preview-content">
+          <span class="highlight">【最も重要な発見】</span><br>
+          あなたのターゲットである30代共働き女性は、<span class="highlight">通勤中の8:00-8:30</span>と<span class="highlight">子供の寝かしつけ後21:30</span>にスマホを見ています...<br><br>
+          <span class="highlight">■ 1日のスケジュール</span><br>
+          朝 6:30 起床 → 子供の準備で慌ただしい...<br>
+          <span class="highlight">■ おすすめハッシュタグ</span><br>
+          #岐阜パン屋 #関市グルメ #朝活パン ...
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>回答が出たら：</strong>「隙間時間」をメモ → ハッシュタグで使えそうなものにチェック！
+      </div>
+    </div>
+  </div>
+
+  <div class="step-arrow">&#9660;</div>
+
+  <!-- ===== ステップ2 ===== -->
+  <div class="step-card">
+    <div class="step-header step2">
+      <div class="step-num">02</div>
+      <div class="step-info">
+        <h3>「知る→気になる→行ってみる」の流れ</h3>
+        <p>お客様の心の動きを4段階で分析</p>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="tip" style="margin-top: 0; margin-bottom: 12px;">
+        <strong>前の回答を引き継ぐので、お店の情報は入力不要です！</strong>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-label">&#128301; 指示（そのままコピー）</div>
+        <div class="prompt-text" id="prompt2">【指示】
+先ほどの回答を踏まえて、ターゲットが私のお店を「知る」→「気になる」→「行ってみよう」と思うまでの心の動きを分析してください。
+
+まず、重要な発見を冒頭3行でまとめ、その後、以下の4段階ごとに「お客様の気持ち / 届けるべき情報 / 最適な媒体」を箇条書き（スマホで見やすいレイアウト）で出力してください。
+
+・知る段階
+・気になる段階
+・比べる・迷う段階
+・行ってみる段階
+
+最後に、来店を迷っているお客様の背中を押す「最後の一言」を3パターン提案してください。</div>
+      </div>
+
+      <button class="copy-btn" onclick="copyStep(2)">まるごとコピー</button>
+
+      <div class="output-preview">
+        <div class="output-preview-label">こんな結果が出ます</div>
+        <div class="output-preview-content">
+          <span class="highlight">■ 知る段階</span><br>
+          気持ち：「あ、こんなお店あるんだ」<br>
+          届ける情報：お店の雰囲気が伝わる写真<br>
+          最適な媒体：Instagram リール...<br><br>
+          <span class="highlight">■ 最後の一言（例）</span><br>
+          「初めての方限定・お試しセットあります」...
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>回答が出たら：</strong>「最適な媒体」をメモ → 「最後の一言」で一番しっくり来るものに丸！
+      </div>
+    </div>
+  </div>
+
+  <div class="step-arrow">&#9660;</div>
+
+  <!-- ===== ステップ3 ===== -->
+  <div class="step-card">
+    <div class="step-header step3">
+      <div class="step-num">03</div>
+      <div class="step-info">
+        <h3>明日からできるアクションプラン</h3>
+        <p>広告費0円・スマホ1台でできる施策を提案</p>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="input-area">
+        <div class="input-area-label">&#9997; ここだけ書き換えてください</div>
+        <div class="input-field" id="input3">【私の一番の悩み】
+・<span class="fill">〇〇</span> <span class="example">（例：平日の午後にお客さんが来ない、新規が少ない）</span></div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-label">&#128301; 指示（このまま使えます）</div>
+        <div class="prompt-text" id="prompt3">【指示】
+これまでの分析を踏まえて、私の悩みを解決する「広告費0円で明日からすぐ実行できる集客アクション」を提案してください。
+
+条件：お金をかけない ／ 1人でできる ／ ITが苦手でもスマホ1台でできる
+
+まず最も効果が高いアクションを冒頭3行にまとめ、そのあと「ネット施策」と「リアル（店頭・対面）施策」に分けて、それぞれ以下を提案してください。
+
+・①明日やること（具体的な3ステップ）
+・②1週間以内にやること
+・③1ヶ月以内にやること
+
+最後に3ヶ月後のビフォー・アフターを見せてください。</div>
+      </div>
+
+      <button class="copy-btn step3-btn" onclick="copyStep(3)">まるごとコピー</button>
+
+      <div class="output-preview">
+        <div class="output-preview-label">こんな結果が出ます</div>
+        <div class="output-preview-content">
+          <span class="highlight">■ ネット施策</span><br>
+          ①明日やること：Instagramのプロフィールを書き直す<br>
+          → Step1: 業種＋地域を入れる → Step2: ...<br><br>
+          <span class="highlight">■ リアル施策</span><br>
+          ①明日やること：レジ横にLINE登録POPを置く...<br><br>
+          <span class="highlight">■ 3ヶ月後のビフォー・アフター</span><br>
+          Before：月の新規客 5人 → After：月の新規客 15人...
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>回答が出たら：</strong>ネット・リアル各3つをアクションシートに記入 → 「明日やること」に★をつける！
+      </div>
+    </div>
+  </div>
+
+  <div class="step-arrow">&#9660;</div>
+
+  <!-- ===== ボーナス ステップ4 ===== -->
+  <div class="step-card">
+    <div class="step-header bonus">
+      <div class="step-num">+</div>
+      <div class="step-info">
+        <h3>【ボーナス】優先順位を整理する</h3>
+        <p>アイデアが多くて迷ったら使ってください</p>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="input-area">
+        <div class="input-area-label">&#9997; ここだけ書き換えてください</div>
+        <div class="input-field" id="input4">【私がいま使える時間とスキル】
+・1日に使える時間：<span class="fill">〇〇</span>分 <span class="example">（例：30分）</span>
+・ITスキル：<span class="fill">〇〇</span> <span class="example">（例：LINEとInstagramは使える、パソコンは苦手）</span>
+
+【出てきたアイデア】★Feloの回答から気になったものをコピペ
+・<span class="fill">〇〇</span>
+・<span class="fill">〇〇</span>
+・<span class="fill">〇〇</span></div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-label">&#128301; 指示（このまま使えます）</div>
+        <div class="prompt-text" id="prompt4">【指示】
+あなたは店舗経営のコーチです。
+上記の条件に合わせて、どのアイデアから手をつけるべきか優先順位をつけてください。
+
+スマホで見やすいように、各アイデアに対して「優先度・理由・所要時間・効果が出る目安」を箇条書きで教えてください。
+
+そのうえで「最初の1週間の月〜日のスケジュール」を作成してください。</div>
+      </div>
+
+      <button class="copy-btn bonus-btn" onclick="copyStep(4)">まるごとコピー</button>
+
+      <div class="tip">
+        <strong>回答が出たら：</strong>1週間スケジュールをスマホで写真に撮っておく → 帰ったらすぐ実行！
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    関市ビジネスサポートセンター（Seki-Biz）<br>
+    集客プラン作成講座 ｜ 2026.4.21
+  </div>
+
+</div>
+
+<script>
+// コピー機能：入力エリア＋指示エリアをまとめてコピー
+function copyStep(step) {
+  let text = '';
+
+  if (step === 1) {
+    text = getPlainText('input1') + '\n\n' + getPlainText('prompt1');
+  } else if (step === 2) {
+    text = getPlainText('prompt2');
+  } else if (step === 3) {
+    text = getPlainText('input3') + '\n\n' + getPlainText('prompt3');
+  } else if (step === 4) {
+    text = getPlainText('input4') + '\n\n' + getPlainText('prompt4');
+  }
+
+  // クリップボードにコピー
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopied(step);
+    }).catch(() => {
+      fallbackCopy(text, step);
+    });
+  } else {
+    fallbackCopy(text, step);
+  }
+}
+
+// テキスト抽出（HTML要素からプレーンテキストに変換）
+function getPlainText(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+
+  // cloneして例文(example)を除去
+  const clone = el.cloneNode(true);
+  const examples = clone.querySelectorAll('.example');
+  examples.forEach(ex => ex.remove());
+
+  // fill要素のテキストをそのまま取得（色情報は含まない）
+  return clone.innerText || clone.textContent;
+}
+
+// フォールバックコピー（古いブラウザ対応）
+function fallbackCopy(text, step) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showCopied(step);
+  } catch (e) {
+    alert('コピーできませんでした。長押しして手動でコピーしてください。');
+  }
+  document.body.removeChild(ta);
+}
+
+// コピー完了表示
+function showCopied(step) {
+  const btns = document.querySelectorAll('.copy-btn');
+  const btn = btns[step - 1];
+  const original = btn.innerHTML;
+  btn.innerHTML = '&#10003; コピーしました！Feloに貼り付けてください';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = original;
+    btn.classList.remove('copied');
+  }, 2500);
+}
+</script>
+
+</body>
+</html>

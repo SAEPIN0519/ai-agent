@@ -106,6 +106,48 @@ def collect_siftai_tasks():
     return tasks
 
 
+def collect_bcbg_tasks():
+    """B.C.B.Gのタスク管理MDから未完了タスクを収集"""
+    tasks = []
+
+    # projects配下の全プロジェクトからタスク管理.mdを探す
+    bcbg_dir = PROJECT_ROOT / "03_clients" / "B.C.B.G" / "projects"
+    if not bcbg_dir.exists():
+        return tasks
+
+    for project_dir in bcbg_dir.iterdir():
+        if not project_dir.is_dir():
+            continue
+
+        task_file = project_dir / "タスク管理.md"
+        if not task_file.exists():
+            continue
+
+        content = task_file.read_text(encoding="utf-8")
+        project_name = project_dir.name
+        current_category = "その他"
+
+        for line in content.split('\n'):
+            line = line.strip()
+            # カテゴリ（## 見出し）を取得
+            if line.startswith('## '):
+                current_category = line[3:].strip()
+                continue
+            # 未完了タスク（- [ ]）を取得
+            match = re.match(r'- \[ \]\s*(.+)', line)
+            if match:
+                tasks.append({
+                    "client": "B.C.B.G",
+                    "project": project_name,
+                    "category": current_category,
+                    "task": match.group(1).strip(),
+                    "deadline": "",
+                    "completed": False
+                })
+
+    return tasks
+
+
 def collect_journal_tasks():
     """最新ジャーナルの申し送り事項を収集"""
     tasks = []
@@ -253,10 +295,12 @@ def main():
     all_tasks = []
     all_tasks.extend(collect_sekibiz_tasks())
     all_tasks.extend(collect_siftai_tasks())
+    all_tasks.extend(collect_bcbg_tasks())
     all_tasks.extend(collect_journal_tasks())
 
     print(f"  関ビズ: {len([t for t in all_tasks if t['client'] == '関ビズ'])}件")
     print(f"  SIFTAI: {len([t for t in all_tasks if t['client'] == 'SIFTAI'])}件")
+    print(f"  B.C.B.G: {len([t for t in all_tasks if t['client'] == 'B.C.B.G'])}件")
     print(f"  申し送り: {len([t for t in all_tasks if t['client'] == '全体'])}件")
     print(f"  合計: {len(all_tasks)}件")
 
