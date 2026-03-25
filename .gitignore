@@ -17,6 +17,12 @@ venv/
 # 依存パッケージ（GitHubには上げない）
 node_modules/
 
+# 一時ファイル
+temp_chrome_profile/
+
+# Netlify
+.netlify/
+
 # OS
 .DS_Store
 Thumbs.db

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO 週次レポート — 2月23日〜3月1日</title>
+<style>
+:root {
+  --primary: #1e3a5f; --accent: #2b6cb0; --accent-light: #ebf4ff;
+  --success: #16a34a; --warning: #d97706; --danger: #dc2626;
+  --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+  --pro-color: #2b6cb0; --premium-color: #7c3aed;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif; background:var(--gray-100); color:var(--gray-800); line-height:1.7; }
+.header { color:#fff; padding:32px 40px 24px; }
+.header.pro { background:linear-gradient(135deg,#1e3a5f,#2b6cb0); }
+.header.premium { background:linear-gradient(135deg,#4c1d95,#7c3aed); }
+.header-inner { max-width:1100px; margin:0 auto; }
+.header h1 { font-size:26px; font-weight:700; }
+.header .subtitle { font-size:14px; opacity:0.85; margin-top:4px; }
+.nav-bar { background:#fff; border-bottom:1px solid var(--gray-200); position:sticky; top:0; z-index:10; }
+.nav-inner { max-width:1100px; margin:0 auto; display:flex; flex-wrap:wrap; }
+.plan-tabs { display:flex; border-right:1px solid var(--gray-200); }
+.plan-tab { padding:12px 20px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border-bottom:3px solid transparent; text-decoration:none; }
+.plan-tab:hover { color:var(--accent); }
+.plan-tab.active-pro { color:var(--pro-color); border-bottom-color:var(--pro-color); }
+.plan-tab.active-premium { color:var(--premium-color); border-bottom-color:var(--premium-color); }
+.view-tabs { display:flex; border-right:1px solid var(--gray-200); }
+.view-tab { padding:12px 20px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border:none; background:none; border-bottom:3px solid transparent; }
+.view-tab.active { color:#059669; border-bottom-color:#059669; }
+.month-tabs { display:flex; border-right:1px solid var(--gray-200); }
+.month-tab { padding:12px 20px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border-bottom:3px solid transparent; }
+.month-tab:hover { color:var(--accent); }
+.month-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.week-tabs { display:flex; flex:1; overflow-x:auto; }
+.week-tab { padding:12px 18px; font-size:13px; color:var(--gray-400); cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; text-decoration:none; }
+.week-tab:hover { color:var(--accent); }
+.week-tab.active { color:var(--accent); font-weight:600; border-bottom-color:var(--accent); }
+.week-tab.disabled { color:#cbd5e1; cursor:default; }
+.nav-top-btn { padding:12px 16px; font-size:12px; font-weight:700; color:var(--accent); cursor:pointer; border-left:1px solid var(--gray-200); white-space:nowrap; display:flex; align-items:center; }
+.nav-top-btn:hover { background:var(--accent-light); }
+.main { max-width:1100px; margin:0 auto; padding:28px 20px 60px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
+.kpi-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.kpi-label { font-size:12px; color:var(--gray-400); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.kpi-value { font-size:32px; font-weight:700; color:var(--primary); margin:4px 0; }
+.kpi-change { font-size:13px; font-weight:600; }
+.kpi-change.up { color:var(--success); }
+.kpi-change.down { color:var(--danger); }
+.kpi-sub { font-size:12px; color:var(--gray-400); margin-top:2px; }
+.section { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:24px; overflow:hidden; }
+.section-header { display:flex; align-items:center; gap:10px; padding:16px 24px; border-bottom:1px solid var(--gray-200); cursor:pointer; user-select:none; }
+.section-header:hover { background:var(--gray-50); }
+.section-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; background:var(--accent); color:#fff; border-radius:50%; font-size:13px; font-weight:700; flex-shrink:0; }
+.section-num.premium { background:var(--premium-color); }
+.section-title { font-size:16px; font-weight:700; color:var(--gray-800); flex:1; }
+.section-toggle { font-size:18px; color:var(--gray-400); transition:transform 0.2s; }
+.section.collapsed .section-toggle { transform:rotate(-90deg); }
+.section.collapsed .section-body { display:none; }
+.section-body { padding:20px 24px; }
+.top3 { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; }
+.top3-item { display:flex; align-items:center; gap:8px; background:var(--gray-50); border-radius:8px; padding:10px 16px; flex:1; min-width:200px; }
+.rank { font-size:20px; width:32px; text-align:center; }
+.top3-name { font-weight:700; font-size:14px; }
+.top3-detail { font-size:12px; color:var(--gray-600); }
+.sentiment-gauge { display:flex; height:36px; border-radius:8px; overflow:hidden; margin:16px 0 8px; }
+.sentiment-pos { background:linear-gradient(90deg,#22c55e,#4ade80); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+.sentiment-neg { background:linear-gradient(90deg,#f87171,#ef4444); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+.phase-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:12px 0; }
+.phase-card { border:1px solid var(--gray-200); border-radius:8px; padding:14px 16px; position:relative; }
+.phase-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:8px 0 0 8px; }
+.phase-card.p1::before { background:#3b82f6; } .phase-card.p2::before { background:#f59e0b; }
+.phase-card.p3::before { background:#8b5cf6; } .phase-card.p4::before { background:#22c55e; }
+.phase-card.p5::before { background:#ef4444; }
+.monetize-podium { display:flex; gap:12px; justify-content:center; align-items:flex-end; margin:20px 0; }
+.podium-item { text-align:center; padding:16px 20px; border-radius:10px; min-width:140px; }
+.podium-item.gold { background:linear-gradient(135deg,#fef3c7,#fde68a); order:1; }
+.podium-item.silver { background:linear-gradient(135deg,#f1f5f9,#e2e8f0); order:0; }
+.podium-item.bronze { background:linear-gradient(135deg,#fed7aa,#fdba74); order:2; }
+.podium-medal { font-size:28px; } .podium-name { font-weight:700; font-size:15px; margin:4px 0; }
+.podium-amount { font-size:20px; font-weight:800; color:var(--primary); }
+.voice-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0; }
+@media (max-width:768px) { .voice-grid { grid-template-columns:1fr; } }
+.voice-section-label { font-size:13px; font-weight:700; margin-bottom:8px; padding:4px 10px; border-radius:4px; display:inline-block; }
+.voice-section-label.pos { background:#dcfce7; color:#166534; }
+.voice-section-label.neg { background:#fef2f2; color:#991b1b; }
+.voice-card { border-left:3px solid var(--gray-300); padding:10px 14px; margin:8px 0; background:var(--gray-50); border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.voice-card.pos { border-left-color:var(--success); } .voice-card.neg { border-left-color:var(--danger); }
+.voice-name { font-weight:700; font-size:13px; margin-bottom:4px; }
+.proposal-list { margin:12px 0; }
+.proposal-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--gray-100); font-size:14px; }
+.proposal-icon { flex-shrink:0; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; margin-top:2px; }
+.proposal-icon.follow { background:#dbeafe; color:#2563eb; } .proposal-icon.improve { background:#fef3c7; color:#d97706; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+th { background:var(--primary); color:#fff; padding:10px 12px; text-align:left; font-weight:600; font-size:12px; white-space:nowrap; }
+th.premium-th { background:var(--premium-color); }
+td { padding:8px 12px; border-bottom:1px solid var(--gray-200); }
+tr:nth-child(even) td { background:var(--gray-50); } tr:hover td { background:var(--accent-light); }
+.zero { color:var(--danger); font-weight:600; } .low { color:var(--warning); }
+.alert { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:8px; margin:8px 0; font-size:13px; line-height:1.6; }
+.alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.alert.danger { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+.alert.warning { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+.day-chart { display:flex; align-items:flex-end; gap:8px; height:140px; margin:16px 0 8px; padding:0 20px; }
+.day-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.day-bar { width:100%; max-width:50px; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; font-size:12px; font-weight:700; color:#fff; }
+.day-bar.pro-bar { background:linear-gradient(180deg,#3b82f6,#2563eb); }
+.day-bar.premium-bar { background:linear-gradient(180deg,#a78bfa,#7c3aed); }
+.day-label { font-size:12px; color:var(--gray-600); font-weight:600; }
+.footer { text-align:center; padding:24px; color:var(--gray-400); font-size:12px; }
+.float-top { position:fixed; bottom:24px; right:24px; width:48px; height:48px; background:var(--accent); color:#fff; border:none; border-radius:50%; font-size:20px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none; align-items:center; justify-content:center; z-index:100; }
+.float-top:hover { transform:scale(1.1); background:var(--primary); }
+.no-data { text-align:center; padding:40px; color:var(--gray-400); font-size:15px; }
+/* 成果報告ビュー用CSS */
+.con-tab { padding:10px 16px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border:1px solid var(--gray-200); background:#fff; border-radius:8px 8px 0 0; }
+.con-tab.active { color:var(--accent); background:var(--accent-light); border-bottom-color:transparent; }
+.concierge-tabs { display:flex; gap:4px; margin-bottom:-1px; padding:0 24px; }
+.member-card { border:1px solid var(--gray-200); border-radius:12px; padding:24px; margin-bottom:20px; }
+.member-header h3 { font-size:18px; font-weight:700; }
+.member-meta { font-size:12px; color:var(--gray-400); margin-top:4px; }
+.member-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0; }
+.member-kpi { text-align:center; padding:12px; background:var(--gray-50); border-radius:8px; }
+.member-kpi .value { font-size:1.4rem; font-weight:800; color:var(--primary); }
+.member-kpi .label { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.member-achievements { margin-top:12px; }
+.member-achievements h4 { font-size:14px; font-weight:700; margin-bottom:8px; }
+.member-achievements ul { list-style:none; padding:0; }
+.member-achievements li { padding:6px 0; border-bottom:1px solid var(--gray-100); font-size:13px; line-height:1.6; }
+.member-achievements li:before { content:'\2022'; color:var(--accent); margin-right:8px; }
+.bar-chart-h { margin:12px 0; }
+.bar-row-h { display:flex; align-items:center; gap:10px; margin:6px 0; }
+.bar-label-h { width:100px; font-size:13px; text-align:right; flex-shrink:0; }
+.bar-track-h { flex:1; height:24px; background:var(--gray-100); border-radius:4px; overflow:hidden; }
+.bar-fill-h { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:12px; font-weight:600; color:#fff; }
+.bar-fill-pro { background:linear-gradient(90deg,#3b82f6,#2563eb); }
+.bar-fill-premium { background:linear-gradient(90deg,#a78bfa,#7c3aed); }
+@media print { .nav-bar { position:static; } .section.collapsed .section-body { display:block; } body { background:#fff; } }
+</style>
+</head>
+<body>
+<div class="header pro"><div class="header-inner">
+  <h1>PRO TEAM 週次レポート</h1>
+  <div class="subtitle">成功習慣行動率100% — 会員分析ダッシュボード</div>
+</div></div>
+<div class="nav-bar"><div class="nav-inner">
+  <div class="plan-tabs"><div class="plan-tab active-pro">PRO</div><a class="plan-tab" href="PREMIUM_2月23日-3月1日.html">PREMIUM</a></div><div class="view-tabs">
+  <button class="view-tab active" onclick="switchView('daily')">日報分析</button>
+  <button class="view-tab" onclick="switchView('report')">成果報告</button>
+</div><div class="month-tabs"><div class="month-tab active">2月</div><a class="month-tab" href="PRO_3月2日-3月8日.html" style="text-decoration:none;">3月</a></div><div class="week-tabs"><a class="week-tab" href="PRO_2月2日-2月8日.html" style="text-decoration:none;">W1: 2/2–2/8</a><a class="week-tab" href="PRO_2月9日-2月15日.html" style="text-decoration:none;">W2: 2/9–2/15</a><a class="week-tab" href="PRO_2月16日-2月22日.html" style="text-decoration:none;">W3: 2/16–2/22</a><div class="week-tab active">W4: 2/23–3/1</div></div>
+  <div class="nav-top-btn" onclick="scrollTo({top:0,behavior:'smooth'})" title="ページトップへ">&#9650; TOP</div>
+</div></div>
+<div class="main">
+  <div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
+  <strong style="font-size:18px;color:var(--gray-800);">2026年02月23日（月）〜 03月01日（日）</strong><br>
+  集計日: 2026-03-24 / 対象: PRO会員 48名
+</div>
+  <div id="view-daily">
+    <div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">179h</div><div class="kpi-change up">+5% (前週 170h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">14h</div><div class="kpi-change up">+5% (前週 14h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">12名</div><div class="kpi-sub">提出51件</div></div>
+  <div class="kpi-card"><div class="kpi-label">アクティブ傾向率</div><div class="kpi-value">80%</div><div class="kpi-change down">-20pt (前週 100%)</div></div>
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">0円</div><div class="kpi-sub">収益報告 0名 / 週報 7名</div></div>
+  <div class="kpi-card"><div class="kpi-label">非アクティブ</div><div class="kpi-value">32名</div><div class="kpi-change down">悪化 (前週 29名)</div><div class="kpi-sub">PRO全体 48名</div></div>
+</div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">矢三やよい</div><div class="top3-detail">36h（平均 5h/日）</div></div></div><div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">32h（平均 4h/日）</div></div></div><div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">池田勝典</div><div class="top3-detail">25h（平均 3h/日）</div></div></div></div><h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">甲村順子</div><div class="top3-detail">7回</div></div></div><div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">7回</div></div></div><div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">藤木智咲</div><div class="top3-detail">7回</div></div></div></div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="day-chart"><div class="day-col"><div class="day-bar pro-bar" style="height:58px;">7</div><div class="day-label">月</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:66px;">8</div><div class="day-label">火</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:58px;">7</div><div class="day-label">水</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:50px;">6</div><div class="day-label">木</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:58px;">7</div><div class="day-label">金</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:25px;">3</div><div class="day-label">土</div></div><div class="day-col"><div class="day-bar pro-bar" style="height:100px;">12</div><div class="day-label">日</div></div></div><div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 50件 / 参加者 14名</div><h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">7回</div></div></div><div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">池田勝典</div><div class="top3-detail">7回</div></div></div><div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">藤木智咲</div><div class="top3-detail">7回</div></div></div></div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="sentiment-gauge">
+  <div class="sentiment-pos" style="width:80%;">80%</div>
+  <div class="sentiment-neg" style="width:20%;">20%</div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
+  <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
+</div><div style="display:flex;gap:16px;margin-top:16px;">
+  <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+    <div style="font-size:11px;color:#94a3b8;font-weight:600;">前週</div>
+    <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+      <span style="color:#16a34a;font-weight:700;font-size:18px;">100%</span>
+      <span style="color:#94a3b8;font-size:14px;">/</span>
+      <span style="color:#dc2626;font-weight:700;font-size:18px;">0%</span>
+    </div>
+  </div>
+  <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+    <div style="font-size:11px;color:#94a3b8;font-weight:600;">今週</div>
+    <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
+      <span style="color:#16a34a;font-weight:700;font-size:18px;">80%</span>
+      <span style="color:#94a3b8;font-size:14px;">/</span>
+      <span style="color:#dc2626;font-weight:700;font-size:18px;">20%</span>
+    </div>
+  </div>
+  <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
+    <div style="font-size:11px;color:#94a3b8;font-weight:600;">変化</div>
+    <div style="color:#dc2626;font-weight:700;font-size:18px;margin-top:4px;">-20pt</div>
+  </div>
+</div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">5</span><span class="section-title">マネタイズフェーズ分析（週報ベース）</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="phase-grid"><div class="phase-card p1">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 1</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">1. 基礎学習・インプット段階</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">池田勝典</div>
+</div><div class="phase-card p2">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 2</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">3. 制作・構築・執筆段階</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">矢三やよい</div>
+</div><div class="phase-card p3">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">4. 出品・公開・営業段階（0→1挑戦中）</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">4名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">伊藤紘二, 藤木智咲, 甲村順子, 坂井俊章</div>
+</div><div class="phase-card p4">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">5. 収益発生・拡大段階（1→100挑戦中）</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">村上真樹子</div>
+</div></div><div style="font-size:13px;color:var(--gray-600);margin-top:8px;">週報提出者: 7名 / PRO基準48名（提出率 14%）</div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div style="display:flex;gap:16px;margin-bottom:16px;">
+  <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+    <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
+    <div style="font-size:22px;font-weight:800;color:var(--primary);">0円</div>
+  </div>
+  <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+    <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
+    <div style="font-size:22px;font-weight:800;color:var(--primary);">0円</div>
+  </div>
+</div><div class="no-data">今週の収益報告はありません</div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="voice-grid"><div><div class="voice-section-label pos">前進を支える声</div><div class="voice-card pos"><div class="voice-name">藤木智咲</div>違う事をやってみようと思い、LINEスタンプの販売をしてみました。ライティングの案件応募を毎日しながら、もっといろんな事を学びたいと思います。</div><div class="voice-card pos"><div class="voice-name">伊藤紘二</div>応募した案件のクライアントさんから連絡いただきました。次のステップに進めると嬉しいです。</div><div class="voice-card pos"><div class="voice-name">甲村順子</div>実践フィードバック会のアーカイブを視聴し、ライティング案件受注時の面談を成功させるためのポイントや成果に直結する動き方を学習しました。また、クラウドワークスでの案件応募やランサーズのプロフィール修正を通じて、自身のスキルをどう言語化してクライアントに訴求すべきか、実務的なアウトプットを行いました。</div><div class="voice-card pos"><div class="voice-name">藤木智咲</div>初めて43円いただけました。嬉しかったです。
+マンツーマンAIキャリアサポートの面談を受けました。私自身では考えてつかない進み方を教えていただき、学びの方法を明確にすることが出来ました。</div><div class="voice-card pos"><div class="voice-name">築山優希</div>新しい学びは特になし、動画編集の音声差し替え後の調整にとても時間がかかった</div></div><div><div class="voice-section-label neg">停滞を招く声</div><div class="voice-card neg"><div class="voice-name">池田勝典</div>クラウドワークス案件応募
+4件→1件テストへ
+
+フィードバック会アーカイブ視聴
+案件応募面談練習
+→文書記述力
+中黒の使い方の理解、日本語理解。
+
+テスト案件添削
+→面談対策として、プロ意識、意欲、姿勢の大切さを学びました。
+稼働時間確保のため、来月の予定を調整中。
+
+習慣振り返り
+システム1の意識...</div><div class="voice-card neg"><div class="voice-name">坂井俊章</div>・LLM（Gemini/GPT）によるアプリケーション開発の可能性
+実践フィードバック会のアーカイブを通じ、コードの知識が乏しくてもAIへの指示出し（プロンプト）次第で簡易的なゲームアプリが構築できることを学びました。実際に過去のゲームタイトルを模したプログラムを生成した際、その再現性の高さに驚くと...</div><div class="voice-card neg"><div class="voice-name">矢三やよい</div>案件の構成、文末がわからなかったのでクライアント様に直接聞いてみた。</div></div></div></div></div>
+    <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">9</span><span class="section-title">非アクティブPRO会員</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+  <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
+    <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（2月23日–3月1日）</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">32名</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">34%</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">18%</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">14%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+    </div>
+  </div><div style="background:var(--gray-50);border-radius:10px;padding:20px;">
+    <div style="font-size:13px;font-weight:700;color:var(--gray-400);margin-bottom:12px;">前週</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">29名</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">40%</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">22%</div></div>
+      <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">16%</div></div>
+    </div>
+  </div></div><div style="overflow-x:auto;"><table><thead><tr><th class="">会員名</th><th class="">今週日報</th><th class="">今週FB</th></tr></thead><tbody><tr><td>道下明和</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>中澤みどり</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>谷山真一</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>片寄孝康</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>山田真由美</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>小川有紀</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>溝口和範</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>関口大樹</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>西尾佳奈</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>西口勇生</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>池田佳史</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>清水秀明</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>杉田守</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>西田紀子</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>島田嵩</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>押久保欽一</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>須貝亮</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>船引純</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>野尻幸樹実</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>川西秀樹</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>岡松威宏</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>大池まどか</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>姥貝有子</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>松村翠</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>河又美智</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>田口旭晃</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>辰野早苗</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>土屋貴裕</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>吉岡寿治</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>中島有季子</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>中澤健治</td><td class="zero">0/7</td><td class="zero">0回</td></tr><tr><td>浜畑悦子</td><td class="zero">0/7</td><td class="zero">0回</td></tr></tbody></table></div></div></div>
+  </div>
+  <div id="view-report" style="display:none;">
+  <div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">0円</div></div>
+  <div class="kpi-card"><div class="kpi-label">収益報告者数</div><div class="kpi-value">0名</div><div class="kpi-sub">全48名中</div></div>
+  <div class="kpi-card"><div class="kpi-label">週報提出率</div><div class="kpi-value">14%</div><div class="kpi-sub">7名提出</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均収益額</div><div class="kpi-value">0円</div><div class="kpi-sub">報告者平均</div></div>
+</div>
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">R1</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="no-data">今週の収益報告はありません</div></div></div>
+  <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">R2</span><span class="section-title">フェーズ別分布（パイプライン）</span><span class="section-toggle">&#9660;</span>
+</div><div class="section-body"><div class="phase-grid"><div class="phase-card p1">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 1</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">1. 基礎学習・インプット段階</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">池田勝典</div>
+</div><div class="phase-card p2">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 2</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">3. 制作・構築・執筆段階</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">矢三やよい</div>
+</div><div class="phase-card p3">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">4. 出品・公開・営業段階（0→1挑戦中）</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">4名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">伊藤紘二, 藤木智咲, 甲村順子, 坂井俊章</div>
+</div><div class="phase-card p4">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div>
+  <div style="font-size:14px;font-weight:700;margin:2px 0;">5. 収益発生・拡大段階（1→100挑戦中）</div>
+  <div style="font-size:24px;font-weight:800;color:var(--primary);">1名</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">村上真樹子</div>
+</div></div><div style="font-size:13px;color:var(--gray-600);margin-top:8px;">週報提出者: 7名 / PRO基準48名（提出率 14%）</div></div></div>
+  <div class="section">
+<div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num ">R3</span>
+  <span class="section-title">コンシェルジュ別メンバー詳細</span>
+  <span class="section-toggle">&#9660;</span>
+</div>
+<div class="section-body" style="padding:0;">
+  <div class="concierge-tabs"><button class="con-tab active" onclick="switchConcierge('yasunaga')">安永チーム</button><button class="con-tab" onclick="switchConcierge('abe')">安部チーム</button><button class="con-tab" onclick="switchConcierge('unassigned')">未割当</button></div>
+  <div class="concierge-panel" id="con-yasunaga" style="display:block;padding:24px;"><h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">安永チーム（1名）</h3><div class="member-card">
+  <div class="member-header">
+    <h3>西尾佳奈</h3>
+    <div class="member-meta">ID: P00038 | コンシェルジュ: 安永</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div></div><div class="concierge-panel" id="con-abe" style="display:none;padding:24px;"><h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">安部チーム（2名）</h3><div class="member-card">
+  <div class="member-header">
+    <h3>坂井俊章</h3>
+    <div class="member-meta">ID: P00001 | コンシェルジュ: 安部友博</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">32h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">7件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">7回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>本日はWordPressの基本設定を完了しました。記事の執筆画面（ブロックエディタ）はまだ不慣れな部分もありますが、「note」に近い直感的な操作感で書けることがわかり、心理的なハードルが大きく下がりました。
+また、実践フィードバック会では</li><li>・未知の技術（クラウドコード）に対するワクワク感の再発見
+フィードバック会での振り返りを通じ、「クラウドコード（Cloud Code）」という新しい技術概念に触れました。自身の知らない技術を知ることで知的好奇心が刺激され、モチベーションの向</li><li>・WordPress記事制作の習慣化と出力スピードの向上
+3記事目の投稿を完了。回数を重ねるごとに構成案の作成から入稿までのワークフローが整理され、執筆のハードルが下がっていることを実感しました。
+
+・X（旧Twitter）運用の再定義と再</li><li>・GPT音声入力の実用性と、言語の壁を越えるAIのポテンシャル
+GPTの音声入力を初めて検証し、小声であっても正確にテキスト化される精度の高さを実感しました。また、アーカイブでのガンラクさんのお話にもあった通り、AIを活用すれば言語の壁は容</li><li>・AIを活用した「途切れない執筆サイクル」の確立
+2記事目を公開した後、手が止まることなくGPTと相談しながら3記事目の構成・下書きへとスムーズに移行できました。ゼロから構成を練る「生みの苦しみ」をAIにサポートしてもらうことで、モチベーシ</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>矢三やよい</h3>
+    <div class="member-meta">ID: P00015 | コンシェルジュ: 安部友博</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">36h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">7件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">6回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div></div><div class="concierge-panel" id="con-unassigned" style="display:none;padding:24px;"><h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">未割当（45名）</h3><div class="member-card">
+  <div class="member-header">
+    <h3>中島有季子</h3>
+    <div class="member-meta">ID: P00063 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>中澤みどり</h3>
+    <div class="member-meta">ID: P00006 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>中澤健治</h3>
+    <div class="member-meta">ID: P00064 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>伊藤紘二</h3>
+    <div class="member-meta">ID: P00009 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">10h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">4件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">4回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>ウェビナーとフィードバック会での学びをXにアウトプットしました。</li><li>応募した案件のクライアントさんから連絡いただきました。次のステップに進めると嬉しいです。</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>内藤友香子</h3>
+    <div class="member-meta">ID: P00014 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">2h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">1件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">2回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>吉岡寿治</h3>
+    <div class="member-meta">ID: P00062 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>吉田比奈</h3>
+    <div class="member-meta">ID: P00017 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">5h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">1件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>■ 本日の取り組み
+	•	note記事投稿（朝・夜 2件）
+	•	クラウドワークス美容系案件 7件応募
+	•	SEO型／体験談型の応募文作成・精緻化
+	•	テストライティング 1件納品
+	•	20:00〜リアルタイム面談ロープレに参加
+	•</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>土屋貴裕</h3>
+    <div class="member-meta">ID: P00061 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>大池まどか</h3>
+    <div class="member-meta">ID: P00054 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>姥貝有子</h3>
+    <div class="member-meta">ID: P00055 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>小川有紀</h3>
+    <div class="member-meta">ID: P00034 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>山田真由美</h3>
+    <div class="member-meta">ID: P00028 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>岡松威宏</h3>
+    <div class="member-meta">ID: P00053 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>島田嵩</h3>
+    <div class="member-meta">ID: P00045 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>島田英敏</h3>
+    <div class="member-meta">ID: P00011 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">4h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">2件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">1回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>PRO・Premium AIコンサル 案件獲得実践会（2026/2/9）
+アーカイブ動画の視聴とワークを実施。日報作成のGEMを作り、この日報作成に利用した。</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>川西秀樹</h3>
+    <div class="member-meta">ID: P00052 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>戸高富美代</h3>
+    <div class="member-meta">ID: P00042 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">1回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>押久保欽一</h3>
+    <div class="member-meta">ID: P00047 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>杉田守</h3>
+    <div class="member-meta">ID: P00043 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>村上真樹子</h3>
+    <div class="member-meta">ID: P00004 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">7h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">3件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">4回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>松村翠</h3>
+    <div class="member-meta">ID: P00056 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>池田佳史</h3>
+    <div class="member-meta">ID: P00040 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>池田勝典</h3>
+    <div class="member-meta">ID: P00007 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">25h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">7件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">7回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>クラウドワークス案件応募
+4件→1件テストへ
+
+フィードバック会アーカイブ視聴
+案件応募面談練習
+→文書記述力
+中黒の使い方の理解、日本語理解。
+
+テスト案件添削
+→面談対策として、プロ意識、意欲、姿勢の大切さを学びました。
+稼働時間確保の</li><li>フィードバック会参加
+時給の考え方がとても学びになりました。
+
+活用事例動画：Gemini x GASでGoogleフォームを簡単に作る方法
+antiグラビティでフォーム作成からGAS管理テスト
+出来るということがわかりました。</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>河又美智</h3>
+    <div class="member-meta">ID: P00057 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>浜畑悦子</h3>
+    <div class="member-meta">ID: P00065 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>清水秀明</h3>
+    <div class="member-meta">ID: P00041 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>溝口和範</h3>
+    <div class="member-meta">ID: P00036 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>片寄孝康</h3>
+    <div class="member-meta">ID: P00016 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>田口旭晃</h3>
+    <div class="member-meta">ID: P00059 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>甲村順子</h3>
+    <div class="member-meta">ID: P00008 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">20h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">7件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">5回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>AIツールの習熟： 動画講義で学んだ Claude と Notion を実際に操作し、自分なりにアウトプットを行いました。特にAIによる効率的な情報整理のフローを体感できました。
+
+実務と応募： 案件応募を5件実施し、自身のポートフォリオと</li><li>実践フィードバック会のアーカイブを視聴し、ライティング案件受注時の面談を成功させるためのポイントや成果に直結する動き方を学習しました。また、クラウドワークスでの案件応募やランサーズのプロフィール修正を通じて、自身のスキルをどう言語化してクラ</li><li>獲得したライター初案件の執筆を行い、納品まで完了させた。</li><li>クラウドワークスでの案件応募7件実施。
+実践フィードバック会への参加。
+NotebookLMを活用した効率的な資料作成（2件）。
+サンプル記事の下書き完了（1件）。</li><li>実践フィードバック会で学んだ手法を即座にアウトプットし、Geminiを使用してミニゲームを作成することができました。理論を学ぶだけでなく、実際に手を動かして形にすることで、プロンプトの調整やAIの挙動への理解がより深まったと感じています。ま</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>白方勇生</h3>
+    <div class="member-meta">ID: P00035 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">2回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>立田素子</h3>
+    <div class="member-meta">ID: P00019 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">1h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">1件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">1回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>築山優希</h3>
+    <div class="member-meta">ID: P00012 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">16h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">4件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>やる気がなくてダラダラ進めても、テキパキ進めても、完了時間に差はないなと感じた。</li><li>新しい学びは特になし、動画編集の音声差し替え後の調整にとても時間がかかった</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>船引純</h3>
+    <div class="member-meta">ID: P00050 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>藤木智咲</h3>
+    <div class="member-meta">ID: P00002 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">19h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">7件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">7回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><ul><li>違う事をやってみようと思い、LINEスタンプの販売をしてみました。ライティングの案件応募を毎日しながら、もっといろんな事を学びたいと思います。</li><li>初めて43円いただけました。嬉しかったです。
+マンツーマンAIキャリアサポートの面談を受けました。私自身では考えてつかない進み方を教えていただき、学びの方法を明確にすることが出来ました。</li></ul></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>西口勇生</h3>
+    <div class="member-meta">ID: P00039 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>西田紀子</h3>
+    <div class="member-meta">ID: P00044 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>谷山真一</h3>
+    <div class="member-meta">ID: P00010 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>辰野早苗</h3>
+    <div class="member-meta">ID: P00060 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>近藤英介</h3>
+    <div class="member-meta">ID: P00046 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">2回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>道下明和</h3>
+    <div class="member-meta">ID: P00005 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>野尻幸樹実</h3>
+    <div class="member-meta">ID: P00051 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>野村すみれ</h3>
+    <div class="member-meta">ID: P00049 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">1回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>関口大樹</h3>
+    <div class="member-meta">ID: P00037 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div><div class="member-card">
+  <div class="member-header">
+    <h3>須貝亮</h3>
+    <div class="member-meta">ID: P00048 | コンシェルジュ: 未割当</div>
+  </div>
+  <div class="member-kpi-row">
+    <div class="member-kpi"><div class="value">¥0</div><div class="label">収益</div></div>
+    <div class="member-kpi"><div class="value">0h</div><div class="label">稼働時間</div></div>
+    <div class="member-kpi"><div class="value">0件</div><div class="label">日報提出</div></div>
+    <div class="member-kpi"><div class="value">0回</div><div class="label">FB参加</div></div>
+  </div><div class="member-achievements"><h4>主な成果</h4><div style="color:var(--gray-400);font-size:13px;padding:8px 0;">今週の成果報告なし</div></div></div></div>
+</div></div>
+</div>
+</div>
+<div class="footer">Generated by SAEPIN — PRO TEAM AI Agent System<br>集計日: 2026-03-24</div>
+<button class="float-top" id="floatTop" onclick="scrollTo({top:0,behavior:'smooth'}})">&#9650;</button>
+<script>
+const btn=document.getElementById('floatTop');
+window.addEventListener('scroll',()=>{btn.style.display=window.scrollY>400?'flex':'none';});
+
+function switchView(view) {
+  document.getElementById('view-daily').style.display = view === 'daily' ? 'block' : 'none';
+  document.getElementById('view-report').style.display = view === 'report' ? 'block' : 'none';
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function switchConcierge(con) {
+  document.querySelectorAll('.concierge-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('con-' + con).style.display = 'block';
+  document.querySelectorAll('.con-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body></html>

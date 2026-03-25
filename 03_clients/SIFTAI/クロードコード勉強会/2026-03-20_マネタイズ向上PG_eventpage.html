@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成果報告特別会 × マネタイズ突破プログラム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans JP',sans-serif;color:#333;line-height:1.6;background:#f8f8f8}
+.header{background:linear-gradient(135deg,#FF5757,#8C52FF);color:#fff;padding:48px 40px 40px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
+.header::after{content:'';position:absolute;bottom:-60px;left:-30px;width:160px;height:160px;background:rgba(255,255,255,.04);border-radius:50%}
+.header .label{display:inline-block;background:rgba(255,255,255,.25);border-radius:24px;padding:6px 20px;font-size:13px;margin-bottom:16px;letter-spacing:1px;font-weight:700;backdrop-filter:blur(4px)}
+.header h1{font-size:28px;font-weight:700;line-height:1.4;margin-bottom:8px}
+.header .subtitle{font-size:15px;opacity:.9;margin-bottom:8px}
+.header .meta{margin-top:16px;font-size:14px;opacity:.85;display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+
+.nav{background:#fff;position:sticky;top:0;z-index:100;border-bottom:1px solid #EBEBEB;display:flex;justify-content:center}
+.nav button{background:none;border:none;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:500;color:#707070;padding:16px 32px;cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
+.nav button.active{color:#A51E6D;border-bottom-color:#A51E6D}
+.nav button:hover{color:#A51E6D}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 64px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.section-title{font-size:20px;font-weight:700;padding-left:16px;border-left:4px solid #A51E6D;margin-bottom:24px;margin-top:48px}
+.section-title:first-child{margin-top:0}
+
+/* 講師カード */
+.speaker-card{background:#F6E9F0;border-radius:16px;padding:32px;display:flex;align-items:center;gap:24px;margin-bottom:32px}
+.speaker-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#FF5757,#8C52FF);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;flex-shrink:0}
+.speaker-name{font-size:20px;font-weight:700}
+.speaker-title{font-size:13px;color:#A51E6D;margin-top:4px}
+
+/* レベルカード */
+.level-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.level-card{border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.level-card .level-badge{display:inline-block;border-radius:24px;padding:4px 16px;font-size:12px;font-weight:700;margin-bottom:16px;letter-spacing:.5px}
+.level-card h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.level-card .level-target{font-size:28px;font-weight:700;margin-bottom:16px}
+.level-card .level-desc{font-size:14px;line-height:1.8;margin-bottom:16px}
+.level-card .level-keyword{font-size:13px;font-weight:500;padding:8px 16px;border-radius:8px;display:inline-block}
+
+.level-card.lv1{background:linear-gradient(135deg,rgba(255,87,87,.08),rgba(255,87,87,.03));border:2px solid rgba(255,87,87,.3)}
+.level-card.lv1 .level-badge{background:#FF5757;color:#fff}
+.level-card.lv1 .level-target{color:#FF5757}
+.level-card.lv1 .level-keyword{background:rgba(255,87,87,.1);color:#FF5757}
+
+.level-card.lv2{background:linear-gradient(135deg,rgba(140,82,255,.08),rgba(140,82,255,.03));border:2px solid rgba(140,82,255,.3)}
+.level-card.lv2 .level-badge{background:#8C52FF;color:#fff}
+.level-card.lv2 .level-target{color:#8C52FF}
+.level-card.lv2 .level-keyword{background:rgba(140,82,255,.1);color:#8C52FF}
+
+/* 共通施策 */
+.common-section{background:#F6E9F0;border-radius:16px;padding:32px;margin-bottom:32px}
+.common-section h3{font-size:18px;font-weight:700;color:#A51E6D;margin-bottom:16px}
+.common-items{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.common-item{background:#fff;border-radius:12px;padding:20px}
+.common-item .item-icon{font-size:24px;margin-bottom:8px}
+.common-item .item-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.common-item .item-desc{font-size:13px;color:#5C5C5C;line-height:1.6}
+
+/* フローカード */
+.flow-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.flow-card{background:#fff;border:2px solid #F6E9F0;border-radius:16px;padding:24px;text-align:center;transition:.2s}
+.flow-card:hover{border-color:#A51E6D;transform:translateY(-2px);box-shadow:0 4px 16px rgba(165,30,109,.1)}
+.flow-card .flow-icon{font-size:32px;margin-bottom:12px}
+.flow-card .flow-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.flow-card .flow-desc{font-size:13px;color:#5C5C5C;line-height:1.6}
+
+/* リンクカード */
+.link-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.link-card{border:2px solid #EBEBEB;border-radius:16px;padding:24px;text-align:center;transition:.2s}
+.link-card.available{border-color:#A51E6D}
+.link-card .icon{font-size:32px;margin-bottom:8px}
+.link-card .card-title{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.link-card .card-title .badge{background:#C2C2C2;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:500}
+.link-card .card-desc{font-size:13px;color:#858585;margin-bottom:16px}
+.link-btn{display:inline-block;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:500;text-decoration:none;transition:.2s}
+.link-btn.active{background:#A51E6D;color:#fff}
+.link-btn.active:hover{background:#AE357C}
+.link-btn.pending{background:#EBEBEB;color:#999;cursor:default}
+
+/* チェックリスト */
+.checklist{list-style:none;margin-bottom:32px}
+.checklist li{padding:12px 0;border-bottom:1px solid #EBEBEB;padding-left:32px;position:relative;font-size:15px}
+.checklist li::before{content:'☐';position:absolute;left:0;color:#A51E6D;font-size:18px}
+
+/* プログラムテーブル */
+.program-table{width:100%;border-collapse:collapse;margin-bottom:32px;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.program-table thead th{background:linear-gradient(135deg,#FF5757,#8C52FF);color:#fff;padding:14px 16px;font-size:14px;font-weight:500;text-align:left}
+.program-table tbody td{padding:14px 16px;font-size:14px;border-bottom:1px solid #EBEBEB}
+.program-table tbody tr:hover{background:#F6E9F0}
+.program-table .time{color:#A51E6D;font-weight:700;white-space:nowrap}
+.program-table .section-name{font-weight:500}
+.program-table tfoot td{background:#f8f8f8;font-weight:700;padding:14px 16px;font-size:14px;text-align:right}
+.program-table .group-header td{background:rgba(165,30,109,.06);font-weight:700;color:#A51E6D;font-size:13px;letter-spacing:.5px;padding:10px 16px}
+
+/* お知らせカード */
+.notice-card{border:2px solid #EBEBEB;border-radius:16px;padding:32px;margin-bottom:24px}
+.notice-card.available{border-color:#A51E6D}
+.notice-card .notice-icon{font-size:32px;margin-bottom:12px}
+.notice-card h3{font-size:18px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.notice-card h3 .badge{background:#C2C2C2;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:500}
+.notice-card p{font-size:14px;color:#5C5C5C;line-height:1.8;margin-bottom:16px}
+
+/* レスポンシブ */
+@media(max-width:600px){
+  .header{padding:32px 24px}
+  .header h1{font-size:22px}
+  .header .meta{flex-direction:column;gap:8px}
+  .level-cards{grid-template-columns:1fr}
+  .common-items{grid-template-columns:1fr}
+  .flow-cards{grid-template-columns:1fr}
+  .link-cards{grid-template-columns:1fr}
+  .speaker-card{flex-direction:column;text-align:center}
+  .nav button{padding:12px 16px;font-size:13px}
+  .program-table{font-size:13px}
+  .program-table thead th,.program-table tbody td{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="label">PRO / PREMIUM 会員向け</span>
+  <h1>成果報告特別会<br>× マネタイズ突破プログラム</h1>
+  <p class="subtitle">あなたのレベルに合わせた突破プランで、成果を出す。</p>
+  <div class="meta">
+    <span>📅 マネタイズ強化期間: 2026年4月〜6月</span>
+    <span>🏆 成功者報告会: 6/30</span>
+  </div>
+</div>
+
+
+<nav class="nav">
+  <button class="active" onclick="switchTab('home')">ホーム</button>
+  <button onclick="switchTab('program')">プログラム</button>
+  <button onclick="switchTab('info')">お知らせ</button>
+</nav>
+
+<div class="container">
+
+  <!-- ホームタブ -->
+  <div id="home" class="tab-content active">
+
+    <h2 class="section-title">マネタイズとは？</h2>
+    <div style="background:#F6E9F0;border-radius:16px;padding:32px;margin-bottom:32px">
+      <p style="font-size:18px;font-weight:700;color:#A51E6D;margin-bottom:16px">AIスキルを「価値」に変えるすべての活動</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:#fff;border-radius:12px;padding:20px">
+          <p style="font-size:14px;font-weight:700;margin-bottom:8px">💰 収益化</p>
+          <p style="font-size:13px;color:#5C5C5C;line-height:1.6">案件受注・サービス販売・コンテンツ販売など、AIスキルで直接収益を得ること</p>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:20px">
+          <p style="font-size:14px;font-weight:700;margin-bottom:8px">⚡ 業務効率化</p>
+          <p style="font-size:13px;color:#5C5C5C;line-height:1.6">本業・社内業務にAIを活用して時間短縮・コスト削減を実現すること</p>
+        </div>
+      </div>
+      <p style="font-size:13px;color:#707070;margin-top:16px;text-align:center">どちらも「AIで価値を生み出した」成果として報告対象になります</p>
+    </div>
+
+    <h2 class="section-title">なぜこの企画が必要なのか</h2>
+    <div style="background:#fff;border:2px solid #F6E9F0;border-radius:16px;padding:32px;margin-bottom:32px">
+      <p style="font-size:15px;line-height:1.8;margin-bottom:16px">PRO/PREMIUM会員の多くが、AIスキルを学んでいるのに<strong style="color:#A51E6D">「収益化」に至っていない</strong>現状があります。</p>
+      <p style="font-size:15px;line-height:1.8;margin-bottom:16px">収益ゼロの人には「まず最初の1円を稼ぐ」きっかけが必要。すでに案件がある人には「月5万円の壁を超える」具体策が必要。</p>
+      <p style="font-size:15px;line-height:1.8">このプログラムは、<strong style="color:#A51E6D">一人ひとりのレベルに合わせた突破プラン</strong>で、「情報を渡す」だけの支援から「一緒にやる」支援に変えます。そして、成果を出した人が報告会で発表する — その循環を作るPRO/PREMIUM運営チームの企画です。</p>
+    </div>
+
+    <h2 class="section-title">発表者</h2>
+    <div class="speaker-card">
+      <div class="speaker-avatar">冴</div>
+      <div>
+        <div class="speaker-name">冴香</div>
+        <div class="speaker-title">PRO運営チーム・企画統括</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">この企画の流れ</h2>
+    <div class="flow-cards">
+      <div class="flow-card">
+        <div class="flow-icon">📋</div>
+        <div class="flow-title">STEP 1: 現在地を知る</div>
+        <div class="flow-desc">アンケートで全員のレベルと壁を可視化。Lv.1/Lv.2を振り分ける</div>
+      </div>
+      <div class="flow-card">
+        <div class="flow-icon">🔥</div>
+        <div class="flow-title">STEP 2: 突破する</div>
+        <div class="flow-desc">Lv.1は48時間チャレンジ、Lv.2は単価UP施策。それぞれのルートで壁を超える</div>
+      </div>
+      <div class="flow-card">
+        <div class="flow-icon">🎤</div>
+        <div class="flow-title">STEP 3: 報告する</div>
+        <div class="flow-desc">PRO・PREMIUM合同の成功者報告会で、突破した成果を発表・共有する</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">当日の資料・フォーム</h2>
+    <div class="link-cards">
+      <div class="link-card">
+        <div class="icon">📑</div>
+        <div class="card-title">当日資料 <span class="badge">準備中</span></div>
+        <div class="card-desc">発表スライド資料</div>
+        <span class="link-btn pending">URLは準備中です</span>
+      </div>
+      <div class="link-card">
+        <div class="icon">✏️</div>
+        <div class="card-title">アウトプットフォーム <span class="badge">準備中</span></div>
+        <div class="card-desc">気づき・感想を記録</div>
+        <span class="link-btn pending">URLは準備中です</span>
+      </div>
+      <div class="link-card">
+        <div class="icon">𝕏</div>
+        <div class="card-title">X（Twitter）に投稿 <span class="badge">準備中</span></div>
+        <div class="card-desc">学びをシェアしよう</div>
+        <span class="link-btn pending">URLは準備中です</span>
+      </div>
+      <div class="link-card">
+        <div class="icon">📋</div>
+        <div class="card-title">アンケートフォーム <span class="badge">準備中</span></div>
+        <div class="card-desc">フィードバックをお願いします</div>
+        <span class="link-btn pending">URLは準備中です</span>
+      </div>
+    </div>
+
+    <h2 class="section-title">事前準備のお願い</h2>
+    <ul class="checklist">
+      <li>週報でマネタイズ成果を必ず報告する（金額・案件内容・進捗）</li>
+      <li>Discord「成果報告チャンネル」に活動の記録を投稿する</li>
+      <li>「今一番困っていること」を1つ考えておく</li>
+    </ul>
+  </div>
+
+  <!-- プログラムタブ -->
+  <div id="program" class="tab-content">
+
+    <h2 class="section-title">2つのレベルで突破する</h2>
+
+    <div class="level-cards">
+      <div class="level-card lv1">
+        <span class="level-badge">Lv.1</span>
+        <h3>まず「最初の1円」を稼ぐ</h3>
+        <div class="level-target">0 → 1万円</div>
+        <div class="level-desc">
+          収益ゼロの状態から抜け出す。48時間で1件出品し、「売れなくてもOK、出品した事実がゴール」。まず動く。
+        </div>
+        <span class="level-keyword">48時間出品チャレンジ（5/1〜5/2）</span>
+      </div>
+      <div class="level-card lv2">
+        <span class="level-badge">Lv.2</span>
+        <h3>「5万円の壁」を超える</h3>
+        <div class="level-target">1万円 → 5万円</div>
+        <div class="level-desc">
+          案件はある。でも単価が上がらない、単発で終わる。単価UP・提案力強化・継続案件化で月5万円を突破する。
+        </div>
+        <span class="level-keyword">提案力強化ワーク（5/4〜5/5）</span>
+      </div>
+    </div>
+
+    <h2 class="section-title">両レベル共通の施策</h2>
+    <div class="common-section">
+      <h3>レベルに関係なく、全員が参加する施策</h3>
+      <div class="common-items">
+        <div class="common-item">
+          <div class="item-icon">📋</div>
+          <div class="item-title">状況把握アンケート</div>
+          <div class="item-desc">今の月収・案件状況・つまずきポイントを1分で回答。全員の現在地を可視化する</div>
+        </div>
+        <div class="common-item">
+          <div class="item-icon">🎤</div>
+          <div class="item-title">一問一答会（5/15）</div>
+          <div class="item-desc">アンケート結果をもとに実践FB会で実施。「なぜできない？」「なぜ止まる？」— 壁をここでクリアする</div>
+        </div>
+        <div class="common-item">
+          <div class="item-icon">📊</div>
+          <div class="item-title">成果の可視化と表彰</div>
+          <div class="item-desc">月収推移ランキング・突破事例の共有・達成者の表彰で、全員のモチベーションを引き上げる</div>
+        </div>
+        <div class="common-item">
+          <div class="item-icon">🏆</div>
+          <div class="item-title">成功者報告会（6/30）</div>
+          <div class="item-desc">PRO・PREMIUM合同の別枠イベント。成果発表・登壇の場を全会員に提供する</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">発表プログラム</h2>
+    <table class="program-table">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>セクション</th>
+          <th>内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="time">1</td>
+          <td class="section-name">タイトル</td>
+          <td>マネタイズ突破プログラム — レベル別に壁を超える実践施策</td>
+        </tr>
+        <tr>
+          <td class="time">2</td>
+          <td class="section-name">現状の課題</td>
+          <td>収益ゼロが大半、案件ありでも月1万円止まり。レベルに応じた突破策が必要</td>
+        </tr>
+        <tr>
+          <td class="time">3</td>
+          <td class="section-name">2つのレベル定義</td>
+          <td>Lv.1: 収益0→1万円（まず動く）/ Lv.2: 1万円→5万円突破（単価UP・継続化）</td>
+        </tr>
+        <tr>
+          <td class="time">4</td>
+          <td class="section-name">Before / After</td>
+          <td>3ヶ月後の目指す姿。Lv.1→全員が出品経験あり / Lv.2→月5万円達成者を複数名輩出</td>
+        </tr>
+        <tr class="group-header">
+          <td colspan="3">▍ Lv.1：0 → 1万円</td>
+        </tr>
+        <tr>
+          <td class="time">5</td>
+          <td class="section-name">施策1: 48時間出品チャレンジ（5/1〜5/2）</td>
+          <td>全員で48時間に「1件出品」。売れなくてOK、出品した事実がゴール</td>
+        </tr>
+        <tr>
+          <td class="time">6</td>
+          <td class="section-name">施策2: フェーズ別アクションマップ</td>
+          <td>各フェーズに「今やるべきこと」を1つ提示。迷わず次の一歩を踏み出す</td>
+        </tr>
+        <tr class="group-header">
+          <td colspan="3">▍ Lv.2：1万円 → 5万円突破</td>
+        </tr>
+        <tr>
+          <td class="time">7</td>
+          <td class="section-name">施策3: 単価UPアクションマップ</td>
+          <td>現在の単価帯別に「次にやるべきこと」を1つ提示。5千円→1万円→3万円→5万円のルートを明示</td>
+        </tr>
+        <tr>
+          <td class="time">8</td>
+          <td class="section-name">施策4: 提案力強化ワーク（5/4〜5/5）</td>
+          <td>「作業者」から「提案者」へ。同じスキルでも単価が3倍変わる提案の型を実践</td>
+        </tr>
+        <tr class="group-header">
+          <td colspan="3">▍ 共通施策</td>
+        </tr>
+        <tr>
+          <td class="time">9</td>
+          <td class="section-name">施策5: 状況把握アンケート</td>
+          <td>今の月収・案件単価・つまずきポイントを1分で回答。全員の「壁」を可視化する</td>
+        </tr>
+        <tr>
+          <td class="time">10</td>
+          <td class="section-name">施策6: 一問一答会（5/15）</td>
+          <td>アンケート結果をもとに実践FB会で実施。「なぜできない？」「なぜ止まる？」— 壁をここでクリアする</td>
+        </tr>
+        <tr>
+          <td class="time">11</td>
+          <td class="section-name">施策7: 成果の可視化と表彰</td>
+          <td>月収推移ランキング・突破事例の共有・達成者の表彰</td>
+        </tr>
+        <tr>
+          <td class="time">12</td>
+          <td class="section-name">施策8: 成功者報告会（6/30）</td>
+          <td>PRO・PREMIUM合同の別枠イベント。成果発表・登壇の場を全会員に提供</td>
+        </tr>
+        <tr>
+          <td class="time">13</td>
+          <td class="section-name">成功条件</td>
+          <td>Lv.1: 出品経験者が過半数 / Lv.2: 月5万円達成者3名以上。全員が「次の一手」を言語化できている</td>
+        </tr>
+        <tr>
+          <td class="time">14</td>
+          <td class="section-name">まとめ・ネクストアクション</td>
+          <td>今週アンケート送信→レベル振り分け→Lv.1は48時間チャレンジ、Lv.2は単価UP施策→月次トラッキング開始</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">全14セクション（Lv.1: 2施策 / Lv.2: 2施策 / 共通: 4施策）</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- お知らせタブ -->
+  <div id="info" class="tab-content">
+    <h2 class="section-title">お知らせ</h2>
+
+    <div class="notice-card">
+      <div class="notice-icon">📅</div>
+      <h3>次回イベント <span class="badge">準備中</span></h3>
+      <p>次回のイベント情報は決まり次第お知らせします。</p>
+      <span class="link-btn pending">URLは準備中です</span>
+    </div>
+
+    <div class="notice-card">
+      <div class="notice-icon">💬</div>
+      <h3>匿名で安心！みんなで育てる「最強のAIパートナー」育成プロジェクト</h3>
+      <p>あなたの「困りごと」や「質問」がコミュニティ全体の財産になります。「こんな初歩的なことを聞いていいの？」そんな心配は無用です。誰にも見られない完全なプライベート空間で質問できます。</p>
+      <span class="link-btn pending">URLは準備中です</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
