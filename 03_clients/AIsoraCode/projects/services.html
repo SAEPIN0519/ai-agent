@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIsora Code - Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans JP',sans-serif;color:#2C3E50;background:#F0F7FC;line-height:1.6}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;display:flex;justify-content:center;gap:8px;padding:12px 16px;background:rgba(240,247,252,.92);backdrop-filter:blur(12px);border-bottom:1px solid #D6E8F2;transition:box-shadow .3s}
+.nav.scrolled{box-shadow:0 2px 16px rgba(91,184,232,.15)}
+.nav a{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC;transition:all .2s}
+.nav a:hover{background:#E8F4FD;color:#2C3E50}
+.nav a.active{background:linear-gradient(135deg,#5BB8E8,#E87A3D);color:#fff}
+
+/* HERO */
+.hero{
+  background:linear-gradient(180deg,#5BB8E8 0%,#87CEEB 40%,#B6DFF5 70%,#E8F4FD 100%);
+  text-align:center;padding:80px 24px 60px;position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;bottom:0;left:0;width:100%;height:80px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23F0F7FC' d='M0,64 C360,120 720,20 1080,80 C1260,100 1380,90 1440,64 L1440,120 L0,120 Z'/%3E%3C/svg%3E") no-repeat bottom;background-size:cover
+}
+.cloud{position:absolute;background:rgba(255,255,255,.5);border-radius:50px}
+.cloud-1{width:140px;height:50px;top:15%;left:5%;box-shadow:60px -12px 0 10px rgba(255,255,255,.4),-35px 8px 0 8px rgba(255,255,255,.35);animation:floatCloud 8s ease-in-out infinite}
+.cloud-2{width:100px;height:40px;top:25%;right:8%;box-shadow:50px -8px 0 8px rgba(255,255,255,.35),-30px 5px 0 6px rgba(255,255,255,.3);animation:floatCloud 10s ease-in-out infinite 2s}
+.cloud-3{width:80px;height:30px;top:10%;left:40%;box-shadow:40px -6px 0 6px rgba(255,255,255,.3);animation:floatCloud 7s ease-in-out infinite 1s}
+@keyframes floatCloud{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+.hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto}
+.hero-logo{width:180px;height:auto;margin-bottom:16px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.08))}
+.hero-badge{display:inline-block;padding:6px 24px;border-radius:100px;background:rgba(232,122,61,.15);border:1px solid rgba(232,122,61,.3);font-size:13px;font-weight:700;letter-spacing:2px;margin-bottom:16px;color:#E87A3D}
+.hero h1{font-size:2.2rem;font-weight:900;line-height:1.4;margin-bottom:16px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.1)}
+.hero h1 .accent{color:#FFF3EC;background:rgba(232,122,61,.4);padding:2px 12px;border-radius:8px}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.9);max-width:600px;margin:0 auto;line-height:1.8}
+
+.container{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* Section Title */
+.section-title{text-align:center;padding:48px 0 32px}
+.section-title h2{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,#5BB8E8,#E87A3D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-title p{color:#8CA8BC;font-size:.95rem;margin-top:6px}
+
+/* Service Card */
+.svc{background:#fff;border-radius:20px;margin:28px 0;overflow:hidden;transition:transform .2s;box-shadow:0 4px 20px rgba(91,184,232,.08)}
+.svc:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(91,184,232,.15)}
+
+.svc-head{padding:28px 28px 20px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.svc-icon{font-size:2.8rem;flex-shrink:0}
+.svc-title-area{flex:1;min-width:200px}
+.svc-title{font-size:1.25rem;font-weight:900;margin-bottom:4px;color:#2C3E50}
+.svc-sub{font-size:.88rem;color:#6B8CA0;line-height:1.6}
+.svc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-block;font-size:.72rem;padding:4px 14px;border-radius:20px;font-weight:700;white-space:nowrap}
+.tag-sky{background:#E8F4FD;color:#3A9AD9}
+.tag-orange{background:#FFF3EC;color:#E87A3D}
+.tag-green{background:#E8F8EE;color:#38A169}
+.tag-pink{background:#FEE8F0;color:#E85380}
+.tag-purple{background:#F0EAFF;color:#7C5CDB}
+.tag-gray{background:#F0F4F8;color:#8CA8BC}
+
+.svc-price{text-align:right;flex-shrink:0;min-width:140px}
+.svc-price .amount{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,#E87A3D,#F5A623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.svc-price .unit{font-size:.78rem;color:#8CA8BC;white-space:nowrap}
+
+.svc-body{padding:0 28px 28px}
+.svc-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px}
+@media(max-width:768px){.svc-grid{grid-template-columns:1fr}.svc-head{flex-direction:column}.svc-price{text-align:left;min-width:auto}}
+
+.svc-section{margin-bottom:18px}
+.svc-label{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px;color:#5BB8E8}
+.svc-label .dot{width:8px;height:8px;border-radius:50%}
+
+.svc-list{list-style:none}
+.svc-list li{font-size:.88rem;padding:5px 0 5px 24px;position:relative;line-height:1.6;color:#4A6A80}
+.svc-list li::before{content:'';position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:#B6DFF5}
+.svc-list li strong{color:#2C3E50}
+
+.svc-process{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.svc-step{background:#F0F7FC;border:2px solid #D6E8F2;padding:12px 16px;border-radius:14px;font-size:.82rem;font-weight:700;text-align:center;transition:transform .2s;min-width:75px}
+.svc-step:hover{transform:scale(1.05);border-color:#5BB8E8}
+.svc-step .step-num{display:block;font-size:.65rem;color:#E87A3D;font-weight:900}
+.svc-step .step-period{display:block;font-size:.7rem;color:#8CA8BC;margin-top:3px}
+.svc-arrow{font-weight:900;font-size:1rem;color:#B6DFF5}
+
+.svc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.metric{text-align:center;padding:14px 8px;background:#F0F7FC;border-radius:14px;border:2px solid #D6E8F2}
+.metric .m-val{font-size:1.1rem;font-weight:900;color:#E87A3D}
+.metric .m-lbl{font-size:.68rem;color:#8CA8BC;font-weight:700;margin-top:2px}
+
+.diff-box{background:linear-gradient(135deg,#E8F4FD,#F0F7FC);border-radius:14px;padding:16px 20px;margin-top:14px;font-size:.86rem;color:#3A9AD9;line-height:1.7;border:1px solid #D6E8F2}
+.diff-box strong{color:#2C3E50}
+
+.goal-box{background:linear-gradient(135deg,#FFF3EC,#FFF8F2);border-radius:14px;padding:16px 20px;margin-top:14px;font-size:.86rem;color:#E87A3D;line-height:1.7;border:1px solid #F5D5B8}
+.goal-box strong{color:#2C3E50}
+
+/* Market Data */
+.market-section{background:linear-gradient(135deg,#2C3E50,#34495E);border-radius:20px;padding:36px;margin:32px 0;color:#fff}
+.market-section h3{font-size:1.2rem;font-weight:900;margin-bottom:20px;text-align:center}
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center}
+@media(max-width:600px){.market-grid{grid-template-columns:1fr}}
+.market-stat{background:rgba(255,255,255,.08);border-radius:14px;padding:20px 12px;border:1px solid rgba(255,255,255,.1)}
+.market-stat .stat-val{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#5BB8E8,#87CEEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.market-stat .stat-sub{font-size:.78rem;color:rgba(255,255,255,.6);margin-top:4px}
+.market-stat .stat-label{font-size:.85rem;color:rgba(255,255,255,.85);margin-top:8px;font-weight:700}
+.market-source{text-align:center;margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.4)}
+
+/* Comparison Table */
+.compare{background:#fff;border-radius:20px;padding:28px;margin:28px 0;box-shadow:0 4px 20px rgba(91,184,232,.08);overflow-x:auto}
+.compare h3{font-size:1.1rem;font-weight:900;margin-bottom:16px;text-align:center;color:#2C3E50}
+.compare table{width:100%;border-collapse:collapse;font-size:.85rem}
+.compare th{background:#F0F7FC;padding:12px 14px;font-weight:700;text-align:left;border-bottom:2px solid #D6E8F2;color:#5BB8E8;white-space:nowrap}
+.compare td{padding:12px 14px;border-bottom:1px solid #F0F4F8;color:#4A6A80}
+.compare tr:last-child td{border-bottom:none}
+.compare .highlight{background:#FFF8F2;font-weight:700;color:#E87A3D}
+.compare .aisora-col{background:linear-gradient(180deg,#E8F4FD,#F0F7FC)}
+
+/* Footer */
+.footer{text-align:center;padding:40px 24px;color:#8CA8BC;font-size:.82rem;background:linear-gradient(to top,#E8F4FD,#F0F7FC)}
+.footer a{color:#5BB8E8;text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="wbs.html"><span class="material-icons" style="font-size:1rem">timeline</span> WBS</a>
+  <a href="handson.html"><span class="material-icons" style="font-size:1rem">cloud</span> Hands-on</a>
+  <a href="services.html" class="active"><span class="material-icons" style="font-size:1rem">storefront</span> Services(旧)</a>
+  <a href="new_service.html"><span class="material-icons" style="font-size:1rem">rocket_launch</span> New Service</a>
+  <a href="task-board.html"><span class="material-icons" style="font-size:1rem">checklist</span> Task Board</a>
+  <a href="lp_v2.html"><span class="material-icons" style="font-size:1rem">language</span> LP(外部用)</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="hero-inner">
+    <img src="assets/aisora_logo.png" alt="AIsora Code" class="hero-logo" onerror="this.style.display='none'">
+    <div class="hero-badge">SERVICE MENU</div>
+    <h1>&#x2601;&#xFE0F; AI社員を、<span class="accent">あなたの右腕</span>に。</h1>
+    <p class="hero-sub">Claude Codeで業務を自動化するマンツーマン指導。<br>社長が「自分で使えて、社員にも教えられる」状態を一緒に作ります。</p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== 市場データ ===== -->
+<div class="market-section">
+  <h3>&#x1F4CA; なぜ今、社長がAIを「自分で」使うべきなのか</h3>
+  <div class="market-grid">
+    <div class="market-stat">
+      <div class="stat-val">61%</div>
+      <div class="stat-sub">vs 非直轄はたった8%</div>
+      <div class="stat-label">社長直轄でAI推進した企業の<br>成果創出率</div>
+    </div>
+    <div class="market-stat">
+      <div class="stat-val">12倍</div>
+      <div class="stat-sub">海外62件 vs 日本5件</div>
+      <div class="stat-label">経営者向けAI研修の<br>海外との格差</div>
+    </div>
+    <div class="market-stat">
+      <div class="stat-val">14%</div>
+      <div class="stat-sub">米国38% / 英国38%</div>
+      <div class="stat-label">日本のCAIO配置率<br>（5カ国最下位）</div>
+    </div>
+  </div>
+  <div class="market-source">出典: PwC Japan「生成AIに関する実態調査 2025春 5カ国比較」/ BCG「The Widening AI Value Gap」2025</div>
+</div>
+
+<!-- ===== Section: Services ===== -->
+<div class="section-title">
+  <h2>&#x2601;&#xFE0F; Service Menu</h2>
+  <p>社長のための、AI導入マンツーマンプログラム</p>
+</div>
+
+<!-- ===== Service 1: メイン商品 ===== -->
+<div class="svc" style="border:2px solid #E87A3D">
+<div class="svc-head">
+  <div class="svc-icon">&#x1F451;</div>
+  <div class="svc-title-area">
+    <div class="svc-title">AI社長コーチング</div>
+    <div class="svc-sub">Claude Codeを使いこなして、社員に「俺もAI使えるんだぜ」と言える状態に。<br>あなたの業務に合わせた完全カスタマイズのマンツーマン指導。</div>
+    <div class="svc-tags">
+      <span class="tag tag-orange">MAIN</span>
+      <span class="tag tag-sky">マンツーマン</span>
+      <span class="tag tag-green">どんな業種もOK</span>
+    </div>
+  </div>
+  <div class="svc-price"><div class="amount">月額 20〜30万円</div><div class="unit">3ヶ月 / 全12回</div></div>
+</div>
+<div class="svc-body"><div class="svc-grid">
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#E87A3D"></span>こんな社長さんへ</div>
+      <ul class="svc-list">
+        <li>「AIすごいのは知ってるけど、自分で使えない」</li>
+        <li>「社員に教えたいけど、まず自分がわからない」</li>
+        <li>「IT担当がいない。全部自分でやるしかない」</li>
+        <li>「請求書、メール、資料作成...事務に時間を取られすぎ」</li>
+        <li>「コンサルに頼むと高いし、結局自分で動かせない」</li>
+      </ul>
+    </div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>やること</div>
+      <ul class="svc-list">
+        <li><strong>初回ヒアリング</strong> — あなたの業務を棚卸し、AI化する業務を一緒に選ぶ</li>
+        <li><strong>環境構築</strong> — PCにClaude Codeをセットアップ（声で操作もOK）</li>
+        <li><strong>AI社員を作る</strong> — あなたのビジョン・仕事の進め方をCLAUDE.mdに落とし込む</li>
+        <li><strong>業務自動化</strong> — 請求書、メール返信、データ集計、SNS投稿...何でも</li>
+        <li><strong>セキュリティ設定</strong> — 安全に使えるガードレールを設置</li>
+        <li><strong>自走トレーニング</strong> — 1人でも使えるようになるまで伴走</li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#E87A3D"></span>3ヶ月のロードマップ</div>
+      <div class="svc-process">
+        <div class="svc-step"><span class="step-num">MONTH 1</span>基礎<span class="step-period">環境構築+AI社員作成</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step"><span class="step-num">MONTH 2</span>実践<span class="step-period">業務自動化を一緒に</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step"><span class="step-num">MONTH 3</span>自走<span class="step-period">1人で回せる状態に</span></div>
+      </div>
+    </div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>含まれるもの</div>
+      <div class="svc-metrics">
+        <div class="metric"><div class="m-val">週1 x 60分</div><div class="m-lbl">マンツーマン</div></div>
+        <div class="metric"><div class="m-val">随時</div><div class="m-lbl">チャットサポート</div></div>
+        <div class="metric"><div class="m-val">全12回</div><div class="m-lbl">3ヶ月プログラム</div></div>
+      </div>
+    </div>
+    <div class="goal-box">&#x1F451; <strong>ゴール:</strong> 「社長が自分でAIを使いこなし、社員にも教えられる状態」。<br>3ヶ月後には、AIがあなたの右腕として24時間働いてくれます。</div>
+    <div class="diff-box">&#x2728; <strong>AIsora Codeだからできること:</strong> SHIFT AIの数千人コミュニティで培ったClaude Code勉強会のナレッジ。「AI社員」というコンセプトで、ツールではなく"仲間"として業務に組み込みます。</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ===== Service 2: 社内展開 ===== -->
+<div class="svc" style="border:2px solid #5BB8E8">
+<div class="svc-head">
+  <div class="svc-icon">&#x1F465;</div>
+  <div class="svc-title-area">
+    <div class="svc-title">社内AI展開サポート</div>
+    <div class="svc-sub">社長が学んだClaude Codeの使い方を、社員にも展開。<br>「社長が教える側」になるためのサポートプログラム。</div>
+    <div class="svc-tags">
+      <span class="tag tag-sky">OPTION</span>
+      <span class="tag tag-purple">社長コーチング修了者向け</span>
+    </div>
+  </div>
+  <div class="svc-price"><div class="amount">月額 15〜25万円</div><div class="unit">1〜3ヶ月 / カスタム</div></div>
+</div>
+<div class="svc-body"><div class="svc-grid">
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>こんなケースに</div>
+      <ul class="svc-list">
+        <li>「自分は使えるようになった。次は社員にも使わせたい」</li>
+        <li>「社員研修のカリキュラムを一緒に作ってほしい」</li>
+        <li>「部署ごとに業務が違うので、それぞれのAI社員が必要」</li>
+      </ul>
+    </div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>やること</div>
+      <ul class="svc-list">
+        <li><strong>社内研修カリキュラム設計</strong> — 社員向けの導入プログラムを共同設計</li>
+        <li><strong>部署別CLAUDE.md作成</strong> — 営業、経理、広報...部署ごとのAI社員を設計</li>
+        <li><strong>社長の「教え方」コーチング</strong> — 社長自身が社員に教えるためのサポート</li>
+        <li><strong>運用定着サポート</strong> — 社内でAIが定着するまでの伴走</li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#E87A3D"></span>プロセス</div>
+      <div class="svc-process">
+        <div class="svc-step"><span class="step-num">STEP 1</span>現状把握<span class="step-period">社内業務の棚卸し</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step"><span class="step-num">STEP 2</span>設計<span class="step-period">カリキュラム作成</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step"><span class="step-num">STEP 3</span>展開<span class="step-period">社員への導入支援</span></div>
+      </div>
+    </div>
+    <div class="goal-box">&#x1F465; <strong>ゴール:</strong> 「社長がリーダーとして社員にAIを教え、会社全体がAIで変わる」。<br>社長直轄のAI推進 = 成果が出る企業の共通点です。</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ===== Service 3: スポット ===== -->
+<div class="svc" style="border:2px solid #D6E8F2">
+<div class="svc-head">
+  <div class="svc-icon">&#x1F4AC;</div>
+  <div class="svc-title-area">
+    <div class="svc-title">スポットAI相談</div>
+    <div class="svc-sub">「ちょっとここだけ教えてほしい」「この業務、AIでできる？」。<br>単発の相談・困りごと解決。</div>
+    <div class="svc-tags">
+      <span class="tag tag-gray">SPOT</span>
+      <span class="tag tag-green">初めての方もOK</span>
+    </div>
+  </div>
+  <div class="svc-price"><div class="amount">1回 3〜5万円</div><div class="unit">90分 / オンライン</div></div>
+</div>
+<div class="svc-body"><div class="svc-grid">
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#8CA8BC"></span>こんな使い方</div>
+      <ul class="svc-list">
+        <li>「Claude Codeが気になるけど、まず話を聞きたい」</li>
+        <li>「自分でやってみたけど、ここだけうまくいかない」</li>
+        <li>「特定の業務1つだけAI化したい」</li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#8CA8BC"></span>含まれるもの</div>
+      <ul class="svc-list">
+        <li><strong>90分のオンライン相談</strong>（画面共有OK）</li>
+        <li><strong>簡易レポート</strong> — 相談内容と次のアクションをまとめて納品</li>
+        <li><strong>1週間のチャットフォロー</strong></li>
+      </ul>
+    </div>
+    <div class="diff-box">&#x1F4A1; まずはここから。相談後に「AI社長コーチング」に進むことも可能です。</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ===== NEW: サービス改定 ===== -->
+<div class="section-title" style="padding-top:60px">
+  <h2>&#x2728; NEW: AI経営パートナー構築プログラム</h2>
+  <p>脳内会議S級議論を経て、サービスを根本的にリニューアル</p>
+</div>
+
+<!-- 変更点サマリー -->
+<div style="background:linear-gradient(135deg,#FFF3EC,#E8F4FD);border-radius:20px;padding:32px;margin:0 0 28px;border:2px solid #E87A3D">
+  <h3 style="font-size:1.1rem;font-weight:900;margin-bottom:16px;color:#2C3E50;text-align:center">&#x1F504; 何が変わったか</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:.88rem">
+    <tr style="border-bottom:2px solid rgba(232,122,61,.2)">
+      <th style="padding:10px 14px;text-align:left;color:#8CA8BC;font-weight:700;width:22%"></th>
+      <th style="padding:10px 14px;text-align:left;color:#8CA8BC;font-weight:700;width:39%">&#x23EA; 旧サービス</th>
+      <th style="padding:10px 14px;text-align:left;color:#E87A3D;font-weight:700;width:39%">&#x23E9; 新サービス</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">名称</td>
+      <td style="padding:10px 14px;color:#4A6A80">AI社長コーチング</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">AI経営パートナー構築プログラム</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">コンセプト</td>
+      <td style="padding:10px 14px;color:#4A6A80">使い方を教えるコーチング</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">社長専用AIパートナーを「構築」して納品</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">キャッチ</td>
+      <td style="padding:10px 14px;color:#4A6A80">AI社員をあなたの右腕に</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">「雇えないなら、作ればいい。」</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">形式</td>
+      <td style="padding:10px 14px;color:#4A6A80">週1 x 60分 x 12回</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">月2回 x 90分 x 3ヶ月 + チャット + 月末レビュー</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">価格</td>
+      <td style="padding:10px 14px;color:#4A6A80">月額20-30万（総額60-90万）</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">モニター35万（税別）/ 本価格120万~</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">納品物</td>
+      <td style="padding:10px 14px;color:#4A6A80">（明確でなかった）</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">CLAUDE.md + ワークフロー + マニュアル一式</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(0,0,0,.05)">
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">ゴール</td>
+      <td style="padding:10px 14px;color:#4A6A80">自分で使えて社員にも教えられる</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">24時間稼働するAIパートナーが残り、自走できる</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;font-weight:700;color:#2C3E50">Entry</td>
+      <td style="padding:10px 14px;color:#4A6A80">スポット相談 3-5万円</td>
+      <td style="padding:10px 14px;color:#E87A3D;font-weight:700">AI社員体験セッション 3万円/90分</td>
+    </tr>
+  </table>
+</div>
+
+<!-- NEW Service 1: Entry -->
+<div class="svc" style="border:2px solid #5BB8E8">
+<div class="svc-head">
+  <div class="svc-icon"><span class="material-icons" style="font-size:2.4rem;color:#5BB8E8">bolt</span></div>
+  <div class="svc-title-area">
+    <div class="svc-title">AI社員体験セッション</div>
+    <div class="svc-sub">「AI社員って実際どんなもの？」を90分で体験。<br>あなたの業務課題1つを、その場でAIが解決するデモを実施します。</div>
+    <div class="svc-tags">
+      <span class="tag tag-sky">NEW</span>
+      <span class="tag tag-green">初めての方向け</span>
+      <span class="tag tag-orange">ENTRY</span>
+    </div>
+  </div>
+  <div class="svc-price"><div class="amount">3万円</div><div class="unit">税別 / 90分 / オンライン</div></div>
+</div>
+<div class="svc-body"><div class="svc-grid">
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>含まれるもの</div>
+      <ul class="svc-list">
+        <li><strong>事前ヒアリング</strong> — あなたの業務課題を事前に整理</li>
+        <li><strong>AI社員デモンストレーション</strong> — あなたの課題をAIがその場で解決</li>
+        <li><strong>業務での活用提案</strong> — どの業務にAIが効くかを具体的に提示</li>
+        <li><strong>導入ロードマップ作成</strong> — 次のステップを明確に</li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <div class="goal-box"><span class="material-icons" style="font-size:1rem;vertical-align:middle">lightbulb</span> <strong>ゴール:</strong> 「自分の業務でAIがどう使えるか」が具体的にイメージできる状態。<br>体験後、メインプログラムへの参加も検討できます。</div>
+  </div>
+</div></div>
+</div>
+
+<!-- NEW Service 2: Main -->
+<div class="svc" style="border:3px solid #E87A3D;box-shadow:0 8px 40px rgba(232,122,61,.12)">
+<div class="svc-head">
+  <div class="svc-icon"><span class="material-icons" style="font-size:2.4rem;color:#E87A3D">workspace_premium</span></div>
+  <div class="svc-title-area">
+    <div class="svc-title">AI経営パートナー構築プログラム <span class="tag tag-orange" style="font-size:.7rem;vertical-align:middle">MAIN</span></div>
+    <div class="svc-sub">「雇えないなら、作ればいい。」<br>3ヶ月で、あなた専用の24時間稼働するAI経営パートナーを構築して納品します。</div>
+    <div class="svc-tags">
+      <span class="tag tag-orange">NEW</span>
+      <span class="tag tag-sky">マンツーマン</span>
+      <span class="tag tag-pink">モニター募集中</span>
+    </div>
+  </div>
+  <div class="svc-price"><div class="amount">35万円</div><div class="unit">税別 / モニター価格 / 3ヶ月<br><span style="font-size:.7rem;color:#E87A3D">本価格: 120万円~</span></div></div>
+</div>
+<div class="svc-body"><div class="svc-grid">
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#E87A3D"></span>こんな社長さんへ</div>
+      <ul class="svc-list">
+        <li>「人手が足りない。でも雇う余裕がない」</li>
+        <li>「事務作業に追われて、経営判断の時間がない」</li>
+        <li>「経営の相談相手がいない。一人で抱えている」</li>
+        <li>「AIが気になるけど、何から始めていいかわからない」</li>
+        <li>「コーチングじゃなくて、実際に動くものが欲しい」</li>
+      </ul>
+    </div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>3ヶ月のカリキュラム</div>
+      <div class="svc-process">
+        <div class="svc-step" style="border-color:#E87A3D"><span class="step-num">MONTH 1</span>AI社員の誕生<span class="step-period">業務棚卸し+CLAUDE.md構築</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step" style="border-color:#5BB8E8"><span class="step-num">MONTH 2</span>業務自動化<span class="step-period">最大のボトルネックを解消</span></div>
+        <span class="svc-arrow">&#x2192;</span>
+        <div class="svc-step" style="border-color:#38A169"><span class="step-num">MONTH 3</span>自走確立<span class="step-period">1人で拡張できる状態に</span></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#E87A3D"></span>含まれるもの</div>
+      <div class="svc-metrics">
+        <div class="metric"><div class="m-val">月2回</div><div class="m-lbl">個別セッション(90分)</div></div>
+        <div class="metric"><div class="m-val">随時</div><div class="m-lbl">チャットサポート</div></div>
+        <div class="metric"><div class="m-val">月1回</div><div class="m-lbl">進捗レビュー(30分)</div></div>
+      </div>
+    </div>
+    <div class="svc-section">
+      <div class="svc-label"><span class="dot" style="background:#5BB8E8"></span>納品物</div>
+      <ul class="svc-list">
+        <li><strong>社長専用CLAUDE.md</strong> — あなたの思考・判断基準を組み込んだAI設計書</li>
+        <li><strong>自動化ワークフロー</strong> — 最も時間を食う業務を自動化する仕組み</li>
+        <li><strong>業務マニュアル</strong> — 自走するためのガイド</li>
+        <li><strong>拡張ロードマップ</strong> — プログラム後にさらに自動化を広げる計画</li>
+      </ul>
+    </div>
+    <div class="goal-box"><span class="material-icons" style="font-size:1rem;vertical-align:middle">workspace_premium</span> <strong>ゴール:</strong> プログラム終了後、あなたのPCに「24時間365日稼働するAI経営パートナー」が残る。コーチがいなくても、自分で拡張し続けられる状態。</div>
+    <div class="diff-box"><span class="material-icons" style="font-size:1rem;vertical-align:middle">star</span> <strong>旧サービスとの最大の違い:</strong> 「使い方を教える」のではなく「動くAIパートナーを構築して納品する」。知識だけでなく、実際に稼働する仕組みが残ります。</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ===== 競合比較 ===== -->
+<div class="section-title">
+  <h2>&#x1F50D; 他サービスとの違い</h2>
+</div>
+
+<div class="compare">
+  <h3>AIsora Code vs 他社サービス</h3>
+  <table>
+    <tr>
+      <th></th>
+      <th class="aisora-col">&#x2601;&#xFE0F; AIsora Code</th>
+      <th>A社（個別指導型）</th>
+      <th>一般的なAIスクール</th>
+    </tr>
+    <tr>
+      <td><strong>対象</strong></td>
+      <td class="aisora-col highlight">中小企業の社長</td>
+      <td>経営者・DX担当</td>
+      <td>全社員向け</td>
+    </tr>
+    <tr>
+      <td><strong>形式</strong></td>
+      <td class="aisora-col highlight">完全マンツーマン</td>
+      <td>マンツーマン</td>
+      <td>動画+グループ</td>
+    </tr>
+    <tr>
+      <td><strong>内容</strong></td>
+      <td class="aisora-col highlight">あなたの業務でカスタム</td>
+      <td>業務課題ベース</td>
+      <td>汎用カリキュラム</td>
+    </tr>
+    <tr>
+      <td><strong>ゴール</strong></td>
+      <td class="aisora-col highlight">社員に教えられる状態</td>
+      <td>自走できる状態</td>
+      <td>知識を得る</td>
+    </tr>
+    <tr>
+      <td><strong>コンセプト</strong></td>
+      <td class="aisora-col highlight">AI社員を作る</td>
+      <td>業務自動化</td>
+      <td>AIリテラシー</td>
+    </tr>
+    <tr>
+      <td><strong>社内展開</strong></td>
+      <td class="aisora-col highlight">対応（オプション）</td>
+      <td>対象外</td>
+      <td>別プラン</td>
+    </tr>
+    <tr>
+      <td><strong>スケール</strong></td>
+      <td class="aisora-col highlight">パートナー展開で全国対応</td>
+      <td>講師1人</td>
+      <td>動画で拡大</td>
+    </tr>
+  </table>
+</div>
+
+</div><!-- container -->
+
+<div class="footer">
+  <p>&#x2601;&#xFE0F; AIsora Code &mdash; AI時代の次の入口を開く</p>
+  <p style="margin-top:8px">Aosy &times; SAEKA &mdash; <a href="index.html">WBS & Roadmap</a></p>
+</div>
+
+<script>
+// Nav scroll effect
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>10)});
+</script>
+</body>
+</html>

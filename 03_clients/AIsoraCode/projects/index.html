@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIsora Code - WBS &amp; Roadmap</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #d4a853;
+  --primary-dark: #b8922e;
+  --primary-light: rgba(212, 168, 83, 0.15);
+  --accent: #d4a853;
+  --bg: #f5f3ef;
+  --bg-dark: #ece8e0;
+  --bg-navy: #0a1628;
+  --bg-navy-mid: #111f3a;
+  --bg-navy-light: #1a2d4e;
+  --white: #ffffff;
+  --text: #0a1628;
+  --text-muted: #5a6577;
+  --text-light: #c8cdd6;
+  --border: rgba(212, 168, 83, 0.2);
+  --shadow: 0 4px 24px rgba(10, 22, 40, 0.08);
+  --shadow-gold: 0 4px 24px rgba(212, 168, 83, 0.2);
+  --radius: 12px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; }
+a { text-decoration: none; color: inherit; }
+
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.2; word-break: keep-all; overflow-wrap: anywhere; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; word-break: keep-all; overflow-wrap: anywhere; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.375rem); font-weight: 600; }
+p { font-size: 1rem; line-height: 1.8; }
+
+.section-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 80px 0; }
+.accent { color: var(--primary); }
+
+.section-eyebrow {
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.15em;
+  color: var(--primary); text-transform: uppercase; margin-bottom: 8px;
+}
+.section-title { margin-bottom: 16px; }
+.section-lead { color: var(--text-muted); max-width: 600px; margin: 0 auto 48px; }
+.text-center { text-align: center; }
+
+/* ── Scroll Progress Bar ── */
+.scroll-indicator {
+  position: fixed; top: 0; left: 0;
+  height: 3px; background: var(--primary);
+  z-index: 200; width: 0%; transition: width 0.1s;
+}
+
+/* ── Navigation ── */
+#mainNav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+#mainNav.scrolled {
+  background: rgba(10, 22, 40, 0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+.nav-logo {
+  font-size: 1.25rem; font-weight: 700; color: var(--white);
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-logo span { color: var(--primary); }
+.nav-links { list-style: none; display: flex; gap: 32px; }
+.nav-links a { color: var(--text-light); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--primary); }
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 24px; border-radius: 50px;
+  background: var(--primary); color: var(--bg-navy);
+  font-size: 0.85rem; font-weight: 700; transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.3);
+}
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 168, 83, 0.45); }
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  background: linear-gradient(135deg, #0a1628 0%, #111f3a 50%, #1a2d4e 100%);
+  position: relative; overflow: hidden;
+}
+.hero-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.12;
+  animation: float 8s ease-in-out infinite;
+}
+.hero-blob-1 { width: 500px; height: 500px; background: var(--primary); top: -100px; right: -100px; }
+.hero-blob-2 { width: 300px; height: 300px; background: #2a5fff; bottom: -50px; left: -50px; animation-delay: -4s; }
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+.hero-content { position: relative; z-index: 1; color: var(--white); }
+.hero-eyebrow {
+  display: inline-block; padding: 6px 16px; border-radius: 50px;
+  background: rgba(212, 168, 83, 0.15); color: var(--primary);
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 24px;
+}
+.hero h1 { color: var(--white); margin-bottom: 20px; }
+.hero h1 .accent { color: var(--primary); }
+.hero-sub { color: var(--text-light); font-size: 1.1rem; max-width: 560px; margin-bottom: 40px; }
+.hero-stats {
+  display: flex; gap: 40px; margin-top: 48px; padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hero-stat-num { font-size: 2rem; font-weight: 700; color: var(--primary); font-family: 'Inter', sans-serif; }
+.hero-stat-label { font-size: 0.85rem; color: var(--text-light); margin-top: 4px; }
+
+/* ── Wave ── */
+.wave { line-height: 0; }
+.wave svg { display: block; width: 100%; height: 90px; }
+
+/* ── Vision Section ── */
+.vision-section { background: var(--white); }
+.vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.vision-highlight {
+  background: linear-gradient(135deg, var(--bg-navy) 0%, var(--bg-navy-mid) 100%);
+  border-radius: var(--radius); padding: 40px; color: var(--white);
+}
+.vision-highlight h3 { color: var(--primary); margin-bottom: 16px; font-size: 1.1rem; }
+.vision-big-num { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; color: var(--primary); font-family: 'Inter', sans-serif; line-height: 1.1; }
+.vision-big-label { font-size: 0.9rem; color: var(--text-light); margin-top: 8px; margin-bottom: 24px; }
+.vision-detail { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+.vision-detail .material-icons { color: var(--primary); font-size: 20px; margin-top: 2px; flex-shrink: 0; }
+.vision-detail p { color: var(--text-light); font-size: 0.9rem; line-height: 1.6; }
+.vision-text h2 { margin-bottom: 20px; }
+.vision-text p { color: var(--text-muted); margin-bottom: 20px; }
+
+/* ── Steps Section ── */
+.steps-section { background: var(--bg); }
+.timeline { position: relative; max-width: 800px; margin: 0 auto; }
+.timeline::before {
+  content: ''; position: absolute; left: 30px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(to bottom, var(--primary), rgba(212, 168, 83, 0.2));
+}
+.timeline-item {
+  position: relative; padding-left: 80px; margin-bottom: 48px;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-dot {
+  position: absolute; left: 16px; top: 4px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--primary); display: flex; align-items: center; justify-content: center;
+  color: var(--bg-navy); font-weight: 700; font-size: 0.75rem; font-family: 'Inter', sans-serif;
+  box-shadow: 0 0 0 6px var(--bg), var(--shadow-gold);
+}
+.timeline-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.timeline-period {
+  display: inline-block; padding: 4px 12px; border-radius: 50px;
+  background: var(--primary-light); color: var(--primary-dark);
+  font-size: 0.8rem; font-weight: 600;
+}
+.timeline-title { font-size: 1.25rem; font-weight: 700; }
+.timeline-purpose {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.85rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 12px;
+}
+.timeline-card {
+  background: var(--white); border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); border-left: 3px solid var(--primary);
+}
+.timeline-card-grid { display: grid; gap: 12px; }
+.timeline-task {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.9rem; color: var(--text);
+}
+.timeline-task .material-icons { color: var(--primary); font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+/* ── KPI Section ── */
+.kpi-section { background: linear-gradient(135deg, var(--bg-navy) 0%, var(--bg-navy-mid) 100%); color: var(--white); }
+.kpi-section .section-eyebrow { color: var(--primary); }
+.kpi-section .section-lead { color: var(--text-light); }
+.kpi-table-wrap { overflow-x: auto; }
+.kpi-table {
+  width: 100%; border-collapse: collapse; font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05); border-radius: var(--radius); overflow: hidden;
+}
+.kpi-table thead { background: rgba(212, 168, 83, 0.15); }
+.kpi-table th {
+  padding: 14px 16px; text-align: center; font-weight: 600;
+  color: var(--primary); font-size: 0.85rem; letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(212, 168, 83, 0.2);
+}
+.kpi-table td {
+  padding: 12px 16px; text-align: center; color: var(--text-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.kpi-table tbody tr:hover { background: rgba(212, 168, 83, 0.05); }
+.kpi-table .highlight-cell { color: var(--primary); font-weight: 700; font-size: 1rem; }
+.kpi-note { margin-top: 24px; font-size: 0.85rem; color: var(--text-light); opacity: 0.7; }
+
+/* ── Service Section ── */
+.service-section { background: var(--white); }
+.service-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 48px; }
+.service-card {
+  background: var(--bg); border-radius: var(--radius); padding: 32px 24px;
+  text-align: center; position: relative; transition: transform 0.2s, box-shadow 0.2s;
+}
+.service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-gold); }
+.service-card-tag {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  padding: 4px 16px; border-radius: 50px;
+  background: var(--primary); color: var(--bg-navy);
+  font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+}
+.service-card .material-icons { font-size: 40px; color: var(--primary); margin: 12px 0 16px; }
+.service-card h3 { margin-bottom: 12px; }
+.service-card p { font-size: 0.9rem; color: var(--text-muted); }
+.service-card ul { text-align: left; list-style: none; margin-top: 16px; }
+.service-card li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;
+}
+.service-card li .material-icons { font-size: 16px; color: var(--primary); margin-top: 3px; flex-shrink: 0; }
+.deliverables {
+  background: var(--bg); border-radius: var(--radius); padding: 32px;
+  border: 1px solid var(--border);
+}
+.deliverables h3 { margin-bottom: 20px; text-align: center; }
+.deliverables-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.deliverable-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.9rem; padding: 8px 12px;
+  background: var(--white); border-radius: var(--radius-sm);
+}
+.deliverable-item .material-icons { font-size: 18px; color: var(--primary); flex-shrink: 0; }
+
+/* ── Revenue Section ── */
+.revenue-section { background: var(--bg); }
+.revenue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.revenue-card {
+  background: var(--white); border-radius: var(--radius); padding: 32px;
+  box-shadow: var(--shadow);
+}
+.revenue-card.dark {
+  background: linear-gradient(135deg, var(--bg-navy) 0%, var(--bg-navy-mid) 100%);
+  color: var(--white);
+}
+.revenue-card.dark .revenue-label { color: var(--text-light); }
+.revenue-card h3 { margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+.revenue-card h3 .material-icons { color: var(--primary); }
+.revenue-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.revenue-card.dark .revenue-row { border-color: rgba(255, 255, 255, 0.08); }
+.revenue-label { font-size: 0.9rem; color: var(--text-muted); }
+.revenue-value { font-size: 1rem; font-weight: 700; font-family: 'Inter', sans-serif; }
+.revenue-value.gold { color: var(--primary); font-size: 1.25rem; }
+.revenue-total {
+  margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--primary);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.revenue-total .revenue-label { font-weight: 700; color: var(--text); }
+.revenue-card.dark .revenue-total .revenue-label { color: var(--white); }
+
+/* ── Roles Section ── */
+.roles-section { background: var(--white); }
+.roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.role-card {
+  border-radius: var(--radius); padding: 40px 32px; position: relative;
+  border: 1px solid var(--border);
+}
+.role-card.aosy { background: linear-gradient(135deg, #f8f4ec 0%, var(--white) 100%); }
+.role-card.saeka { background: linear-gradient(135deg, #ecf0f8 0%, var(--white) 100%); }
+.role-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700; margin-bottom: 16px;
+}
+.role-card.aosy .role-avatar { background: var(--primary); color: var(--bg-navy); }
+.role-card.saeka .role-avatar { background: var(--bg-navy); color: var(--primary); }
+.role-card h3 { margin-bottom: 4px; }
+.role-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+.role-list { list-style: none; }
+.role-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.9rem; margin-bottom: 12px; color: var(--text);
+}
+.role-list .material-icons { color: var(--primary); font-size: 18px; flex-shrink: 0; margin-top: 3px; }
+
+/* ── Next Actions Section ── */
+.actions-section {
+  background: linear-gradient(135deg, var(--bg-navy) 0%, var(--bg-navy-mid) 100%);
+  color: var(--white);
+}
+.actions-section .section-eyebrow { color: var(--primary); }
+.actions-section .section-lead { color: var(--text-light); }
+.actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
+.action-card {
+  background: rgba(255, 255, 255, 0.05); border-radius: var(--radius);
+  padding: 28px 24px; border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s;
+}
+.action-card:hover { border-color: rgba(212, 168, 83, 0.3); }
+.action-priority {
+  display: inline-block; padding: 3px 10px; border-radius: 50px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 12px;
+}
+.action-priority.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.action-priority.mid { background: rgba(234, 179, 8, 0.2); color: #fde68a; }
+.action-card h3 { color: var(--white); font-size: 1rem; margin-bottom: 8px; }
+.action-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.6; }
+.final-cta-wrap { text-align: center; }
+.final-message { font-size: 1.1rem; color: var(--text-light); margin-bottom: 24px; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 36px; border-radius: 50px;
+  background: var(--primary); color: var(--bg-navy);
+  font-size: 1rem; font-weight: 700; text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(212, 168, 83, 0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212, 168, 83, 0.45); }
+
+/* ── Footer ── */
+footer {
+  background: #060e1a; color: var(--text-light); padding: 32px 0;
+  text-align: center; font-size: 0.85rem;
+}
+footer .accent { color: var(--primary); }
+
+/* ── Fade In Animation ── */
+.fi { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fi.visible { opacity: 1; transform: translateY(0); }
+.fi.delay-1 { transition-delay: 0.1s; }
+.fi.delay-2 { transition-delay: 0.2s; }
+.fi.delay-3 { transition-delay: 0.3s; }
+.fi.delay-4 { transition-delay: 0.4s; }
+.fi.delay-5 { transition-delay: 0.5s; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  section { padding: 48px 0; }
+  #mainNav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .nav-cta { padding: 8px 16px; font-size: 0.8rem; }
+  .hero-stats { flex-direction: column; gap: 16px; }
+  .vision-grid { grid-template-columns: 1fr; }
+  .timeline::before { left: 20px; }
+  .timeline-item { padding-left: 56px; }
+  .timeline-dot { left: 6px; width: 28px; height: 28px; }
+  .service-flow { grid-template-columns: 1fr; }
+  .revenue-grid { grid-template-columns: 1fr; }
+  .roles-grid { grid-template-columns: 1fr; }
+  .actions-grid { grid-template-columns: 1fr; }
+  .deliverables-grid { grid-template-columns: 1fr; }
+  .kpi-table { font-size: 0.8rem; }
+  .kpi-table th, .kpi-table td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div class="scroll-indicator" id="scrollBar"></div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">AIsora<span>Code</span></a>
+  <ul class="nav-links">
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#steps">Roadmap</a></li>
+    <li><a href="#kpi">KPI</a></li>
+    <li><a href="#service">Service</a></li>
+    <li><a href="#revenue">Revenue</a></li>
+    <li><a href="#roles">Roles</a></li>
+  </ul>
+  <a href="#actions" class="nav-cta">
+    <span class="material-icons" style="font-size:16px;">rocket_launch</span>
+    Next Actions
+  </a>
+</nav>
+
+<!-- ==============================
+     1. HERO
+     ============================== -->
+<section class="hero" id="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="section-inner hero-content">
+    <span class="hero-eyebrow fi">Aosy x SAEKA</span>
+    <h1 class="fi delay-1">AI時代の次の入口を<span class="accent">開く。</span></h1>
+    <p class="hero-sub fi delay-2">Claude Code導入支援を「型」にし、認定パートナー制度で全国展開。10ヶ月後には月3〜4時間の稼働で月160万円の不労所得を目指す事業ロードマップ。</p>
+    <a href="#steps" class="btn-primary fi delay-3">
+      <span class="material-icons" style="font-size:18px;">timeline</span>
+      ロードマップを見る
+    </a>
+    <div class="hero-stats fi delay-4">
+      <div>
+        <div class="hero-stat-num">160万</div>
+        <div class="hero-stat-label">月あたりの不労所得/人</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">3〜4h</div>
+        <div class="hero-stat-label">月間稼働時間</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">10名</div>
+        <div class="hero-stat-label">認定パートナー体制</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Hero → Vision -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="#0a1628"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     2. VISION
+     ============================== -->
+<section class="vision-section" id="vision">
+  <div class="section-inner">
+    <div class="vision-grid">
+      <div class="vision-text fi">
+        <p class="section-eyebrow">Vision</p>
+        <h2 class="section-title">事業の<span class="accent">最終形</span></h2>
+        <p>パートナーが導入支援を実行し、Aosy x SAEKAは報告を受けるだけ。月商1,000万円以上を、月3〜4時間の稼働で実現するビジネスモデル。</p>
+        <p>Claude Codeの導入支援を「25万円/件のスポット型」で提供。テンプレート・チェックリスト・品質基準を標準化し、認定パートナーが全国で再現可能な「型」に仕上げる。</p>
+      </div>
+      <div class="vision-highlight fi delay-2">
+        <h3><span class="material-icons" style="font-size:18px; vertical-align:middle;">trending_up</span> 不労所得化後の数字</h3>
+        <div class="vision-big-num">160万円</div>
+        <div class="vision-big-label">1人あたりの月間収入</div>
+        <div class="vision-detail">
+          <span class="material-icons">schedule</span>
+          <p>月間稼働わずか3〜4時間。報告確認とパートナーMTGのみ</p>
+        </div>
+        <div class="vision-detail">
+          <span class="material-icons">groups</span>
+          <p>パートナー10名が各月4件を担当。合計月40件を安定運用</p>
+        </div>
+        <div class="vision-detail">
+          <span class="material-icons">monetization_on</span>
+          <p>時給換算で約40〜53万円。完全な経済的自由を実現</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Vision → Steps -->
+<div class="wave" style="background: var(--bg);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--white)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     3. 4 STEPS TIMELINE
+     ============================== -->
+<section class="steps-section" id="steps">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Roadmap</p>
+      <h2 class="section-title fi delay-1">不労所得化の<span class="accent">4ステップ</span></h2>
+      <p class="section-lead fi delay-2">10ヶ月で「自分でやる」から「報告を受けるだけ」へ。各フェーズの目標と具体的なタスクを時系列で整理。</p>
+    </div>
+
+    <div class="timeline">
+      <!-- Step 1 -->
+      <div class="timeline-item fi">
+        <div class="timeline-dot">1</div>
+        <div class="timeline-header">
+          <span class="timeline-period">Month 1-3</span>
+          <span class="timeline-title">自分でやる</span>
+        </div>
+        <div class="timeline-purpose"><span class="material-icons" style="font-size:16px;">flag</span> 目的: 「型」を作る</div>
+        <div class="timeline-card">
+          <div class="timeline-card-grid">
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>モニター10件を自分たちで対応し、必要な工程を体で覚える</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>1件ごとに手順書を作成。全工程を記録・マニュアル化</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>CLAUDE.md雛形、settings.json雛形、ガードレール、スキルパックを完成</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>パートナーが「上から順にやれば完了」の導入チェックリスト作成</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>「ここまでやったらOK」の品質基準を定義</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="timeline-item fi">
+        <div class="timeline-dot">2</div>
+        <div class="timeline-header">
+          <span class="timeline-period">Month 4-6</span>
+          <span class="timeline-title">パートナーに任せる</span>
+        </div>
+        <div class="timeline-purpose"><span class="material-icons" style="font-size:16px;">flag</span> 目的: 「型」が他人でも再現できることを証明</div>
+        <div class="timeline-card">
+          <div class="timeline-card-grid">
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>パートナー5人を採用・育成（SHIFT AI関連のAI人材）</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>認定プログラム実施。デモ導入を自分たちの前で実施して合格で認定</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>最初の5件は同行して品質確認。6件目から独り立ち</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>報告フォーマットを固め、パートナーの報告を標準化</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="timeline-item fi">
+        <div class="timeline-dot">3</div>
+        <div class="timeline-header">
+          <span class="timeline-period">Month 7-9</span>
+          <span class="timeline-title">仕組み化する</span>
+        </div>
+        <div class="timeline-purpose"><span class="material-icons" style="font-size:16px;">flag</span> 目的: パートナー管理も自動化</div>
+        <div class="timeline-card">
+          <div class="timeline-card-grid">
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>完了報告フォーム + 自動通知の報告システムを構築</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>納品物チェックリスト定型化。品質チェックを自動化</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>SNS + LP + 紹介制度で問い合わせが自動的に入る集客を仕組み化</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>地域/専門/空き状況で自動アサイン。案件振り分けを仕組み化</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>新規パートナーは既存パートナーが育成。育成のOJT化</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="timeline-item fi">
+        <div class="timeline-dot">4</div>
+        <div class="timeline-header">
+          <span class="timeline-period">Month 10〜</span>
+          <span class="timeline-title">報告を受けるだけ</span>
+        </div>
+        <div class="timeline-purpose"><span class="material-icons" style="font-size:16px;">flag</span> 目的: 不労所得の完成</div>
+        <div class="timeline-card">
+          <div class="timeline-card-grid">
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>パートナー完了報告をフォーム通知でチェック（週1回 / 15分）</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>SAEKAさんが月次PLレポートを作成・報告（月1回 / 30分）</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>パートナーMTGでオンライン近況共有（月1回 / 1時間）</span></div>
+            <div class="timeline-task"><span class="material-icons">check_circle</span><span>ランダム抜き打ちで1件の納品物を品質チェック（月1回 / 30分）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Steps → KPI -->
+<div class="wave" style="background: var(--bg-navy);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     4. MONTHLY KPI
+     ============================== -->
+<section class="kpi-section" id="kpi">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Monthly KPI</p>
+      <h2 class="section-title fi delay-1" style="color:var(--white);">月別<span class="accent">目標数値</span></h2>
+      <p class="section-lead fi delay-2">各月の件数・売上・パートナー数・利益を明確に設定。この数字を追いかけることで、不労所得化までの進捗を可視化する。</p>
+    </div>
+    <div class="kpi-table-wrap fi delay-3">
+      <table class="kpi-table">
+        <thead>
+          <tr>
+            <th>月</th>
+            <th>フェーズ</th>
+            <th>月間件数</th>
+            <th>パートナー数</th>
+            <th>月商</th>
+            <th>AIsora Code利益</th>
+            <th>1人あたり収入</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M1</td><td>Step 1</td><td>2件</td><td>0人</td>
+            <td>50万</td><td class="highlight-cell">50万</td><td>25万</td>
+          </tr>
+          <tr>
+            <td>M2</td><td>Step 1</td><td>3件</td><td>0人</td>
+            <td>75万</td><td class="highlight-cell">75万</td><td>37.5万</td>
+          </tr>
+          <tr>
+            <td>M3</td><td>Step 1</td><td>5件</td><td>0人</td>
+            <td>125万</td><td class="highlight-cell">125万</td><td>62.5万</td>
+          </tr>
+          <tr>
+            <td>M4</td><td>Step 2</td><td>8件</td><td>3人</td>
+            <td>200万</td><td class="highlight-cell">114万</td><td>57万</td>
+          </tr>
+          <tr>
+            <td>M5</td><td>Step 2</td><td>12件</td><td>5人</td>
+            <td>300万</td><td class="highlight-cell">146万</td><td>73万</td>
+          </tr>
+          <tr>
+            <td>M6</td><td>Step 2</td><td>16件</td><td>5人</td>
+            <td>400万</td><td class="highlight-cell">178万</td><td>89万</td>
+          </tr>
+          <tr>
+            <td>M7</td><td>Step 3</td><td>24件</td><td>8人</td>
+            <td>600万</td><td class="highlight-cell">218万</td><td>109万</td>
+          </tr>
+          <tr>
+            <td>M8</td><td>Step 3</td><td>30件</td><td>8人</td>
+            <td>750万</td><td class="highlight-cell">266万</td><td>133万</td>
+          </tr>
+          <tr>
+            <td>M9</td><td>Step 3</td><td>35件</td><td>10人</td>
+            <td>875万</td><td class="highlight-cell">300万</td><td>150万</td>
+          </tr>
+          <tr style="background: rgba(212, 168, 83, 0.1);">
+            <td style="color:var(--primary); font-weight:700;">M10</td>
+            <td style="color:var(--primary); font-weight:700;">Step 4</td>
+            <td style="color:var(--primary); font-weight:700;">40件</td>
+            <td style="color:var(--primary); font-weight:700;">10人</td>
+            <td style="color:var(--primary); font-weight:700;">1,000万</td>
+            <td class="highlight-cell" style="font-size:1.1rem;">320万</td>
+            <td style="color:var(--primary); font-weight:700;">160万</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="kpi-note fi delay-4">* Step 1（M1-3）は自分たちで全件対応するため利益率100%。Step 2以降はパートナー報酬（17万/件）を差し引いた利益。</p>
+  </div>
+</section>
+
+<!-- Wave: KPI → Service -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--bg-navy)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     5. SERVICE DETAILS
+     ============================== -->
+<section class="service-section" id="service">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Service</p>
+      <h2 class="section-title fi delay-1">25万円の<span class="accent">提供内容</span></h2>
+      <p class="section-lead fi delay-2">事前ヒアリングから導入日、2週間のサポートまで。1件あたりの提供フローと納品物を明確化。</p>
+    </div>
+
+    <div class="service-flow">
+      <div class="service-card fi">
+        <div class="service-card-tag">Day 0</div>
+        <span class="material-icons">headset_mic</span>
+        <h3>事前ヒアリング</h3>
+        <p>オンライン1時間</p>
+        <ul>
+          <li><span class="material-icons">arrow_right</span>業務内容・課題・ゴールの整理</li>
+          <li><span class="material-icons">arrow_right</span>現在のツール・ワークフロー把握</li>
+          <li><span class="material-icons">arrow_right</span>Before計測（改善前の数値記録）</li>
+        </ul>
+      </div>
+      <div class="service-card fi delay-1">
+        <div class="service-card-tag">Day 1</div>
+        <span class="material-icons">build</span>
+        <h3>導入日</h3>
+        <p>半日〜1日（計6.5時間）</p>
+        <ul>
+          <li><span class="material-icons">arrow_right</span>インストール & 初期設定（30分）</li>
+          <li><span class="material-icons">arrow_right</span>CLAUDE.md設計 & 作成（1.5h）</li>
+          <li><span class="material-icons">arrow_right</span>セキュリティ / ガードレール（1.5h）</li>
+          <li><span class="material-icons">arrow_right</span>カスタムスキル 2〜3個（1.5h）</li>
+          <li><span class="material-icons">arrow_right</span>MCP連携 + ハンズオン研修（1.5h）</li>
+        </ul>
+      </div>
+      <div class="service-card fi delay-2">
+        <div class="service-card-tag">Day 2-14</div>
+        <span class="material-icons">support_agent</span>
+        <h3>アフターサポート</h3>
+        <p>2週間</p>
+        <ul>
+          <li><span class="material-icons">arrow_right</span>チャット質問対応（1日1回）</li>
+          <li><span class="material-icons">arrow_right</span>CLAUDE.md / スキル微調整（1回）</li>
+          <li><span class="material-icons">arrow_right</span>2週間後にAfter計測</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deliverables fi">
+      <h3><span class="material-icons" style="vertical-align:middle; color:var(--primary); margin-right:8px;">inventory_2</span>納品物一覧</h3>
+      <div class="deliverables-grid">
+        <div class="deliverable-item"><span class="material-icons">description</span>CLAUDE.md</div>
+        <div class="deliverable-item"><span class="material-icons">settings</span>settings.json</div>
+        <div class="deliverable-item"><span class="material-icons">security</span>ガードレール設定書</div>
+        <div class="deliverable-item"><span class="material-icons">auto_awesome</span>カスタムスキル 2-3個</div>
+        <div class="deliverable-item"><span class="material-icons">hub</span>MCP連携設定</div>
+        <div class="deliverable-item"><span class="material-icons">menu_book</span>導入マニュアル</div>
+        <div class="deliverable-item"><span class="material-icons">analytics</span>BeforeAfterレポート</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Service → Revenue -->
+<div class="wave" style="background: var(--bg);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--white)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     6. REVENUE STRUCTURE
+     ============================== -->
+<section class="revenue-section" id="revenue">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Revenue</p>
+      <h2 class="section-title fi delay-1">収益<span class="accent">構造</span></h2>
+      <p class="section-lead fi delay-2">1件25万円の売上からパートナー報酬を引いた粗利構造と、月商1,000万円時の全体収益を図解。</p>
+    </div>
+
+    <div class="revenue-grid">
+      <div class="revenue-card fi">
+        <h3><span class="material-icons">receipt_long</span>1件あたりの分配</h3>
+        <div class="revenue-row">
+          <span class="revenue-label">クライアントへの請求</span>
+          <span class="revenue-value">25万円</span>
+        </div>
+        <div class="revenue-row">
+          <span class="revenue-label">パートナー報酬（68%）</span>
+          <span class="revenue-value">17万円</span>
+        </div>
+        <div class="revenue-total">
+          <span class="revenue-label">AIsora Code マージン（32%）</span>
+          <span class="revenue-value gold">8万円</span>
+        </div>
+      </div>
+
+      <div class="revenue-card dark fi delay-1">
+        <h3 style="color:var(--white);"><span class="material-icons">account_balance</span>月商1,000万時</h3>
+        <div class="revenue-row">
+          <span class="revenue-label">月間件数</span>
+          <span class="revenue-value" style="color:var(--white);">40件</span>
+        </div>
+        <div class="revenue-row">
+          <span class="revenue-label">パートナー数</span>
+          <span class="revenue-value" style="color:var(--white);">10人（各月4件）</span>
+        </div>
+        <div class="revenue-row">
+          <span class="revenue-label">パートナー報酬合計</span>
+          <span class="revenue-value" style="color:var(--white);">680万円</span>
+        </div>
+        <div class="revenue-row">
+          <span class="revenue-label">AIsora Code取り分</span>
+          <span class="revenue-value gold">320万円/月</span>
+        </div>
+        <div class="revenue-total">
+          <span class="revenue-label">Aosy / SAEKA 各取り分</span>
+          <span class="revenue-value gold">160万円/月</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Revenue → Roles -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     7. ROLES
+     ============================== -->
+<section class="roles-section" id="roles">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Roles</p>
+      <h2 class="section-title fi delay-1">Aosy x SAEKA<span class="accent">役割分担</span></h2>
+      <p class="section-lead fi delay-2">2人の強みを活かした役割分担で、事業の立ち上げから不労所得化まで効率的に推進。</p>
+    </div>
+
+    <div class="roles-grid">
+      <div class="role-card aosy fi">
+        <div class="role-avatar">A</div>
+        <h3>Aosy</h3>
+        <p class="role-subtitle">サービス設計 / パートナー統括 / ブランディング</p>
+        <ul class="role-list">
+          <li><span class="material-icons">star</span>Claude Code導入支援の「型」設計（CLAUDE.md、スキルパック、ガードレール）</li>
+          <li><span class="material-icons">star</span>パートナーの採用・育成・認定プログラム運営</li>
+          <li><span class="material-icons">star</span>チームをまとめるリーダーシップ</li>
+          <li><span class="material-icons">star</span>SNS発信・ブランド構築・集客戦略</li>
+          <li><span class="material-icons">star</span>品質基準の策定と抜き打ちチェック</li>
+        </ul>
+      </div>
+      <div class="role-card saeka fi delay-1">
+        <div class="role-avatar">S</div>
+        <h3>SAEKA</h3>
+        <p class="role-subtitle">PL管理 / 事業戦略 / オペレーション</p>
+        <ul class="role-list">
+          <li><span class="material-icons">star</span>収支管理・月次PLレポート作成</li>
+          <li><span class="material-icons">star</span>事業戦略の策定・KPIモニタリング</li>
+          <li><span class="material-icons">star</span>報告システム・案件アサインの仕組み構築</li>
+          <li><span class="material-icons">star</span>パートナー報酬管理・契約手続き</li>
+          <li><span class="material-icons">star</span>小規模事業者向けAI支援の知見提供</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave: Roles → Actions -->
+<div class="wave" style="background: var(--bg-navy);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="var(--white)"/>
+  </svg>
+</div>
+
+<!-- ==============================
+     8. NEXT ACTIONS
+     ============================== -->
+<section class="actions-section" id="actions">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Next Actions</p>
+      <h2 class="section-title fi delay-1" style="color:var(--white);">今すぐ<span class="accent">やるべきこと</span></h2>
+      <p class="section-lead fi delay-2">不労所得化への第一歩。優先度の高いものから順に着手する。</p>
+    </div>
+
+    <div class="actions-grid">
+      <div class="action-card fi">
+        <span class="action-priority high">最優先</span>
+        <h3>SAEKAさんとビジョンすり合わせ</h3>
+        <p>このロードマップをベースに、2人のビジョン・役割・スケジュールを合意する。ここが全ての起点。</p>
+      </div>
+      <div class="action-card fi delay-1">
+        <span class="action-priority high">最優先</span>
+        <h3>設定テンプレート一式の作成</h3>
+        <p>CLAUDE.md雛形、settings.json雛形、ガードレール、スキルパックを標準化。パートナーが再現できる「型」に仕上げる。</p>
+      </div>
+      <div class="action-card fi delay-2">
+        <span class="action-priority high">最優先</span>
+        <h3>導入チェックリスト作成</h3>
+        <p>「これを上から順にやれば完了」の状態を作る。品質のバラつきをゼロにする最重要ツール。</p>
+      </div>
+      <div class="action-card fi delay-3">
+        <span class="action-priority mid">今週中</span>
+        <h3>モニター3件獲得</h3>
+        <p>SHIFT AIネットワークから最初の3件を獲得。実践でテンプレートの精度を上げる。</p>
+      </div>
+      <div class="action-card fi delay-4">
+        <span class="action-priority mid">今週中</span>
+        <h3>SNS発信開始</h3>
+        <p>Claude Code導入支援の認知を広げる。実績が出たらBeforeAfterを発信して集客につなげる。</p>
+      </div>
+      <div class="action-card fi delay-5">
+        <span class="action-priority mid">今週中</span>
+        <h3>SHIFT AI副業ポリシー確認</h3>
+        <p>所属企業の副業規定を確認。問題があれば事前に調整。リスクをゼロにしてから動く。</p>
+      </div>
+    </div>
+
+    <div class="final-cta-wrap fi">
+      <p class="final-message">AIsora Code - AI時代の次の入口を開く</p>
+      <a href="#hero" class="btn-primary">
+        <span class="material-icons" style="font-size:18px;">arrow_upward</span>
+        トップに戻る
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="section-inner">
+    <p>AIsora<span class="accent">Code</span> - Aosy x SAEKA | Claude Code Setup Support</p>
+    <p style="margin-top: 8px; opacity: 0.5;">Confidential - Internal Use Only</p>
+  </div>
+</footer>
+
+<script>
+// Scroll Progress Bar
+const scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', () => {
+  const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  scrollBar.style.width = scrolled + '%';
+}, { passive: true });
+
+// Nav Scroll Effect
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// Scroll Animation (Intersection Observer)
+document.addEventListener('DOMContentLoaded', () => {
+  const items = Array.from(document.querySelectorAll('.fi'));
+  const show = el => el.classList.add('visible');
+  if (!('IntersectionObserver' in window)) { items.forEach(show); return; }
+  const io = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { show(entry.target); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.06 });
+  items.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) show(el);
+    else io.observe(el);
+  });
+});
+
+// Smooth Scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
