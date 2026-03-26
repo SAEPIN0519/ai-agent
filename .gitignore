@@ -29,3 +29,11 @@ Thumbs.db
 slack_bot_token.txt
 slack_user_token.txt
 anthropic_api_key.txt
+line_*_access_token.txt
+line_*_channel_secret.txt
+
+# 一時プレビュー
+temp_preview.html
+
+# 動画出力
+video-output/

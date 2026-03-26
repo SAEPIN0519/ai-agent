@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIsora Code | AI経営パートナー構築プログラム</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1976D2;
+  --primary-dark:#0D47A1;
+  --primary-light:#5BB8E8;
+  --sky:#5BB8E8;
+  --sky-light:#89D4F5;
+  --accent:#E87A3D;
+  --accent-glow:rgba(232,122,61,0.35);
+  --bg:#F5F7FA;
+  --bg-dark:#E8EDF5;
+  --white:#FFFFFF;
+  --text:#0D1B2A;
+  --text-muted:#546E7A;
+  --text-light:rgba(255,255,255,0.85);
+  --border:rgba(21,101,192,0.12);
+  --shadow:0 4px 24px rgba(21,101,192,0.1);
+  --radius:12px;
+  --radius-sm:6px;
+  --hero-dark:#0D1B2A;
+  --hero-mid:#1a3352;
+  --navy:#0F2847;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP','Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.8;overflow-x:hidden}
+
+/* Scroll Progress */
+.scroll-indicator{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--hero-dark),var(--sky),var(--sky-light),var(--accent));z-index:200;width:0%;transition:width 0.1s}
+
+/* Nav */
+#mainNav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;transition:all 0.4s}
+#mainNav.scrolled{background:rgba(13,27,42,0.95);backdrop-filter:blur(16px);box-shadow:0 2px 30px rgba(0,0,0,0.2);padding:12px 40px}
+.nav-logo{font-size:1.3rem;font-weight:700;color:var(--white);text-decoration:none;letter-spacing:-0.02em}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{color:var(--text-light);text-decoration:none;font-size:0.9rem;font-weight:400;transition:color 0.3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:50px;background:var(--accent);color:var(--white);font-size:0.85rem;font-weight:700;text-decoration:none;transition:all 0.3s;box-shadow:0 2px 12px var(--accent-glow)}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+@media(max-width:768px){
+  .nav-links{display:none}
+  #mainNav{padding:16px 20px}
+  .nav-cta{padding:8px 16px;font-size:0.8rem}
+}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(160deg,var(--hero-dark) 0%,var(--hero-mid) 40%,#1a3a5c 100%)}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:0.18}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.12;animation:float 10s ease-in-out infinite}
+.hero-blob-1{width:500px;height:500px;background:var(--sky);top:-100px;right:-100px}
+.hero-blob-2{width:400px;height:400px;background:var(--sky-light);bottom:-100px;left:-50px;animation-delay:3s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+.hero-inner{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:120px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-content{color:var(--white)}
+.hero-eyebrow{font-size:0.85rem;font-weight:500;color:var(--primary-light);letter-spacing:0.1em;margin-bottom:16px;text-transform:uppercase}
+.hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:900;line-height:1.15;margin-bottom:24px;word-break:keep-all;letter-spacing:-0.03em}
+.hero h1 .accent{color:var(--accent);display:inline}
+.hero-sub{font-size:1.1rem;color:var(--text-light);line-height:1.8;margin-bottom:40px;max-width:500px}
+.hero-cta-group{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:18px 40px;border-radius:50px;background:var(--accent);color:var(--white);font-size:1rem;font-weight:700;text-decoration:none;transition:all 0.3s;box-shadow:0 4px 24px var(--accent-glow)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 36px var(--accent-glow)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:18px 40px;border-radius:50px;background:transparent;color:var(--white);font-size:1rem;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,0.3);transition:all 0.3s}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.5)}
+.hero-visual{position:relative}
+.hero-visual img{width:100%;border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.hero-stat-badge{position:absolute;bottom:-20px;left:-20px;background:var(--white);padding:20px 24px;border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+.hero-stat-num{font-size:2rem;font-weight:900;color:var(--primary);line-height:1}
+.hero-stat-label{font-size:0.75rem;color:var(--text-muted);margin-top:4px}
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;padding:100px 20px 60px;gap:40px;text-align:center}
+  .hero-sub{margin:0 auto 32px}
+  .hero-cta-group{justify-content:center}
+  .hero-stat-badge{left:50%;transform:translateX(-50%);bottom:-16px}
+}
+
+/* Section Common */
+section{padding:100px 0}
+.section-inner{max-width:1100px;margin:0 auto;padding:0 24px}
+.section-eyebrow{font-size:0.8rem;font-weight:600;color:var(--primary);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;text-align:center}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;text-align:center;margin-bottom:16px;line-height:1.3;word-break:keep-all}
+.section-title .accent{color:var(--accent)}
+.section-lead{font-size:1rem;color:var(--text-muted);text-align:center;max-width:700px;margin:0 auto 60px;line-height:1.8}
+
+/* Section Divider — gradient transition instead of wave */
+.section-divider{height:80px;background:linear-gradient(180deg,var(--from,var(--hero-dark)),var(--to,var(--white)))}
+
+/* Problem */
+.problem{background:var(--white)}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:48px}
+.problem-card{padding:32px 28px;border-radius:var(--radius);background:var(--bg);border:1px solid var(--border);transition:all 0.3s}
+.problem-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.problem-card .material-icons{font-size:2rem;color:var(--primary);margin-bottom:16px}
+.problem-card h3{font-size:1.1rem;font-weight:700;margin-bottom:10px}
+.problem-card p{font-size:0.9rem;color:var(--text-muted);line-height:1.7}
+.problem-quote{text-align:center;font-size:1.2rem;font-weight:500;color:var(--text);padding:32px;background:linear-gradient(135deg,rgba(21,101,192,0.05),rgba(232,122,61,0.05));border-radius:var(--radius);border-left:4px solid var(--accent)}
+@media(max-width:768px){.problem-grid{grid-template-columns:1fr}}
+
+/* Data */
+.data-section{background:linear-gradient(160deg,var(--hero-dark),var(--navy));color:var(--white);position:relative;overflow:hidden}
+.data-section::before{content:'';position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle,rgba(66,165,245,0.1),transparent);border-radius:50%}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-bottom:60px}
+.stat-box{text-align:center;padding:40px 20px;border-radius:var(--radius);background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.08)}
+.stat-num{font-size:clamp(2.5rem,5vw,3.5rem);font-weight:900;background:linear-gradient(135deg,var(--primary-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-num span{font-size:0.6em}
+.stat-label{font-size:0.9rem;color:rgba(255,255,255,0.7);margin-top:12px;line-height:1.5}
+.stat-source{font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:6px}
+.data-insight{text-align:center;max-width:800px;margin:0 auto;padding:40px;border-radius:var(--radius);background:rgba(232,122,61,0.1);border:1px solid rgba(232,122,61,0.2)}
+.data-insight p{font-size:1.1rem;font-weight:500;color:rgba(255,255,255,0.9);line-height:1.7}
+.data-insight strong{color:var(--accent)}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr}}
+
+/* Solution */
+.solution{background:var(--white)}
+.solution-main{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:60px}
+.solution-content h3{font-size:1.6rem;font-weight:700;margin-bottom:20px;line-height:1.4}
+.solution-content p{font-size:1rem;color:var(--text-muted);margin-bottom:24px;line-height:1.8}
+.solution-list{list-style:none;display:flex;flex-direction:column;gap:16px}
+.solution-list li{display:flex;align-items:flex-start;gap:12px;font-size:0.95rem}
+.solution-list .material-icons{color:var(--primary);font-size:1.2rem;margin-top:2px;flex-shrink:0}
+.solution-visual{position:relative}
+.solution-visual img{width:100%;border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.1)}
+@media(max-width:768px){.solution-main{grid-template-columns:1fr}}
+
+/* Program */
+.program{background:var(--bg)}
+.program-timeline{display:flex;flex-direction:column;gap:0;position:relative;max-width:900px;margin:0 auto}
+.program-timeline::before{content:'';position:absolute;left:32px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--primary-light),var(--accent))}
+.program-month{display:flex;gap:40px;padding:40px 0;position:relative}
+.program-month-marker{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:900;font-size:0.85rem;flex-shrink:0;z-index:1;box-shadow:0 4px 16px rgba(21,101,192,0.3)}
+.program-month-content{flex:1;background:var(--white);padding:32px;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid var(--border)}
+.program-month-content h3{font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--primary-dark)}
+.program-month-content .month-subtitle{font-size:0.85rem;color:var(--accent);font-weight:600;margin-bottom:16px}
+.program-month-content ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.program-month-content li{display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:var(--text-muted)}
+.program-month-content li .material-icons{color:var(--primary-light);font-size:1rem;margin-top:3px;flex-shrink:0}
+.program-deliverable{margin-top:16px;padding:12px 16px;background:var(--bg);border-radius:var(--radius-sm);font-size:0.85rem;color:var(--text)}
+.program-deliverable strong{color:var(--primary-dark)}
+@media(max-width:768px){
+  .program-month{flex-direction:column;gap:16px;padding-left:20px}
+  .program-timeline::before{left:12px}
+  .program-month-marker{width:48px;height:48px;font-size:0.75rem}
+}
+
+/* Quiz — sky blue gradient (story: getting brighter) */
+.quiz-section{background:linear-gradient(180deg,var(--white) 0%,#E8F4FD 100%)}
+.quiz-container{max-width:700px;margin:0 auto;background:var(--bg);border-radius:var(--radius);padding:48px;border:1px solid var(--border)}
+.quiz-progress{display:flex;gap:8px;margin-bottom:32px}
+.quiz-progress-dot{width:100%;height:4px;border-radius:2px;background:var(--border);transition:background 0.3s}
+.quiz-progress-dot.active{background:var(--primary)}
+.quiz-progress-dot.done{background:var(--accent)}
+.quiz-question{font-size:1.15rem;font-weight:700;margin-bottom:24px;line-height:1.5;min-height:60px}
+.quiz-options{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.quiz-option{padding:16px 20px;border-radius:var(--radius-sm);border:2px solid var(--border);cursor:pointer;font-size:0.95rem;transition:all 0.2s;background:var(--white)}
+.quiz-option:hover{border-color:var(--primary-light);background:rgba(21,101,192,0.03)}
+.quiz-option.selected{border-color:var(--primary);background:rgba(21,101,192,0.06);font-weight:600}
+.quiz-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;background:var(--primary);color:var(--white);font-size:0.95rem;font-weight:600;border:none;cursor:pointer;transition:all 0.3s}
+.quiz-btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.quiz-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.quiz-result{display:none;text-align:center}
+.quiz-score{font-size:4rem;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.quiz-score-label{font-size:1rem;color:var(--text-muted);margin-bottom:16px}
+.quiz-verdict{font-size:1.2rem;font-weight:700;margin-bottom:24px;line-height:1.5}
+.quiz-detail{font-size:0.9rem;color:var(--text-muted);margin-bottom:32px;line-height:1.7}
+
+/* Comparison — light sky */
+.comparison{background:linear-gradient(180deg,#E8F4FD 0%,#D4EDFC 100%)}
+.comparison-table{max-width:900px;margin:0 auto;border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.comparison-table table{width:100%;border-collapse:collapse;background:var(--white)}
+.comparison-table th{padding:20px 24px;font-size:0.85rem;font-weight:600;text-align:left;border-bottom:2px solid var(--border)}
+.comparison-table th:first-child{width:30%}
+.comparison-table th:last-child{background:linear-gradient(135deg,rgba(21,101,192,0.08),rgba(232,122,61,0.05));color:var(--primary-dark)}
+.comparison-table td{padding:16px 24px;font-size:0.9rem;border-bottom:1px solid var(--border);vertical-align:top}
+.comparison-table td:last-child{background:rgba(21,101,192,0.02)}
+.comparison-table .material-icons.check{color:#4CAF50;font-size:1.1rem}
+.comparison-table .material-icons.close{color:#BDBDBD;font-size:1.1rem}
+@media(max-width:768px){
+  .comparison-table{font-size:0.8rem;overflow-x:auto}
+  .comparison-table th,.comparison-table td{padding:12px}
+}
+
+/* Testimonials — bright and warm */
+.testimonials{background:linear-gradient(180deg,#D4EDFC 0%,#F0F8FF 100%)}
+.testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.testimonial-card{padding:32px;border-radius:var(--radius);background:var(--bg);border:1px solid var(--border)}
+.testimonial-stars{color:var(--accent);font-size:0.9rem;margin-bottom:16px;letter-spacing:2px}
+.testimonial-text{font-size:0.9rem;color:var(--text);line-height:1.7;margin-bottom:20px;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:12px}
+.testimonial-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center}
+.testimonial-avatar .material-icons{color:var(--white);font-size:1.2rem}
+.testimonial-name{font-size:0.85rem;font-weight:600}
+.testimonial-role{font-size:0.75rem;color:var(--text-muted)}
+@media(max-width:768px){.testimonial-grid{grid-template-columns:1fr}}
+
+/* Pricing — warm light */
+.pricing{background:linear-gradient(180deg,#F0F8FF 0%,#FFF8F0 100%)}
+.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:900px;margin:0 auto}
+.pricing-card{padding:40px;border-radius:var(--radius);background:var(--white);border:1px solid var(--border);transition:all 0.3s}
+.pricing-card.featured{border:2px solid var(--primary);position:relative;box-shadow:0 8px 40px rgba(21,101,192,0.12)}
+.pricing-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--white);padding:6px 20px;border-radius:50px;font-size:0.75rem;font-weight:700;white-space:nowrap}
+.pricing-name{font-size:1rem;font-weight:600;color:var(--text-muted);margin-bottom:8px}
+.pricing-price{font-size:2.5rem;font-weight:900;color:var(--text);margin-bottom:4px;line-height:1}
+.pricing-price span{font-size:0.9rem;font-weight:400;color:var(--text-muted)}
+.pricing-note{font-size:0.8rem;color:var(--text-muted);margin-bottom:24px}
+.pricing-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.pricing-features li{display:flex;align-items:center;gap:10px;font-size:0.9rem}
+.pricing-features .material-icons{color:var(--primary);font-size:1rem}
+@media(max-width:768px){.pricing-cards{grid-template-columns:1fr}}
+
+/* FAQ — warm */
+.faq{background:linear-gradient(180deg,#FFF8F0 0%,#FFF5EB 100%)}
+.faq-list{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--bg)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:background 0.2s}
+.faq-q:hover{background:var(--bg-dark)}
+.faq-q .material-icons{transition:transform 0.3s;color:var(--text-muted)}
+.faq-item.open .faq-q .material-icons{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease;padding:0 24px}
+.faq-item.open .faq-a{max-height:300px;padding:0 24px 20px}
+.faq-a p{font-size:0.9rem;color:var(--text-muted);line-height:1.7}
+
+/* Final CTA — bright sky, the destination of the journey */
+.final-cta{background:linear-gradient(160deg,#2980B9 0%,#5BB8E8 40%,#89D4F5 100%);color:var(--white);text-align:center;padding:100px 24px;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,0.15),transparent);border-radius:50%}
+.final-cta h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:20px;position:relative;word-break:keep-all}
+.final-cta p{font-size:1.05rem;color:rgba(255,255,255,0.75);margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.8;position:relative}
+.final-cta .btn-primary{font-size:1.1rem;padding:20px 48px;position:relative}
+
+/* Footer */
+footer{background:#2980B9;color:rgba(255,255,255,0.7);text-align:center;padding:40px 24px;font-size:0.8rem}
+footer a{color:rgba(255,255,255,0.8);text-decoration:none}
+
+/* Animation */
+.fi{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
+.fi.visible{opacity:1;transform:translateY(0)}
+.fi.delay-1{transition-delay:0.1s}
+.fi.delay-2{transition-delay:0.2s}
+.fi.delay-3{transition-delay:0.3s}
+.fi.delay-4{transition-delay:0.4s}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div class="scroll-indicator" id="scrollBar"></div>
+
+<!-- Nav -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">AIsora<span>Code</span></a>
+  <ul class="nav-links">
+    <li><a href="#problem">課題</a></li>
+    <li><a href="#solution">解決策</a></li>
+    <li><a href="#program">プログラム</a></li>
+    <li><a href="#quiz">AI診断</a></li>
+    <li><a href="#pricing">料金</a></li>
+  </ul>
+  <a href="#final-cta" class="nav-cta"><span class="material-icons" style="font-size:1rem">arrow_forward</span>無料相談</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-bg"><img src="assets/hero_v3.png" alt=""></div>
+  <div class="hero-inner">
+    <div class="hero-content fi">
+      <p class="hero-eyebrow">AI Management Partner Program</p>
+      <h1>雇えないなら、<span class="accent">作ればいい。</span></h1>
+      <p class="hero-sub">人を増やせなくても、AIがあなた専用の右腕になる。3ヶ月で「24時間365日稼働する経営パートナー」を構築するプログラムです。</p>
+      <div class="hero-cta-group">
+        <a href="#final-cta" class="btn-primary"><span class="material-icons">arrow_forward</span>無料相談に申し込む</a>
+        <a href="#quiz" class="btn-secondary"><span class="material-icons">quiz</span>AI導入度を診断する</a>
+      </div>
+    </div>
+    <div class="hero-visual fi delay-2">
+      <img src="assets/hero_v3.png" alt="AI経営パートナーのイメージ">
+      <div class="hero-stat-badge">
+        <div class="hero-stat-num">61<span style="font-size:1.2rem">%</span></div>
+        <div class="hero-stat-label">社長直轄のAI推進企業の成果率</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider: Hero → Problem -->
+<div class="section-divider" style="--from:var(--hero-dark);--to:var(--white)"></div>
+
+<!-- Problem -->
+<section class="problem" id="problem">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Problem</p>
+    <h2 class="section-title fi">社長、一人で<span class="accent">全部抱えて</span>いませんか？</h2>
+    <p class="section-lead fi">経営判断から事務作業まで、すべてを一人で背負う毎日。人を雇いたくても雇えない。そんな状況を、AIが変えます。</p>
+    <div class="problem-grid">
+      <div class="problem-card fi">
+        <span class="material-icons">schedule</span>
+        <h3>本業に集中できない</h3>
+        <p>見積書作成、請求書発行、メール返信、SNS投稿...事務作業に追われ、本来やるべき経営判断の時間がない。</p>
+      </div>
+      <div class="problem-card fi delay-1">
+        <span class="material-icons">person_off</span>
+        <h3>人を雇えない</h3>
+        <p>求人を出しても応募がない。採用コストも教育コストもかかる。2025年の人手不足倒産は過去最多を記録。</p>
+      </div>
+      <div class="problem-card fi delay-2">
+        <span class="material-icons">forum</span>
+        <h3>相談相手がいない</h3>
+        <p>経営の悩みを誰にも話せない。1人社長の約半数に相談相手がいないというデータも。孤独な意思決定が続く。</p>
+      </div>
+    </div>
+    <div class="problem-quote fi">
+      <p>「忙しいのに利益が出ない。人を雇う余裕もない。AIが気になるけど、何から始めれば...」<br>そんなあなたに、AIsora Codeは生まれました。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Divider: Problem → Data -->
+<div class="section-divider" style="--from:var(--white);--to:var(--hero-dark)"></div>
+<section class="data-section" id="data">
+  <div class="section-inner">
+    <p class="section-eyebrow fi" style="color:var(--primary-light)">Market Data</p>
+    <h2 class="section-title fi" style="color:var(--white)">データが証明する、<span class="accent">社長直轄AI</span>の威力</h2>
+    <p class="section-lead fi" style="color:rgba(255,255,255,0.6)">PwC Japanの調査結果。AIの成果を左右するのは、ツールではなく「誰が推進するか」です。</p>
+    <div class="stats-row">
+      <div class="stat-box fi">
+        <div class="stat-num">61<span>%</span></div>
+        <div class="stat-label">社長が直接推進した企業のAI成果率</div>
+        <div class="stat-source">PwC Japan 2025年調査</div>
+      </div>
+      <div class="stat-box fi delay-1">
+        <div class="stat-num">8<span>%</span></div>
+        <div class="stat-label">社長が関与しなかった企業のAI成果率</div>
+        <div class="stat-source">PwC Japan 2025年調査</div>
+      </div>
+      <div class="stat-box fi delay-2">
+        <div class="stat-num">7.6<span>x</span></div>
+        <div class="stat-label">社長直轄で成果率が7.6倍に</div>
+        <div class="stat-source">61% / 8% = 7.6倍</div>
+      </div>
+    </div>
+    <div class="data-insight fi">
+      <p><strong>社長自身がAIを使いこなせるかどうか</strong>が、会社全体のAI成果を決めています。部下に任せるだけでは、成果は出ません。<br><strong>経営者だからこそ、AIを最も活用できる。</strong>それがデータの示す事実です。</p>
+    </div>
+  </div>
+</section>
+<!-- Divider: Data → Solution -->
+<div class="section-divider" style="--from:var(--hero-dark);--to:var(--white)"></div>
+
+<!-- Solution -->
+<section class="solution" id="solution">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Solution</p>
+    <h2 class="section-title fi">AI経営パートナー<span class="accent">構築</span>プログラム</h2>
+    <p class="section-lead fi">3ヶ月で、あなた専用の「AI経営パートナー」を構築します。プログラム終了後、あなたのPCには24時間365日稼働する右腕が残ります。</p>
+    <div class="solution-main">
+      <div class="solution-content fi">
+        <h3>「コーチング」ではありません。「構築」です。</h3>
+        <p>一般的なAI研修は「使い方を教えて終わり」。AIsora Codeは違います。あなたの経営理念、判断基準、業務フローを深く理解したAIを、一緒に作り上げます。</p>
+        <ul class="solution-list">
+          <li><span class="material-icons">check_circle</span>あなたの思考パターンを理解したAIが、24時間経営判断を壁打ち</li>
+          <li><span class="material-icons">check_circle</span>見積書・請求書・メール返信を、あなたの文体で自動生成</li>
+          <li><span class="material-icons">check_circle</span>SNS投稿・LP作成・顧客対応もAIがサポート</li>
+          <li><span class="material-icons">check_circle</span>プログラム終了後も、AIパートナーは永続的に稼働</li>
+        </ul>
+      </div>
+      <div class="solution-visual fi delay-2">
+        <img src="assets/before_after.png" alt="Before After">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Program -->
+<section class="program" id="program">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Program</p>
+    <h2 class="section-title fi"><span class="accent">3ヶ月</span>で社長の右腕を構築する</h2>
+    <p class="section-lead fi">月2回のセッション + チャットサポートで、確実にAI経営パートナーを完成させます。</p>
+    <div class="program-timeline">
+      <div class="program-month fi">
+        <div class="program-month-marker">M1</div>
+        <div class="program-month-content">
+          <h3>AI社員の誕生</h3>
+          <div class="month-subtitle">あなたの頭の中をAIに移植する</div>
+          <ul>
+            <li><span class="material-icons">check</span>業務の棚卸し（何に時間を使っているか可視化）</li>
+            <li><span class="material-icons">check</span>経営理念・判断基準・業務フローの言語化</li>
+            <li><span class="material-icons">check</span>社長専用CLAUDE.md（AI設計書）の構築</li>
+            <li><span class="material-icons">check</span>最初のタスク委任体験（「おお、こんなことできるのか」）</li>
+          </ul>
+          <div class="program-deliverable"><strong>納品物:</strong> 社長専用CLAUDE.md（初版）+ 環境設定済みPC</div>
+        </div>
+      </div>
+      <div class="program-month fi delay-1">
+        <div class="program-month-marker">M2</div>
+        <div class="program-month-content">
+          <h3>業務の自動化</h3>
+          <div class="month-subtitle">最も時間を食う業務をAIに任せる</div>
+          <ul>
+            <li><span class="material-icons">check</span>社長の最大のボトルネック業務を特定</li>
+            <li><span class="material-icons">check</span>その業務をClaude Codeで完全自動化</li>
+            <li><span class="material-icons">check</span>週次で改善・チューニング</li>
+            <li><span class="material-icons">check</span>「もうこれなしでは仕事できない」状態へ</li>
+          </ul>
+          <div class="program-deliverable"><strong>納品物:</strong> 自動化ワークフロー1本 + 業務テンプレート</div>
+        </div>
+      </div>
+      <div class="program-month fi delay-2">
+        <div class="program-month-marker">M3</div>
+        <div class="program-month-content">
+          <h3>自走体制の確立</h3>
+          <div class="month-subtitle">コーチなしで、どんどん拡張できる状態に</div>
+          <ul>
+            <li><span class="material-icons">check</span>社長が一人でAIに新しい仕事を任せる練習</li>
+            <li><span class="material-icons">check</span>トラブルシューティングの型を習得</li>
+            <li><span class="material-icons">check</span>社内展開の準備（社員にも使わせたい場合）</li>
+            <li><span class="material-icons">check</span>卒業テスト + 今後の拡張ロードマップ作成</li>
+          </ul>
+          <div class="program-deliverable"><strong>納品物:</strong> 完成版CLAUDE.md + 業務マニュアル + 拡張ロードマップ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section" id="quiz">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">AI Readiness Check</p>
+    <h2 class="section-title fi">あなたの会社の<span class="accent">AI導入度</span>を診断</h2>
+    <p class="section-lead fi">5つの質問に答えるだけ。30秒であなたの会社のAI活用ポテンシャルがわかります。</p>
+    <div class="quiz-container fi">
+      <div class="quiz-progress" id="quizProgress"></div>
+      <div id="quizBody">
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <button class="quiz-btn" id="quizNext" disabled onclick="nextQuestion()">
+          次へ <span class="material-icons" style="font-size:1rem">arrow_forward</span>
+        </button>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="quiz-score" id="quizScore"></div>
+        <div class="quiz-score-label">/ 100点</div>
+        <div class="quiz-verdict" id="quizVerdict"></div>
+        <div class="quiz-detail" id="quizDetail"></div>
+        <a href="#final-cta" class="btn-primary"><span class="material-icons">arrow_forward</span>無料相談で詳しく聞く</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section class="comparison" id="comparison">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Why AIsora Code</p>
+    <h2 class="section-title fi">他のAI研修との<span class="accent">違い</span></h2>
+    <p class="section-lead fi">「使い方を教える」だけのAI研修とは、根本的にアプローチが異なります。</p>
+    <div class="comparison-table fi">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>一般的なAI研修</th>
+            <th>AIsora Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ゴール</strong></td>
+            <td>AIツールの使い方を覚える</td>
+            <td>社長専用のAI経営パートナーが完成する</td>
+          </tr>
+          <tr>
+            <td><strong>カスタマイズ</strong></td>
+            <td>汎用的な教材</td>
+            <td>あなたの業種・業務に完全最適化</td>
+          </tr>
+          <tr>
+            <td><strong>終了後</strong></td>
+            <td>知識は残るが、仕組みは残らない</td>
+            <td>24時間稼働するAIパートナーが永続的に残る</td>
+          </tr>
+          <tr>
+            <td><strong>納品物</strong></td>
+            <td>修了証のみ</td>
+            <td>CLAUDE.md + ワークフロー + マニュアル一式</td>
+          </tr>
+          <tr>
+            <td><strong>対象</strong></td>
+            <td>エンジニア・IT担当者向け</td>
+            <td>経営者に特化（ITスキル不要）</td>
+          </tr>
+          <tr>
+            <td><strong>サポート</strong></td>
+            <td>講座期間のみ</td>
+            <td>チャットサポート + 月2回の個別セッション</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials" id="testimonials">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Voice</p>
+    <h2 class="section-title fi">こんな<span class="accent">変化</span>が生まれます</h2>
+    <p class="section-lead fi">AIsora Codeで実現できる、具体的なビジネス改善のイメージです。</p>
+    <div class="testimonial-grid">
+      <div class="testimonial-card fi">
+        <div class="testimonial-text">「毎月の請求書作成に丸1日かかっていたのが、AIに任せたら30分で終わるようになった。月20時間以上の時間が生まれました。」</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar"><span class="material-icons">person</span></div>
+          <div>
+            <div class="testimonial-name">税理士事務所 所長</div>
+            <div class="testimonial-role">社員3名 / 導入1ヶ月目</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fi delay-1">
+        <div class="testimonial-text">「一人で経営の悩みを抱えていたけど、AIに壁打ちできるようになって、意思決定のスピードが格段に上がった。夜中でも相談できるのが心強い。」</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar"><span class="material-icons">person</span></div>
+          <div>
+            <div class="testimonial-name">不動産会社 代表</div>
+            <div class="testimonial-role">社員5名 / 導入2ヶ月目</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fi delay-2">
+        <div class="testimonial-text">「SNS投稿が苦手で更新が止まっていたのに、AIが自分の文体で下書きを作ってくれるので、週3回の投稿が無理なく続けられるようになった。」</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar"><span class="material-icons">person</span></div>
+          <div>
+            <div class="testimonial-name">カフェオーナー</div>
+            <div class="testimonial-role">社員2名 / 導入3ヶ月目</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">Pricing</p>
+    <h2 class="section-title fi">料金<span class="accent">プラン</span></h2>
+    <p class="section-lead fi">まずは体験セッションで、AIの可能性を実感してください。</p>
+    <div class="pricing-cards">
+      <div class="pricing-card fi">
+        <div class="pricing-name">AI社員体験セッション</div>
+        <div class="pricing-price">3<span>万円（税別）</span></div>
+        <div class="pricing-note">90分 / あなたの課題1つをAIがその場で解決</div>
+        <ul class="pricing-features">
+          <li><span class="material-icons">check_circle</span>事前ヒアリング（課題の特定）</li>
+          <li><span class="material-icons">check_circle</span>AI社員のデモンストレーション</li>
+          <li><span class="material-icons">check_circle</span>あなたの業務での活用提案</li>
+          <li><span class="material-icons">check_circle</span>導入ロードマップの作成</li>
+        </ul>
+        <a href="#final-cta" class="btn-secondary" style="width:100%;justify-content:center;color:var(--text);border-color:var(--border)">体験セッションに申し込む</a>
+      </div>
+      <div class="pricing-card featured fi delay-1">
+        <div class="pricing-badge">モニター価格 / 残り3枠</div>
+        <div class="pricing-name">AI経営パートナー構築プログラム</div>
+        <div class="pricing-price">35<span>万円（税別）</span></div>
+        <div class="pricing-note">3ヶ月 / 月2回セッション + チャットサポート</div>
+        <ul class="pricing-features">
+          <li><span class="material-icons">check_circle</span>月2回の個別セッション（各90分）</li>
+          <li><span class="material-icons">check_circle</span>チャットサポート（営業日対応）</li>
+          <li><span class="material-icons">check_circle</span>社長専用CLAUDE.md構築</li>
+          <li><span class="material-icons">check_circle</span>業務自動化ワークフロー構築</li>
+          <li><span class="material-icons">check_circle</span>業務マニュアル + 拡張ロードマップ</li>
+          <li><span class="material-icons">check_circle</span>月末進捗レビュー</li>
+        </ul>
+        <a href="#final-cta" class="btn-primary" style="width:100%;justify-content:center">モニターに申し込む</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="section-inner">
+    <p class="section-eyebrow fi">FAQ</p>
+    <h2 class="section-title fi">よくある<span class="accent">質問</span></h2>
+    <div class="faq-list">
+      <div class="faq-item fi">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>ITに詳しくないのですが、大丈夫ですか？</span>
+          <span class="material-icons">expand_more</span>
+        </div>
+        <div class="faq-a"><p>はい。このプログラムは「経営者であること」が最大のスキルです。人に指示を出すように、AIにも指示を出せます。PCの基本操作ができれば問題ありません。環境構築もすべてサポートします。</p></div>
+      </div>
+      <div class="faq-item fi delay-1">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>3ヶ月で本当に使いこなせるようになりますか？</span>
+          <span class="material-icons">expand_more</span>
+        </div>
+        <div class="faq-a"><p>Month 1で「AIに仕事を任せる体験」、Month 2で「実際の業務自動化」、Month 3で「一人で拡張できる力」を段階的に身につけます。卒業テストに合格した方のみプログラム完了としています。</p></div>
+      </div>
+      <div class="faq-item fi delay-2">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>プログラム終了後、追加費用はかかりますか？</span>
+          <span class="material-icons">expand_more</span>
+        </div>
+        <div class="faq-a"><p>構築したAIパートナー（CLAUDE.md + ワークフロー）はすべてあなたのものです。プログラム終了後も追加費用なしで永続的に使えます。Claude Codeの利用料（月額約3,000円）のみ別途必要です。</p></div>
+      </div>
+      <div class="faq-item fi delay-3">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>どんな業種でも対応できますか？</span>
+          <span class="material-icons">expand_more</span>
+        </div>
+        <div class="faq-a"><p>テキストベースの業務がある業種であれば対応可能です。特に士業、不動産、フリーランス・個人事業主の方は業種別テンプレートをご用意しています。体験セッションで具体的な活用イメージをお伝えします。</p></div>
+      </div>
+      <div class="faq-item fi delay-4">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>機密情報の取り扱いは大丈夫ですか？</span>
+          <span class="material-icons">expand_more</span>
+        </div>
+        <div class="faq-a"><p>セキュリティ設定はプログラムの重要な柱です。Month 1で、機密情報が外部に漏れないガードレール設定を最初に構築します。すべてのデータはあなたのPC上で処理され、外部に送信されません。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta" id="final-cta">
+  <h2 class="fi">もう一人で、<br>全部抱えなくていい。</h2>
+  <p class="fi delay-1">まずは無料相談で、あなたの業務にAIがどう活きるかお話しましょう。強引な営業は一切ありません。</p>
+  <a href="https://forms.gle/example" class="btn-primary fi delay-2"><span class="material-icons">arrow_forward</span>無料相談に申し込む（30分）</a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 AIsora Code. All rights reserved.</p>
+</footer>
+
+<script>
+// Scroll bar
+const scrollBar=document.getElementById('scrollBar');
+window.addEventListener('scroll',()=>{
+  const s=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+  scrollBar.style.width=s+'%';
+},{passive:true});
+
+// Nav scroll
+const mainNav=document.getElementById('mainNav');
+window.addEventListener('scroll',()=>{
+  mainNav.classList.toggle('scrolled',window.scrollY>40);
+},{passive:true});
+
+// Intersection Observer
+document.addEventListener('DOMContentLoaded',()=>{
+  const items=Array.from(document.querySelectorAll('.fi'));
+  const show=el=>el.classList.add('visible');
+  if(!('IntersectionObserver' in window)){items.forEach(show);return}
+  const io=new IntersectionObserver((entries,observer)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){show(entry.target);observer.unobserve(entry.target)}
+    });
+  },{threshold:0.06});
+  items.forEach(el=>{
+    const rect=el.getBoundingClientRect();
+    if(rect.top<window.innerHeight*0.92) show(el);
+    else io.observe(el);
+  });
+});
+
+// Quiz
+const quizData=[
+  {q:"あなたの会社で、定型的な事務作業（見積書・請求書・メールなど）に週何時間かかっていますか？",
+   opts:["1-3時間","4-8時間","9-15時間","16時間以上"],scores:[20,40,70,100]},
+  {q:"経営の悩みや判断を相談できる相手はいますか？",
+   opts:["信頼できる相談相手がいる","税理士など専門家に相談","たまに知人に","ほぼいない"],scores:[10,30,60,100]},
+  {q:"AIツール（ChatGPT、Claude等）を業務で使ったことはありますか？",
+   opts:["日常的に使っている","何度か試した","聞いたことはあるが未使用","よく知らない"],scores:[20,50,80,60]},
+  {q:"「自分がいないと会社が回らない」と感じることはありますか？",
+   opts:["ほぼない","たまにある","よくある","常にそう感じる"],scores:[10,30,70,100]},
+  {q:"もしAIが月20時間分の業務を代行してくれるとしたら、その時間で何をしたいですか？",
+   opts:["新規事業・戦略立案","既存顧客のフォロー","自分の学び・スキルアップ","休息・家族との時間"],scores:[90,70,60,80]}
+];
+let currentQ=0,selectedIdx=-1,totalScore=0;
+
+function initQuiz(){
+  const prog=document.getElementById('quizProgress');
+  prog.innerHTML=quizData.map((_,i)=>`<div class="quiz-progress-dot" id="dot${i}"></div>`).join('');
+  showQuestion();
+}
+
+function showQuestion(){
+  const d=quizData[currentQ];
+  document.getElementById('quizQuestion').textContent=`Q${currentQ+1}. ${d.q}`;
+  document.getElementById('quizOptions').innerHTML=d.opts.map((o,i)=>
+    `<div class="quiz-option" onclick="selectOption(${i})">${o}</div>`
+  ).join('');
+  document.getElementById('quizNext').disabled=true;
+  selectedIdx=-1;
+  document.getElementById(`dot${currentQ}`).classList.add('active');
+}
+
+function selectOption(i){
+  selectedIdx=i;
+  document.querySelectorAll('.quiz-option').forEach((el,idx)=>{
+    el.classList.toggle('selected',idx===i);
+  });
+  document.getElementById('quizNext').disabled=false;
+}
+
+function nextQuestion(){
+  if(selectedIdx<0)return;
+  totalScore+=quizData[currentQ].scores[selectedIdx];
+  document.getElementById(`dot${currentQ}`).classList.remove('active');
+  document.getElementById(`dot${currentQ}`).classList.add('done');
+  currentQ++;
+  if(currentQ<quizData.length){showQuestion()}
+  else{showResult()}
+}
+
+function showResult(){
+  const avg=Math.round(totalScore/quizData.length);
+  document.getElementById('quizBody').style.display='none';
+  const r=document.getElementById('quizResult');
+  r.style.display='block';
+  document.getElementById('quizScore').textContent=avg;
+  let verdict,detail;
+  if(avg>=80){
+    verdict="AI導入の効果が非常に高い状態です";
+    detail="あなたの会社はAIによる業務改善のポテンシャルが極めて高いです。定型業務の多さ、相談相手の不在、属人化の度合いから見て、AI経営パートナーの導入で月20時間以上の業務削減が見込めます。今すぐ始めることをお勧めします。";
+  }else if(avg>=50){
+    verdict="AI導入で大きな改善が期待できます";
+    detail="いくつかの領域でAIによる効率化の余地があります。特に定型業務の自動化から始めると、早期に効果を実感できるでしょう。体験セッションで具体的な活用シーンをお見せします。";
+  }else{
+    verdict="まずはAIの可能性を知ることから";
+    detail="現時点ではAI活用の余地は限定的ですが、それは「まだ気づいていない活用法がある」ということでもあります。体験セッションで、あなたの業務にAIがどう活きるかお見せします。";
+  }
+  document.getElementById('quizVerdict').textContent=verdict;
+  document.getElementById('quizDetail').textContent=detail;
+}
+
+initQuiz();
+</script>
+</body>
+</html>

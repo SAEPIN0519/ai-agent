@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Felo 使い方ガイド — ダウンロードからプレゼン資料作成まで</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    color: #333;
+    line-height: 1.5;
+    font-size: 13px;
+    background: #fff;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 0 auto;
+    padding: 10mm;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: linear-gradient(135deg, #FF5757, #8C52FF);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .header p {
+    font-size: 12px;
+    margin-top: 4px;
+    opacity: 0.9;
+  }
+
+  /* セクション */
+  .section {
+    margin-bottom: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .section-header {
+    background: #F6E9F0;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-num {
+    background: #A51E6D;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #A51E6D;
+  }
+  .section-body {
+    padding: 12px 14px;
+  }
+
+  /* ステップリスト */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 6px 0 6px 32px;
+    position: relative;
+    border-bottom: 1px dashed #e0e0e0;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    background: #A51E6D;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .steps li strong {
+    color: #A51E6D;
+  }
+
+  /* 2列レイアウト */
+  .two-col {
+    display: flex;
+    gap: 14px;
+  }
+  .two-col > div {
+    flex: 1;
+  }
+
+  /* デバイス別ボックス */
+  .device-box {
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .device-box h4 {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #A51E6D;
+  }
+  .device-box ol {
+    padding-left: 20px;
+    font-size: 12px;
+  }
+  .device-box ol li {
+    padding: 3px 0;
+  }
+
+  /* クレジット表 */
+  .credit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  .credit-table th {
+    background: #A51E6D;
+    color: #fff;
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .credit-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .credit-table tr:nth-child(even) td {
+    background: #faf5f8;
+  }
+  .free-badge {
+    background: #039578;
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* 注意・ポイント */
+  .note {
+    background: #FFF8E1;
+    border-left: 4px solid #FFA000;
+    padding: 8px 12px;
+    margin-top: 8px;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+  }
+  .note strong { color: #E65100; }
+
+  .tip {
+    background: #E6F4F2;
+    border-left: 4px solid #039578;
+    padding: 8px 12px;
+    margin-top: 8px;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+  }
+  .tip strong { color: #039578; }
+
+  /* フロー図 */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: #F6E9F0;
+    border: 2px solid #A51E6D;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #A51E6D;
+    min-width: 100px;
+  }
+  .flow-arrow {
+    color: #A51E6D;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* プレゼン作成手順 */
+  .slide-steps {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .slide-step {
+    flex: 1;
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    border-top: 3px solid #A51E6D;
+  }
+  .slide-step .step-num {
+    background: #A51E6D;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .slide-step h5 {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #A51E6D;
+  }
+  .slide-step p {
+    font-size: 11px;
+    color: #555;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; padding: 8mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <h1>Felo 使い方ガイド</h1>
+    <p>ダウンロード → 無料クレジット → プレゼン資料作成まで</p>
+  </div>
+
+  <!-- 全体フロー -->
+  <div class="flow">
+    <div class="flow-step">① アプリを入れる<br>（またはブラウザ）</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">② 無料クレジット<br>毎日200pt GET</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">③ 質問を入力<br>（検索・分析）</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">④ プレゼン資料<br>を自動作成</div>
+  </div>
+
+  <!-- STEP 1: ダウンロード・アクセス -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Feloを使えるようにする</div>
+    </div>
+    <div class="section-body">
+      <div class="two-col">
+        <div class="device-box">
+          <h4>📱 スマホの場合（おすすめ）</h4>
+          <ol>
+            <li>App Store / Google Playで<strong>「Felo」</strong>と検索</li>
+            <li>アプリをダウンロード（無料）</li>
+            <li>メールアドレスで新規登録</li>
+          </ol>
+        </div>
+        <div class="device-box">
+          <h4>💻 パソコンの場合</h4>
+          <ol>
+            <li>ブラウザで <strong>felo.ai</strong> にアクセス</li>
+            <li>右上の「ログイン」をクリック</li>
+            <li>メールアドレスで新規登録</li>
+          </ol>
+        </div>
+      </div>
+      <div class="note">
+        <strong>⚠️ 登録にメールアドレスが必要です。</strong>
+        Googleアカウントでも登録できます。
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: 無料クレジット -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">無料クレジットの仕組み</div>
+    </div>
+    <div class="section-body">
+      <table class="credit-table">
+        <tr>
+          <th>機能</th>
+          <th>消費クレジット</th>
+          <th>無料プランの目安</th>
+        </tr>
+        <tr>
+          <td>通常の検索（AI検索）</td>
+          <td><span class="free-badge">0</span> 無制限</td>
+          <td>何回でも使える</td>
+        </tr>
+        <tr>
+          <td>Pro検索（深い分析）</td>
+          <td>約40クレジット/回</td>
+          <td>1日5回まで</td>
+        </tr>
+        <tr>
+          <td>スライド作成（通常）</td>
+          <td>約30クレジット/ページ</td>
+          <td>1日約6ページ分</td>
+        </tr>
+        <tr>
+          <td>スライド作成（テンプレート）</td>
+          <td>約100クレジット/ページ</td>
+          <td>1日約2ページ分</td>
+        </tr>
+      </table>
+      <div class="tip">
+        <strong>💡 毎日200クレジットが自動でもらえます。</strong>
+        翌日にリセットされるので、毎日使い切るのがお得です。課金は不要！
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: 講座での使い方 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">今日の講座での使い方（Pro検索 × 3回）</div>
+    </div>
+    <div class="section-body">
+      <ul class="steps">
+        <li><strong>ステップ1：</strong>お客様の「1日」を見える化する → 配布プロンプトをコピペして、〇〇を自分の情報に書き換えて送信</li>
+        <li><strong>ステップ2：</strong>「知る→気になる→行ってみる」の流れを分析 → 同じチャット画面で続けて送信</li>
+        <li><strong>ステップ3：</strong>明日からできるアクションプラン → ネット施策・リアル施策が出てくる</li>
+      </ul>
+      <div class="note">
+        <strong>⚠️ 無料枠の5回中3回を使います。</strong>残り2回は帰ってからの復習に使えます！
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: プレゼン資料の作り方 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">【帰ってから使える】プレゼン資料の作り方</div>
+    </div>
+    <div class="section-body">
+      <div class="slide-steps">
+        <div class="slide-step">
+          <div class="step-num">1</div>
+          <h5>検索する</h5>
+          <p>Feloの検索バーに<br>テーマを入力して<br>検索する</p>
+        </div>
+        <div class="slide-step">
+          <div class="step-num">2</div>
+          <h5>スライドを選ぶ</h5>
+          <p>検索結果の画面で<br>「スライド」ボタン<br>をタップ</p>
+        </div>
+        <div class="slide-step">
+          <div class="step-num">3</div>
+          <h5>自動生成！</h5>
+          <p>AIがスライドを<br>自動で作成<br>（約30秒〜1分）</p>
+        </div>
+        <div class="slide-step">
+          <div class="step-num">4</div>
+          <h5>ダウンロード</h5>
+          <p>PDF・PowerPoint<br>形式で保存<br>できる</p>
+        </div>
+      </div>
+      <div class="tip">
+        <strong>💡 1日約6ページ分が無料で作れます。</strong>
+        毎日少しずつ作れば、数日で立派な資料が完成します！
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    関市ビジネスサポートセンター（Seki-Biz） ｜ 集客プラン作成講座 ｜ 2026.4.21
+  </div>
+
+</div>
+
+</body>
+</html>

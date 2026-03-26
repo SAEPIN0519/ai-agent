@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIsora Code - WBS & Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans JP',sans-serif;color:#2C3E50;background:#F0F7FC;line-height:1.6}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;display:flex;justify-content:center;gap:8px;padding:12px 16px;background:rgba(240,247,252,.92);backdrop-filter:blur(12px);border-bottom:1px solid #D6E8F2}
+.nav.scrolled{box-shadow:0 2px 16px rgba(91,184,232,.15)}
+.nav a{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC;transition:all .2s}
+.nav a:hover{background:#E8F4FD;color:#2C3E50}
+.nav a.active{background:linear-gradient(135deg,#5BB8E8,#E87A3D);color:#fff}
+
+/* HERO */
+.hero{
+  background:linear-gradient(180deg,#5BB8E8 0%,#87CEEB 40%,#B6DFF5 70%,#E8F4FD 100%);
+  text-align:center;padding:80px 24px 60px;position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;bottom:0;left:0;width:100%;height:80px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23F0F7FC' d='M0,64 C360,120 720,20 1080,80 C1260,100 1380,90 1440,64 L1440,120 L0,120 Z'/%3E%3C/svg%3E") no-repeat bottom;background-size:cover
+}
+.cloud{position:absolute;background:rgba(255,255,255,.5);border-radius:50px}
+.cloud-1{width:140px;height:50px;top:15%;left:5%;box-shadow:60px -12px 0 10px rgba(255,255,255,.4),-35px 8px 0 8px rgba(255,255,255,.35);animation:floatCloud 8s ease-in-out infinite}
+.cloud-2{width:100px;height:40px;top:25%;right:8%;box-shadow:50px -8px 0 8px rgba(255,255,255,.35),-30px 5px 0 6px rgba(255,255,255,.3);animation:floatCloud 10s ease-in-out infinite 2s}
+.cloud-3{width:80px;height:30px;top:10%;left:40%;box-shadow:40px -6px 0 6px rgba(255,255,255,.3);animation:floatCloud 7s ease-in-out infinite 1s}
+@keyframes floatCloud{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+.hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto}
+.hero-logo{width:180px;height:auto;margin-bottom:16px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.08))}
+.hero-badge{display:inline-block;padding:6px 24px;border-radius:100px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);font-size:13px;font-weight:700;letter-spacing:2px;margin-bottom:16px;color:#fff}
+.hero h1{font-size:2.2rem;font-weight:900;line-height:1.4;margin-bottom:12px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.1)}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.9);max-width:600px;margin:0 auto;line-height:1.8}
+
+.container{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* Progress Bar */
+.progress-section{background:#fff;border-radius:20px;padding:28px;margin:-30px 24px 32px;position:relative;z-index:2;box-shadow:0 8px 32px rgba(91,184,232,.12);max-width:1000px;margin-left:auto;margin-right:auto}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.progress-header h3{font-size:1rem;font-weight:900;color:#2C3E50}
+.progress-stat{font-size:.85rem;color:#E87A3D;font-weight:700}
+.progress-bar{height:14px;background:#E8F4FD;border-radius:10px;overflow:hidden}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#5BB8E8,#E87A3D);transition:width .5s;position:relative}
+.progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));animation:shimmer 2s infinite}
+@keyframes shimmer{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+.progress-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:.72rem;color:#8CA8BC;font-weight:700}
+
+/* Section Title */
+.section-title{text-align:center;padding:40px 0 28px}
+.section-title h2{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#5BB8E8,#E87A3D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-title p{color:#8CA8BC;font-size:.9rem;margin-top:6px}
+
+/* Roadmap */
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+@media(max-width:768px){.roadmap{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.roadmap{grid-template-columns:1fr}}
+.rm-card{background:#fff;border-radius:16px;padding:24px 20px;box-shadow:0 4px 16px rgba(91,184,232,.08);border-top:4px solid;transition:transform .2s}
+.rm-card:hover{transform:translateY(-3px)}
+.rm-card.active{box-shadow:0 8px 24px rgba(232,122,61,.15)}
+.rm-icon{font-size:2rem;margin-bottom:8px}
+.rm-phase{font-size:.72rem;font-weight:900;letter-spacing:.1em;margin-bottom:4px}
+.rm-title{font-size:1rem;font-weight:900;margin-bottom:6px;color:#2C3E50}
+.rm-period{font-size:.78rem;color:#8CA8BC;margin-bottom:10px;font-weight:500}
+.rm-list{list-style:none;font-size:.82rem;color:#4A6A80}
+.rm-list li{padding:3px 0 3px 16px;position:relative}
+.rm-list li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%}
+
+/* Task Board */
+.task-board{margin-bottom:40px}
+.task-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:768px){.task-cols{grid-template-columns:1fr}}
+.task-col{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(91,184,232,.06)}
+.task-col-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #F0F4F8}
+.task-col-header .col-dot{width:10px;height:10px;border-radius:50%}
+.task-col-header h3{font-size:.9rem;font-weight:900}
+.task-col-header .col-count{margin-left:auto;font-size:.75rem;background:#F0F4F8;padding:2px 10px;border-radius:10px;font-weight:700;color:#8CA8BC}
+
+.task-card{background:#F8FBFD;border:1px solid #E8F0F6;border-radius:12px;padding:14px 16px;margin-bottom:10px;transition:all .2s;cursor:default}
+.task-card:hover{border-color:#5BB8E8;box-shadow:0 2px 12px rgba(91,184,232,.1)}
+.task-card.urgent{border-left:4px solid #E87A3D}
+.task-card.normal{border-left:4px solid #5BB8E8}
+.task-card.done{border-left:4px solid #38A169;opacity:.7}
+.task-title{font-size:.85rem;font-weight:700;color:#2C3E50;margin-bottom:6px;line-height:1.5}
+.task-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-assignee{font-size:.72rem;padding:3px 10px;border-radius:10px;font-weight:700}
+.task-assignee.aosy{background:#FFF3EC;color:#E87A3D}
+.task-assignee.saeka{background:#F0EAFF;color:#7C5CDB}
+.task-assignee.both{background:#E8F4FD;color:#3A9AD9}
+.task-date{font-size:.72rem;color:#8CA8BC;font-weight:500}
+.task-date.overdue{color:#E85380;font-weight:700}
+
+/* Footer */
+.footer{text-align:center;padding:40px 24px;color:#8CA8BC;font-size:.82rem;background:linear-gradient(to top,#E8F4FD,#F0F7FC)}
+.footer a{color:#5BB8E8;text-decoration:none}
+
+/* Last Updated */
+.last-updated{text-align:center;margin:20px 0;font-size:.78rem;color:#8CA8BC}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="wbs.html" class="active"><span class="material-icons" style="font-size:1rem">timeline</span> WBS</a>
+  <a href="handson.html"><span class="material-icons" style="font-size:1rem">cloud</span> Hands-on</a>
+  <a href="services.html"><span class="material-icons" style="font-size:1rem">storefront</span> Services(旧)</a>
+  <a href="new_service.html"><span class="material-icons" style="font-size:1rem">rocket_launch</span> New Service</a>
+  <a href="task-board.html"><span class="material-icons" style="font-size:1rem">checklist</span> Task Board</a>
+  <a href="lp_v2.html"><span class="material-icons" style="font-size:1rem">language</span> LP(外部用)</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="hero-inner">
+    <img src="assets/aisora_logo.png" alt="AIsora Code" class="hero-logo" onerror="this.style.display='none'">
+    <div class="hero-badge">WBS & ROADMAP</div>
+    <h1>&#x2601;&#xFE0F; AIsora Code<br>事業ロードマップ</h1>
+    <p class="hero-sub">Aosy &times; SAEKA &mdash; AI時代の次の入口を開く</p>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-section">
+  <div class="progress-header">
+    <h3>&#x1F4CA; 全体進捗</h3>
+    <div class="progress-stat">Phase 1: 型作り &mdash; 5 / 14 完了</div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" style="width:36%"></div>
+  </div>
+  <div class="progress-labels">
+    <span>Phase 1: 型作り</span>
+    <span>Phase 2: パートナー展開</span>
+    <span>Phase 3: スケール</span>
+    <span>Phase 4: 自走</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== Roadmap ===== -->
+<div class="section-title">
+  <h2>&#x1F5FA;&#xFE0F; ロードマップ</h2>
+  <p>4つのフェーズで「型を作り」→「パートナーで広げ」→「仕組みで回す」</p>
+</div>
+
+<div class="roadmap">
+  <!-- Phase 1 -->
+  <div class="rm-card active" style="border-color:#E87A3D">
+    <div class="rm-icon">&#x1F528;</div>
+    <div class="rm-phase" style="color:#E87A3D">PHASE 1</div>
+    <div class="rm-title">型作り</div>
+    <div class="rm-period">Month 1-3 &#x1F534; NOW</div>
+    <ul class="rm-list">
+      <li style="--dot:#E87A3D"><span>サービス内容確定</span></li>
+      <li style="--dot:#E87A3D"><span>モニター3件実施</span></li>
+      <li style="--dot:#E87A3D"><span>テンプレート一式完成</span></li>
+      <li style="--dot:#E87A3D"><span>導入マニュアル作成</span></li>
+      <li style="--dot:#E87A3D"><span>全工程を記録・再現可能に</span></li>
+    </ul>
+  </div>
+  <!-- Phase 2 -->
+  <div class="rm-card" style="border-color:#5BB8E8">
+    <div class="rm-icon">&#x1F91D;</div>
+    <div class="rm-phase" style="color:#5BB8E8">PHASE 2</div>
+    <div class="rm-title">パートナー展開</div>
+    <div class="rm-period">Month 4-6</div>
+    <ul class="rm-list">
+      <li><span>パートナー5人育成</span></li>
+      <li><span>認定プログラム実施</span></li>
+      <li><span>月20件体制構築</span></li>
+      <li><span>品質チェックリスト整備</span></li>
+    </ul>
+  </div>
+  <!-- Phase 3 -->
+  <div class="rm-card" style="border-color:#38A169">
+    <div class="rm-icon">&#x1F680;</div>
+    <div class="rm-phase" style="color:#38A169">PHASE 3</div>
+    <div class="rm-title">スケール</div>
+    <div class="rm-period">Month 7-9</div>
+    <ul class="rm-list">
+      <li><span>パートナー10人+</span></li>
+      <li><span>月40件体制</span></li>
+      <li><span>管理の仕組み化</span></li>
+      <li><span>月商1,000万円</span></li>
+    </ul>
+  </div>
+  <!-- Phase 4 -->
+  <div class="rm-card" style="border-color:#7C5CDB">
+    <div class="rm-icon">&#x2728;</div>
+    <div class="rm-phase" style="color:#7C5CDB">PHASE 4</div>
+    <div class="rm-title">自走</div>
+    <div class="rm-period">Month 10~</div>
+    <ul class="rm-list">
+      <li><span>報告を受けるだけ</span></li>
+      <li><span>不労所得化完了</span></li>
+      <li><span>事業売却準備</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== Task Board ===== -->
+<div class="section-title">
+  <h2>&#x1F4CB; タスクボード</h2>
+  <p>SAEKAさんとの共有タスク（Phase 1）</p>
+</div>
+
+<div class="task-board">
+<div class="task-cols">
+
+  <!-- Column: やること -->
+  <div class="task-col">
+    <div class="task-col-header">
+      <div class="col-dot" style="background:#E87A3D"></div>
+      <h3>やること</h3>
+      <div class="col-count">6</div>
+    </div>
+
+    <div class="task-card urgent">
+      <div class="task-title">&#x1F4B0; マネタイズ後の報酬分配ルールを決める</div>
+      <div class="task-meta">
+        <span class="task-assignee both">SAEKA + AOSY</span>
+        <span class="task-date">~04/10</span>
+      </div>
+    </div>
+
+    <div class="task-card urgent">
+      <div class="task-title">&#x1F3E2; AIsoraCode単独 or KOKONOE統合を検討（税理士相談）</div>
+      <div class="task-meta">
+        <span class="task-assignee saeka">SAEKA</span>
+        <span class="task-date">~04/01</span>
+      </div>
+    </div>
+
+    <div class="task-card urgent">
+      <div class="task-title">&#x1F3AF; サービス内容を確定する</div>
+      <div class="task-meta">
+        <span class="task-assignee aosy">AOSY</span>
+        <span class="task-date overdue">~03/30 &#x26A0;</span>
+      </div>
+    </div>
+
+    <div class="task-card urgent">
+      <div class="task-title">&#x1F4DD; 教える内容を決める（Claude Codeを動かせる状態）</div>
+      <div class="task-meta">
+        <span class="task-assignee aosy">AOSY</span>
+        <span class="task-date overdue">~03/30 &#x26A0;</span>
+      </div>
+    </div>
+
+    <div class="task-card normal">
+      <div class="task-title">&#x1F4B2; モニタリング対象者と価格（妥当性）を決める</div>
+      <div class="task-meta">
+        <span class="task-assignee saeka">SAEKA</span>
+        <span class="task-date">未定</span>
+      </div>
+    </div>
+
+    <div class="task-card urgent">
+      <div class="task-title">&#x1F4C5; スタート時期・モニタリング開始日・ゴールを決める</div>
+      <div class="task-meta">
+        <span class="task-assignee both">SAEKA + AOSY</span>
+        <span class="task-date overdue">~03/30 &#x26A0;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Column: 準備中 -->
+  <div class="task-col">
+    <div class="task-col-header">
+      <div class="col-dot" style="background:#5BB8E8"></div>
+      <h3>準備中</h3>
+      <div class="col-count">3</div>
+    </div>
+
+    <div class="task-card normal">
+      <div class="task-title">&#x1F4AC; オープンチャットを準備する</div>
+      <div class="task-meta">
+        <span class="task-assignee saeka">SAEKA</span>
+        <span class="task-date">~04/01</span>
+      </div>
+    </div>
+
+    <div class="task-card normal">
+      <div class="task-title">&#x1F3AB; Peatixを準備する</div>
+      <div class="task-meta">
+        <span class="task-assignee aosy">AOSY</span>
+        <span class="task-date">~04/15</span>
+      </div>
+    </div>
+
+    <div class="task-card normal">
+      <div class="task-title">&#x1F4E3; 勉強会・ウェビナー企画 + 営業フロー設計</div>
+      <div class="task-meta">
+        <span class="task-assignee both">SAEKA + AOSY</span>
+        <span class="task-date">未定</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Column: 完了 -->
+  <div class="task-col">
+    <div class="task-col-header">
+      <div class="col-dot" style="background:#38A169"></div>
+      <h3>完了</h3>
+      <div class="col-count">5</div>
+    </div>
+
+    <div class="task-card done">
+      <div class="task-title">&#x2705; GitHub共有リポジトリ作成</div>
+      <div class="task-meta"><span class="task-date">03/14</span></div>
+    </div>
+
+    <div class="task-card done">
+      <div class="task-title">&#x2705; ビジネスプラン v1~v3 作成</div>
+      <div class="task-meta"><span class="task-date">03/14~23</span></div>
+    </div>
+
+    <div class="task-card done">
+      <div class="task-title">&#x2705; ハンズオン説明ページ作成</div>
+      <div class="task-meta"><span class="task-date">03/23</span></div>
+    </div>
+
+    <div class="task-card done">
+      <div class="task-title">&#x2705; サービスパッケージ設計</div>
+      <div class="task-meta"><span class="task-date">03/23</span></div>
+    </div>
+
+    <div class="task-card done">
+      <div class="task-title">&#x2705; 市場動向・競合調査</div>
+      <div class="task-meta"><span class="task-date">03/24</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="last-updated">最終更新: 2026-03-24 &mdash; Aosy &times; SAEKA</div>
+
+</div><!-- container -->
+
+<div class="footer">
+  <p>&#x2601;&#xFE0F; AIsora Code &mdash; AI時代の次の入口を開く</p>
+  <p style="margin-top:8px"><a href="services.html">&#x1F680; Services</a> &bull; <a href="handson.html">&#x2601;&#xFE0F; Hands-on</a></p>
+</div>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>10)});
+
+// Add bullet colors
+document.querySelectorAll('.rm-list li').forEach(li=>{
+  const dot=li.closest('.rm-card').style.borderColor;
+  li.style.setProperty('--dot',dot);
+  li.querySelector('::before')
+});
+
+// Inject pseudo styles
+const style=document.createElement('style');
+style.textContent=`.rm-list li::before{background:var(--dot,#8CA8BC)}`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

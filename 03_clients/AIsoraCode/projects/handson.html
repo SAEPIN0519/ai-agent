@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIsora Code - はじめてのAI社員ハンズオン</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans JP', sans-serif; color: #2C3E50; background: #F0F7FC; line-height: 1.6; }
+
+  /* ===== ヘッダー ===== */
+  .header {
+    background: linear-gradient(180deg, #5BB8E8 0%, #87CEEB 40%, #B6DFF5 70%, #E8F4FD 100%);
+    color: #2C3E50; text-align: center; padding: 56px 24px 48px; position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23F0F7FC' d='M0,64 C360,120 720,20 1080,80 C1260,100 1380,90 1440,64 L1440,120 L0,120 Z'/%3E%3C/svg%3E") no-repeat bottom;
+    background-size: cover;
+  }
+  /* 雲のデコレーション */
+  .header::after {
+    content: ''; position: absolute; top: 20px; left: 5%; width: 120px; height: 50px;
+    background: rgba(255,255,255,0.5); border-radius: 50px;
+    box-shadow: 60px -10px 0 10px rgba(255,255,255,0.4), 120px 5px 0 5px rgba(255,255,255,0.3),
+                -40px 10px 0 8px rgba(255,255,255,0.35), 200px -5px 0 12px rgba(255,255,255,0.25);
+  }
+  .cloud-right {
+    position: absolute; top: 40px; right: 8%; width: 100px; height: 40px;
+    background: rgba(255,255,255,0.45); border-radius: 40px;
+    box-shadow: 50px -8px 0 8px rgba(255,255,255,0.35), -30px 5px 0 6px rgba(255,255,255,0.3);
+  }
+  .header-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+  .header-logo {
+    width: 200px; height: auto; margin-bottom: 16px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+  }
+  .event-badge {
+    display: inline-block; padding: 6px 24px; border-radius: 100px;
+    background: rgba(232, 122, 61, 0.15); border: 1px solid rgba(232, 122, 61, 0.3);
+    font-size: 14px; font-weight: 700; letter-spacing: 2px; margin-bottom: 16px;
+    color: #E87A3D;
+  }
+  .header h1 { font-size: 26px; font-weight: 900; line-height: 1.5; margin-bottom: 16px; color: #2C3E50; }
+  .header h1 .accent { color: #E87A3D; }
+  .header-sub { font-size: 15px; color: #4A6A80; line-height: 1.8; max-width: 600px; margin: 0 auto; }
+
+  /* ===== ナビゲーション ===== */
+  .nav {
+    background: #fff; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #D6E8F2;
+  }
+  .nav-inner { max-width: 900px; margin: 0 auto; display: flex; }
+  .nav-tab {
+    flex: 1; text-align: center; padding: 16px 0; font-size: 15px; font-weight: 700;
+    color: #8CA8BC; cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab.active { color: #E87A3D; border-bottom-color: #E87A3D; }
+  .nav-tab:hover { color: #E87A3D; }
+
+  /* ===== コンテンツ共通 ===== */
+  .content { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  .tab-panel { display: none; padding: 48px 0; }
+  .tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title {
+    font-size: 20px; font-weight: 900; margin-bottom: 24px;
+    padding-left: 16px; border-left: 4px solid #E87A3D;
+  }
+  .section-block { margin-bottom: 48px; }
+
+  /* ===== Before/After カード ===== */
+  .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .ba-card {
+    background: #fff; border-radius: 16px; padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .ba-card.before { border: 2px solid #D6E8F2; }
+  .ba-card.after { border: 2px solid #E87A3D; }
+  .ba-label {
+    display: inline-block; padding: 4px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px;
+  }
+  .ba-card.before .ba-label { background: #F0F7FC; color: #8CA8BC; }
+  .ba-card.after .ba-label { background: #FFF3EC; color: #E87A3D; }
+  .ba-card ul { list-style: none; padding: 0; }
+  .ba-card ul li { padding: 8px 0 8px 28px; position: relative; font-size: 14px; color: #4A6A80; }
+  .ba-card.before ul li::before { content: '\e5cd'; font-family: 'Material Icons'; position: absolute; left: 0; color: #C2D4E0; }
+  .ba-card.after ul li::before { content: '\e86c'; font-family: 'Material Icons'; position: absolute; left: 0; color: #E87A3D; }
+
+  /* ===== ステップカード ===== */
+  .step-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .step-card {
+    background: #fff; border-radius: 16px; padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #D6E8F2;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .step-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #5BB8E8, #87CEEB);
+    color: #fff; font-size: 16px; font-weight: 900; margin-bottom: 12px;
+  }
+  .step-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #2C3E50; }
+  .step-card p { font-size: 13px; color: #6B8CA0; line-height: 1.7; }
+  .step-card .step-icon { font-size: 28px; color: #E87A3D; float: right; margin-top: -4px; }
+
+  /* ===== 講師カード ===== */
+  .speaker-card {
+    background: #fff; border-radius: 16px; padding: 32px;
+    display: flex; align-items: center; gap: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #D6E8F2;
+  }
+  .speaker-avatar {
+    width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #5BB8E8, #E87A3D);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 28px; font-weight: 900;
+  }
+  .speaker-info { flex: 1; }
+  .speaker-name { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+  .speaker-title { font-size: 13px; color: #E87A3D; font-weight: 500; }
+
+  /* ===== リンクカード ===== */
+  .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .link-card {
+    background: #fff; border-radius: 16px; padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s;
+  }
+  .link-card.available { border: 2px solid #E87A3D; }
+  .link-card.pending { border: 2px solid #D6E8F2; }
+  .link-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .link-card-title { font-size: 15px; font-weight: 700; }
+  .link-card-icon { font-size: 28px; }
+  .pending-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 100px;
+    background: #F0F7FC; color: #8CA8BC; font-size: 11px; font-weight: 700; margin-left: 8px;
+  }
+  .link-btn {
+    display: block; text-align: center; padding: 12px; border-radius: 12px;
+    font-size: 14px; font-weight: 700; text-decoration: none; transition: all 0.2s;
+  }
+  .link-btn.active { background: #E87A3D; color: #fff; }
+  .link-btn.active:hover { background: #D06A2D; }
+  .link-btn.pending-btn { background: #F0F7FC; color: #B0C8D8; cursor: default; }
+
+  /* ===== チェックリスト ===== */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 16px 20px 16px 52px; position: relative; margin-bottom: 8px;
+    background: #fff; border-radius: 12px; font-size: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); border: 1px solid #D6E8F2;
+  }
+  .checklist li::before {
+    content: 'check_box_outline_blank'; font-family: 'Material Icons';
+    position: absolute; left: 20px; top: 16px; font-size: 18px; color: #E87A3D;
+  }
+
+  /* ===== プログラムテーブル ===== */
+  .program-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .program-table thead th {
+    background: linear-gradient(135deg, #5BB8E8 0%, #87CEEB 50%, #A8D8F0 100%);
+    color: #fff; font-size: 14px; font-weight: 700; padding: 16px 20px; text-align: left;
+  }
+  .program-table tbody td {
+    padding: 16px 20px; font-size: 14px; border-bottom: 1px solid #E8F2F8; background: #fff;
+    vertical-align: top;
+  }
+  .program-table tbody tr:last-child td { border-bottom: none; }
+  .program-table tbody tr:hover td { background: #F5FAFD; }
+  .program-time { color: #E87A3D; font-weight: 700; white-space: nowrap; }
+  .program-section { font-weight: 700; }
+  .program-total td {
+    background: #F8FCFF !important; font-weight: 700; border-top: 2px solid #D6E8F2;
+  }
+
+  /* ===== お知らせカード ===== */
+  .notice-card {
+    background: #fff; border-radius: 16px; padding: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 24px;
+  }
+  .notice-card.available { border: 2px solid #E87A3D; }
+  .notice-card.pending { border: 2px solid #D6E8F2; }
+  .notice-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .notice-card-icon { font-size: 28px; color: #E87A3D; }
+  .notice-card-title { font-size: 18px; font-weight: 900; }
+  .notice-card-body { font-size: 14px; color: #6B8CA0; line-height: 1.7; margin-bottom: 20px; }
+  .notice-card .link-btn { max-width: 280px; }
+
+  /* ===== フッター ===== */
+  .footer {
+    text-align: center; padding: 32px 24px; font-size: 13px; color: #B0C8D8;
+    margin-top: 24px;
+  }
+
+  /* ===== レスポンシブ ===== */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 20px; }
+    .ba-grid, .step-grid, .link-grid { grid-template-columns: 1fr; }
+    .speaker-card { flex-direction: column; text-align: center; }
+    .program-table { font-size: 13px; }
+    .program-table thead th, .program-table tbody td { padding: 12px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 共通ナビ -->
+<nav style="position:sticky;top:0;z-index:200;display:flex;justify-content:center;gap:8px;padding:12px 16px;background:rgba(240,247,252,.92);backdrop-filter:blur(12px);border-bottom:1px solid #D6E8F2;flex-wrap:wrap">
+  <a href="wbs.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC"><span class="material-icons" style="font-size:1rem">timeline</span> WBS</a>
+  <a href="handson.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;background:linear-gradient(135deg,#5BB8E8,#E87A3D);color:#fff"><span class="material-icons" style="font-size:1rem">cloud</span> Hands-on</a>
+  <a href="services.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC"><span class="material-icons" style="font-size:1rem">storefront</span> Services(旧)</a>
+  <a href="new_service.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC"><span class="material-icons" style="font-size:1rem">rocket_launch</span> New Service</a>
+  <a href="task-board.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC"><span class="material-icons" style="font-size:1rem">checklist</span> Task Board</a>
+  <a href="lp_v2.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;text-decoration:none;font-weight:700;font-size:.85rem;color:#8CA8BC"><span class="material-icons" style="font-size:1rem">language</span> LP(外部用)</a>
+</nav>
+
+<!-- ===== ヘッダー ===== -->
+<div class="header">
+  <div class="cloud-right"></div>
+  <div class="header-inner">
+    <img src="assets/aisora_logo.png" alt="AIsora Code" class="header-logo">
+    <div class="event-badge">HANDS-ON</div>
+    <h1>はじめての<span class="accent">AI社員</span><br>あなた専属のAIを作ろう</h1>
+    <p class="header-sub">Claude Codeを使って、あなただけのAI社員を作る体験。<br>環境構築からサイト作成まで、2.5時間のハンズオン。</p>
+  </div>
+</div>
+
+<!-- ===== ナビゲーション ===== -->
+<div class="nav">
+  <div class="nav-inner">
+    <div class="nav-tab active" data-tab="home"><span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">home</span>ホーム</div>
+    <div class="nav-tab" data-tab="program"><span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">schedule</span>プログラム</div>
+    <div class="nav-tab" data-tab="materials"><span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">folder</span>資料</div>
+    <div class="nav-tab" data-tab="notice"><span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">notifications</span>お知らせ</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ===== ホームタブ ===== -->
+<div class="tab-panel active" id="tab-home">
+
+  <!-- Before / After -->
+  <div class="section-block">
+    <h2 class="section-title">Before / After</h2>
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <span class="ba-label">BEFORE</span>
+        <ul>
+          <li>SNS投稿・書類作成に毎日3時間</li>
+          <li>AIって難しそう...何から始めれば？</li>
+          <li>自分の業務に活かせるかわからない</li>
+          <li>セキュリティが心配で手が出せない</li>
+        </ul>
+      </div>
+      <div class="ba-card after">
+        <span class="ba-label">AFTER</span>
+        <ul>
+          <li>AI社員があなたの代わりに作業してくれる</li>
+          <li>話しかけるだけでAIが動く体験済み</li>
+          <li>自分専用のサイトがその場で完成</li>
+          <li>セキュリティ設定済みで安心して使える</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4ステップ -->
+  <div class="section-block">
+    <h2 class="section-title">今日やること</h2>
+    <div class="step-grid">
+      <div class="step-card">
+        <span class="material-icons step-icon">build</span>
+        <div class="step-num">1</div>
+        <h3>環境構築</h3>
+        <p>IDE + Claude Code + AquaVoice（音声入力）をセットアップ。あなたのPCでAIが動く状態に。</p>
+      </div>
+      <div class="step-card">
+        <span class="material-icons step-icon">psychology</span>
+        <div class="step-num">2</div>
+        <h3>AI社員を作る</h3>
+        <p>ビジョン整理・思考分解を通じて、あなた専属のAI社員（CLAUDE.md）を作ります。</p>
+      </div>
+      <div class="step-card">
+        <span class="material-icons step-icon">security</span>
+        <div class="step-num">3</div>
+        <h3>セキュリティ設定</h3>
+        <p>ガードレール設定で安全にAIを使える環境に。情報漏洩の心配なく使えます。</p>
+      </div>
+      <div class="step-card">
+        <span class="material-icons step-icon">web</span>
+        <div class="step-num">4</div>
+        <h3>HTML体験</h3>
+        <p>あなただけのWebサイト/ポートフォリオをその場で作成。AIの力を実感！</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 講師紹介 -->
+  <div class="section-block">
+    <h2 class="section-title">講師</h2>
+    <div class="speaker-card">
+      <div class="speaker-avatar">A</div>
+      <div class="speaker-info">
+        <div class="speaker-name">Aosy</div>
+        <div class="speaker-title">AIsora Code 共同創業者</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 事前準備 -->
+  <div class="section-block">
+    <h2 class="section-title">事前準備のお願い</h2>
+    <ul class="checklist">
+      <li>PC（Mac推奨 / Windows可）をご準備ください</li>
+      <li>安定したインターネット環境でご参加ください</li>
+      <li>Googleアカウントをご用意ください</li>
+      <li>事前アンケート（やりたいこと・業務の困りごと）にご回答ください</li>
+    </ul>
+  </div>
+
+  <!-- リンクカード -->
+  <div class="section-block">
+    <h2 class="section-title">当日の資料・フォーム</h2>
+    <div class="link-grid">
+      <div class="link-card pending">
+        <div class="link-card-header">
+          <span class="material-icons link-card-icon" style="color:#5BB8E8;">description</span>
+          <span class="link-card-title">事前アンケート</span>
+          <span class="pending-badge">準備中</span>
+        </div>
+        <span class="link-btn pending-btn">URLは準備中です</span>
+      </div>
+      <div class="link-card pending">
+        <div class="link-card-header">
+          <span class="material-icons link-card-icon" style="color:#5BB8E8;">slideshow</span>
+          <span class="link-card-title">当日スライド</span>
+          <span class="pending-badge">準備中</span>
+        </div>
+        <span class="link-btn pending-btn">URLは準備中です</span>
+      </div>
+      <div class="link-card pending">
+        <div class="link-card-header">
+          <span class="material-icons link-card-icon" style="color:#5BB8E8;">rate_review</span>
+          <span class="link-card-title">アンケートフォーム</span>
+          <span class="pending-badge">準備中</span>
+        </div>
+        <span class="link-btn pending-btn">URLは準備中です</span>
+      </div>
+      <div class="link-card pending">
+        <div class="link-card-header">
+          <span class="material-icons link-card-icon" style="color:#5BB8E8;">chat</span>
+          <span class="link-card-title">サポートチャット</span>
+          <span class="pending-badge">準備中</span>
+        </div>
+        <span class="link-btn pending-btn">URLは準備中です</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== プログラムタブ ===== -->
+<div class="tab-panel" id="tab-program">
+  <div class="section-block">
+    <h2 class="section-title">ハンズオン プログラム</h2>
+    <table class="program-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">時間</th>
+          <th style="width: 200px;">セクション</th>
+          <th>内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="program-time">10分</td>
+          <td class="program-section">オープニング</td>
+          <td>自己紹介・本日のゴール共有。「AIって何ができるの？」を1枚で解説</td>
+        </tr>
+        <tr>
+          <td class="program-time">30分</td>
+          <td class="program-section">Step 1: 環境構築</td>
+          <td>IDE（Cursor / Antigravity）のインストール → Claude Codeの設定 → AquaVoice音声入力の設定。あなたのPCでAIが動く状態に</td>
+        </tr>
+        <tr>
+          <td class="program-time">10分</td>
+          <td class="program-section">音声デモ体験</td>
+          <td>AquaVoiceで話しかけてClaude Codeが動くのを体験。「話すだけでプログラムが動く！」</td>
+        </tr>
+        <tr>
+          <td class="program-time">40分</td>
+          <td class="program-section">Step 2: AI社員を作る</td>
+          <td>ビジョン・ミッションの整理 → 思考分解ワーク → CLAUDE.mdの作成。あなた専属のAI社員が誕生</td>
+        </tr>
+        <tr>
+          <td class="program-time">20分</td>
+          <td class="program-section">Step 3: セキュリティ設定</td>
+          <td>settings.json の設定 → ガードレールの構築。安全にAIを使える環境に</td>
+        </tr>
+        <tr>
+          <td class="program-time">40分</td>
+          <td class="program-section">Step 4: HTML体験</td>
+          <td>自分だけのポートフォリオサイト / 名刺ページを作成。AIに指示するだけでWebサイトが完成する体験</td>
+        </tr>
+        <tr>
+          <td class="program-time">10分</td>
+          <td class="program-section">クロージング</td>
+          <td>今日の振り返り・サポートプランのご案内・質疑応答</td>
+        </tr>
+        <tr class="program-total">
+          <td class="program-time">160分</td>
+          <td colspan="2">合計（約2時間40分 / 休憩込み）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 資料タブ ===== -->
+<div class="tab-panel" id="tab-materials">
+  <div class="section-block">
+    <h2 class="section-title">当日資料</h2>
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">slideshow</span>
+        <span class="notice-card-title">ハンズオン スライド</span>
+        <span class="pending-badge">準備中</span>
+      </div>
+      <div class="notice-card-body">
+        当日使用するスライド資料は、開催前日までにこちらに公開します。
+      </div>
+      <span class="link-btn pending-btn">URLは準備中です</span>
+    </div>
+
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">code</span>
+        <span class="notice-card-title">テンプレート一式</span>
+        <span class="pending-badge">準備中</span>
+      </div>
+      <div class="notice-card-body">
+        CLAUDE.md雛形・settings.json雛形・ガードレール設定テンプレートを配布します。
+      </div>
+      <span class="link-btn pending-btn">URLは準備中です</span>
+    </div>
+
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">menu_book</span>
+        <span class="notice-card-title">環境構築マニュアル</span>
+        <span class="pending-badge">準備中</span>
+      </div>
+      <div class="notice-card-body">
+        事前に環境構築を進めたい方向けの手順書です。
+      </div>
+      <span class="link-btn pending-btn">URLは準備中です</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== お知らせタブ ===== -->
+<div class="tab-panel" id="tab-notice">
+  <div class="section-block">
+    <h2 class="section-title">お知らせ</h2>
+
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">event</span>
+        <span class="notice-card-title">初回ハンズオンの日程</span>
+        <span class="pending-badge">準備中</span>
+      </div>
+      <div class="notice-card-body">
+        初回ハンズオンの日程が決まり次第、こちらでお知らせします。少人数制で丁寧にサポートします。
+      </div>
+      <span class="link-btn pending-btn">日程調整中です</span>
+    </div>
+
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">support_agent</span>
+        <span class="notice-card-title">2週間アフターサポート</span>
+      </div>
+      <div class="notice-card-body">
+        ハンズオン参加者には、2週間のチャットサポート + 1回の個別面談（30分）が付きます。わからないことがあればいつでもご相談ください。
+      </div>
+    </div>
+
+    <div class="notice-card pending">
+      <div class="notice-card-header">
+        <span class="material-icons notice-card-icon">rocket_launch</span>
+        <span class="notice-card-title">フル導入パッケージのご案内</span>
+      </div>
+      <div class="notice-card-body">
+        ハンズオンで「もっと本格的に活用したい！」と思った方向けに、あなたの業務に合わせたカスタム導入パッケージもご用意しています。詳細はハンズオン当日にご案内します。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="footer">
+  &copy; 2026 AIsora Code — AIの空から、あなたの仕事を変える
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.nav-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
