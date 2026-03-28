@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAEKA | AI × 経営コンサルタント</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1B2A4A;
+  --primary-dark: #0F1B33;
+  --primary-light: #2C4070;
+  --accent: #C9A96E;
+  --accent-light: #E0C992;
+  --bg: #FAF8F5;
+  --bg-dark: #F0EDE8;
+  --white: #FFFFFF;
+  --text: #1C1208;
+  --text-muted: #6B6560;
+  --border: rgba(201, 169, 110, 0.2);
+  --shadow: 0 4px 24px rgba(27, 42, 74, 0.08);
+  --shadow-hover: 0 8px 32px rgba(27, 42, 74, 0.14);
+  --radius: 6px;
+  --radius-sm: 3px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; line-height: 1.25; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; line-height: 1.3; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.375rem); font-weight: 600; }
+p { font-size: 1rem; line-height: 1.8; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; height: auto; }
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section { padding: 100px 0; }
+
+.section-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.section-eyebrow::before,
+.section-eyebrow::after {
+  content: ''; width: 24px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent));
+}
+.section-eyebrow::after {
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.text-center .section-eyebrow { justify-content: center; }
+
+.section-title {
+  margin-bottom: 16px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.section-title .accent {
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #D4AF37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-lead {
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 48px;
+}
+
+.section-lead.center { margin-left: auto; margin-right: auto; text-align: center; }
+
+.text-center { text-align: center; }
+
+/* スクロールプログレスバー */
+.scroll-indicator {
+  position: fixed; top: 0; left: 0;
+  height: 3px; background: linear-gradient(90deg, var(--accent), #D4AF37, var(--accent-light));
+  z-index: 200; width: 0%; transition: width 0.1s;
+}
+
+/* ナビゲーション */
+#mainNav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+  transition: background 0.3s, box-shadow 0.3s, padding 0.3s;
+}
+#mainNav.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  padding: 14px 40px;
+}
+.nav-logo {
+  font-size: 1.2rem; font-weight: 700; color: var(--white);
+  transition: color 0.3s;
+}
+.nav-logo span { color: var(--accent); }
+#mainNav.scrolled .nav-logo { color: var(--primary); }
+
+.nav-links {
+  display: flex; gap: 28px; list-style: none;
+}
+.nav-links a {
+  font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.8);
+  transition: color 0.3s; letter-spacing: 0.03em;
+}
+.nav-links a:hover { color: var(--accent); }
+#mainNav.scrolled .nav-links a { color: var(--text-muted); }
+#mainNav.scrolled .nav-links a:hover { color: var(--accent); }
+
+.nav-cta {
+  font-size: 0.85rem; font-weight: 600; color: var(--white);
+  padding: 8px 20px; border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s;
+}
+.nav-cta:hover { background: var(--accent); border-color: var(--accent); }
+#mainNav.scrolled .nav-cta {
+  color: var(--white); background: var(--accent); border-color: var(--accent);
+}
+
+/* ハンバーガー */
+.nav-hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.nav-hamburger span {
+  display: block; width: 24px; height: 2px;
+  background: var(--white); transition: all 0.3s;
+}
+#mainNav.scrolled .nav-hamburger span { background: var(--primary); }
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+  position: relative; overflow: hidden;
+}
+.hero-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(100px); opacity: 0.18;
+  animation: float 8s ease-in-out infinite;
+}
+.hero-blob-1 {
+  width: 600px; height: 600px; top: -150px; right: -150px;
+  background: linear-gradient(135deg, var(--accent), #D4AF37);
+}
+.hero-blob-2 {
+  width: 500px; height: 500px; bottom: -100px; left: -100px;
+  background: linear-gradient(135deg, #4A6FA5, #7B68EE); animation-delay: -3s;
+}
+.hero-blob-3 {
+  width: 350px; height: 350px; top: 35%; left: 45%;
+  background: linear-gradient(135deg, var(--accent-light), #F0D78C); animation-delay: -5s;
+}
+.hero-particles {
+  position: absolute; inset: 0; overflow: hidden; z-index: 1;
+}
+.hero-particle {
+  position: absolute; width: 3px; height: 3px;
+  background: var(--accent-light); border-radius: 50%;
+  opacity: 0; animation: particle-rise 6s ease-in-out infinite;
+}
+.hero-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.hero-particle:nth-child(2) { left: 25%; animation-delay: 1.2s; }
+.hero-particle:nth-child(3) { left: 40%; animation-delay: 0.6s; }
+.hero-particle:nth-child(4) { left: 55%; animation-delay: 2.4s; }
+.hero-particle:nth-child(5) { left: 70%; animation-delay: 1.8s; }
+.hero-particle:nth-child(6) { left: 85%; animation-delay: 3s; }
+.hero-particle:nth-child(7) { left: 15%; animation-delay: 3.6s; }
+.hero-particle:nth-child(8) { left: 60%; animation-delay: 4.2s; }
+@keyframes particle-rise {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.3; }
+  100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 700px;
+}
+.hero-eyebrow {
+  font-size: 0.85rem; font-weight: 500;
+  color: var(--accent-light);
+  letter-spacing: 0.12em; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 32px; height: 1px; background: var(--accent);
+}
+.hero h1 {
+  color: var(--white); margin-bottom: 20px;
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+.hero h1 .accent { color: var(--accent-light); }
+.hero-sub {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.05rem; line-height: 1.9;
+  margin-bottom: 36px; max-width: 560px;
+}
+.hero-cta-group {
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+}
+
+/* 装飾ライン */
+.hero-deco {
+  position: absolute; right: 80px; top: 50%; transform: translateY(-50%);
+  z-index: 1; opacity: 0.08;
+}
+.hero-deco-circle {
+  width: 360px; height: 360px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  animation: rotate-slow 40s linear infinite;
+}
+.hero-deco-circle:nth-child(2) {
+  position: absolute; top: 40px; left: 40px;
+  width: 280px; height: 280px;
+  animation-direction: reverse; animation-duration: 30s;
+}
+@keyframes rotate-slow { to { transform: rotate(360deg); } }
+
+/* ボタン */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 36px; border-radius: 50px;
+  background: linear-gradient(135deg, var(--accent), #D4AF37, var(--accent));
+  background-size: 200% 200%;
+  animation: shimmer-bg 3s ease infinite;
+  color: var(--white);
+  font-size: 1rem; font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(201, 169, 110, 0.3);
+  position: relative; overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  animation: shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(100%) rotate(25deg); }
+}
+@keyframes shimmer-bg {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(201, 169, 110, 0.5);
+}
+.btn-primary .material-icons { font-size: 1.1rem; }
+
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem; font-weight: 500;
+  transition: all 0.3s;
+}
+.btn-outline:hover {
+  border-color: var(--accent); color: var(--accent);
+}
+
+/* ウェーブ区切り */
+.wave { line-height: 0; }
+.wave svg { display: block; width: 100%; height: 90px; }
+.wave-flip { transform: scaleY(-1); }
+
+/* About */
+.about { background: var(--white); }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px;
+  align-items: center;
+}
+.about-image-wrap {
+  position: relative;
+}
+.about-image-placeholder {
+  width: 100%; aspect-ratio: 3/4;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.about-image-placeholder::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(201, 169, 110, 0.15));
+}
+.about-image-placeholder .material-icons {
+  font-size: 64px; color: rgba(255, 255, 255, 0.15);
+  position: relative; z-index: 1;
+}
+.about-image-placeholder img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+}
+.about-image-accent {
+  position: absolute; top: -16px; left: -16px;
+  width: 80px; height: 80px;
+  border-top: 2px solid var(--accent);
+  border-left: 2px solid var(--accent);
+}
+.about-image-accent-2 {
+  position: absolute; bottom: -16px; right: -16px;
+  width: 80px; height: 80px;
+  border-bottom: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+}
+.about-text h2 { margin-bottom: 20px; }
+.about-lead {
+  font-size: 1.05rem; color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.about-story {
+  margin-bottom: 24px;
+}
+.about-story p { margin-bottom: 12px; }
+.about-timeline {
+  display: flex; flex-direction: column; gap: 0;
+  padding: 0; background: transparent; border-radius: var(--radius);
+  position: relative;
+  margin-left: 8px;
+}
+.about-timeline::before {
+  content: '';
+  position: absolute; left: 72px; top: 8px; bottom: 8px;
+  width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(201, 169, 110, 0.2));
+}
+.about-timeline-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 10px 0; position: relative;
+}
+.about-timeline-year {
+  font-size: 0.78rem; font-weight: 700;
+  color: var(--accent); white-space: nowrap; min-width: 60px;
+  text-align: right; padding-top: 2px;
+}
+.about-timeline-item::before {
+  content: '';
+  position: absolute; left: 67px; top: 14px;
+  width: 12px; height: 12px;
+  background: var(--white); border: 2px solid var(--accent);
+  border-radius: 50%; z-index: 1;
+}
+.about-timeline-item:first-child::before {
+  background: var(--accent);
+}
+.about-timeline-item:last-child::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.2);
+}
+.about-timeline-text {
+  font-size: 0.88rem; color: var(--text-muted);
+  padding-left: 24px; padding-top: 2px;
+}
+
+/* Mission */
+.mission {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: var(--white); text-align: center;
+}
+.mission .section-eyebrow { color: var(--accent-light); }
+.mission h2 { color: var(--white); margin-bottom: 20px; }
+.mission-quote {
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-weight: 300; line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 700px; margin: 0 auto 48px;
+  position: relative; padding: 0 24px;
+}
+.mission-quote::before,
+.mission-quote::after {
+  content: '';
+  position: absolute; width: 24px; height: 24px;
+  border-color: var(--accent); opacity: 0.4;
+}
+.mission-quote::before {
+  top: -12px; left: 0;
+  border-top: 2px solid; border-left: 2px solid;
+}
+.mission-quote::after {
+  bottom: -12px; right: 0;
+  border-bottom: 2px solid; border-right: 2px solid;
+}
+.mission-sub {
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 600px; margin: 0 auto 48px;
+}
+.stats-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  max-width: 700px; margin: 0 auto;
+}
+.stat {
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  transition: transform 0.3s, border-color 0.3s;
+}
+.stat:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.stat-num {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-light), #F0D78C, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+.stat-num span { font-size: 0.5em; }
+.stat-label {
+  font-size: 0.85rem; color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+}
+
+/* Services */
+.services { background: var(--white); }
+.grid-3 {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+}
+.service-card {
+  padding: 40px 32px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  position: relative;
+}
+.service-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; border-radius: var(--radius) var(--radius) 0 0;
+  background: linear-gradient(90deg, var(--accent), #D4AF37, var(--accent-light));
+  opacity: 0; transition: opacity 0.3s;
+}
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(201, 169, 110, 0.2);
+  border-color: var(--accent);
+}
+.service-card:hover::before { opacity: 1; }
+.service-card-icon {
+  width: 60px; height: 60px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(27, 42, 74, 0.2);
+}
+.service-card-icon .material-icons {
+  font-size: 28px; color: var(--accent-light);
+}
+.service-card h3 { margin-bottom: 12px; }
+.service-card p { color: var(--text-muted); font-size: 0.95rem; }
+.service-card-price {
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--accent); margin-top: 16px;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.service-card-detail {
+  font-size: 0.8rem; color: var(--text-muted);
+  margin-top: 4px;
+}
+.service-card-badge {
+  display: inline-block; font-size: 0.75rem; font-weight: 600;
+  color: var(--primary); background: rgba(27, 42, 74, 0.08);
+  padding: 4px 12px; border-radius: 50px; margin-top: 10px;
+  border: 1px solid rgba(27, 42, 74, 0.15);
+}
+.service-card-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px;
+}
+.service-card-tags span {
+  font-size: 0.75rem; padding: 4px 10px;
+  background: var(--white); border-radius: 50px;
+  color: var(--text-muted); border: 1px solid var(--border);
+}
+
+/* Works */
+.works { background: var(--bg); }
+.works-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px;
+}
+.work-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.work-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(201, 169, 110, 0.18);
+  border-color: var(--accent);
+}
+.work-card-visual {
+  height: 180px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.work-card-visual .material-icons {
+  font-size: 40px; color: rgba(255, 255, 255, 0.3);
+  position: relative; z-index: 1;
+}
+.work-card-visual-1 { background: linear-gradient(135deg, #1B2A4A, #2C4070); }
+.work-card-visual-2 { background: linear-gradient(135deg, #2C4070, #4A6FA5); }
+.work-card-visual-3 { background: linear-gradient(135deg, #4A6FA5, #6A8FC5); }
+.work-card-visual-4 { background: linear-gradient(135deg, #8D6748, #C9A96E); }
+.work-card-visual-5 { background: linear-gradient(135deg, #3D5A3E, #6D9B4A); }
+.work-card-visual-6 { background: linear-gradient(135deg, #6B3A7D, #9B59B6); }
+
+.work-card-body { padding: 24px; }
+.work-card-tag {
+  display: inline-block; font-size: 0.72rem; font-weight: 600;
+  color: var(--accent); background: rgba(201, 169, 110, 0.1);
+  padding: 3px 10px; border-radius: 50px; margin-bottom: 10px;
+  letter-spacing: 0.03em;
+}
+.work-card-body h3 { margin-bottom: 8px; font-size: 1.1rem; }
+.work-card-body p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+.work-card-techs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+}
+.work-card-techs span {
+  font-size: 0.7rem; padding: 2px 8px;
+  background: var(--bg); border-radius: 50px;
+  color: var(--text-muted);
+}
+
+/* Skills */
+.skills { background: var(--white); }
+.skills-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px;
+}
+.skill-category {
+  padding: 32px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.skill-category-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+.skill-category-icon {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+}
+.skill-category-icon .material-icons {
+  font-size: 20px; color: var(--accent-light);
+}
+.skill-category-header h3 { font-size: 1.05rem; }
+.skill-list {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.skill-tag {
+  font-size: 0.82rem; padding: 6px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50px; color: var(--text);
+  transition: all 0.2s;
+}
+.skill-tag:hover {
+  border-color: var(--accent); color: var(--accent);
+}
+.skill-tag.highlight {
+  background: var(--primary); color: var(--white);
+  border-color: var(--primary);
+}
+
+/* Process */
+.process { background: var(--bg); }
+.steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  position: relative;
+}
+.steps.steps-6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.steps::before {
+  display: none;
+}
+.step {
+  text-align: center; position: relative;
+  background: var(--white); padding: 36px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.step-num {
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--white); background: var(--accent);
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; margin-bottom: 16px;
+}
+.step h3 { margin-bottom: 10px; }
+.step p { color: var(--text-muted); font-size: 0.9rem; }
+.process-note {
+  text-align: center; margin-top: 32px;
+  font-size: 0.85rem; color: var(--text-muted);
+}
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  text-align: center; color: var(--white);
+  padding: 100px 0;
+}
+.cta-section h2 {
+  color: var(--white); margin-bottom: 16px;
+}
+.cta-section p {
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 500px; margin: 0 auto 36px;
+}
+.btn-line {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 20px 48px; border-radius: 50px;
+  background: linear-gradient(135deg, #06C755, #00B548);
+  color: var(--white);
+  font-size: 1.1rem; font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(6, 199, 85, 0.3);
+  position: relative; overflow: hidden;
+}
+.btn-line::after {
+  content: '';
+  position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  animation: shimmer 3s ease-in-out infinite;
+}
+.btn-line:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(6, 199, 85, 0.5);
+}
+.btn-line .material-icons { font-size: 1.2rem; }
+.cta-note {
+  font-size: 0.82rem; color: rgba(255, 255, 255, 0.45);
+  margin-top: 16px;
+}
+
+/* Footer */
+footer {
+  background: var(--primary-dark); color: rgba(255, 255, 255, 0.5);
+  padding: 40px 0; text-align: center; font-size: 0.82rem;
+}
+footer a { color: var(--accent-light); }
+
+/* スクロールアニメーション */
+.fi {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fi.visible { opacity: 1; transform: translateY(0); }
+.fi.delay-1 { transition-delay: 0.1s; }
+.fi.delay-2 { transition-delay: 0.2s; }
+.fi.delay-3 { transition-delay: 0.3s; }
+.fi.delay-4 { transition-delay: 0.4s; }
+.fi.delay-5 { transition-delay: 0.5s; }
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  section { padding: 64px 0; }
+  .section-inner { padding: 0 20px; }
+
+  #mainNav { padding: 16px 20px; }
+  #mainNav.scrolled { padding: 12px 20px; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--white);
+    padding: 20px; gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  .nav-links.open a { color: var(--text); }
+
+  .hero { min-height: 90vh; padding-top: 80px; }
+  .hero h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+  .hero-deco { display: none; }
+  .hero-cta-group { flex-direction: column; align-items: flex-start; }
+
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .about-image-wrap { order: -1; max-width: 300px; margin: 0 auto; }
+
+  .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .stat-num { font-size: clamp(1.5rem, 5vw, 2rem); }
+
+  .grid-3 { grid-template-columns: 1fr; }
+  .works-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .steps {
+    grid-template-columns: 1fr; gap: 20px;
+  }
+  .steps::before { display: none; }
+
+  .wave svg { height: 50px; }
+}
+</style>
+</head>
+<body>
+
+<!-- スクロールプログレスバー -->
+<div class="scroll-indicator" id="scrollBar"></div>
+
+<!-- ナビゲーション -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">SAE<span>KA</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#works">Works</a></li>
+    <li><a href="#skills">Skills</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">LINE で相談する</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="メニューを開く">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+  <div class="hero-particles">
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+    <div class="hero-particle"></div>
+  </div>
+  <div class="hero-deco">
+    <div class="hero-deco-circle"></div>
+    <div class="hero-deco-circle"></div>
+  </div>
+  <div class="section-inner">
+    <div class="hero-content">
+      <p class="hero-eyebrow fi">AI Consultant / DX Leader / Business Architect</p>
+      <h1 class="fi delay-1">製造業15年の現場知見 ×<br>最新AI。<span class="accent">事業の「困った」を、<br>仕組みで解決する。</span></h1>
+      <p class="hero-sub fi delay-2">150人以上のAI活用コンサルティングを実施。製造業DX推進リーダーとSHIFT AIコンサルティングコーチの二足の草鞋で、日本をAIの先進国へ。</p>
+      <div class="hero-cta-group fi delay-3">
+        <a href="#contact" class="btn-primary">
+          <span class="material-icons">chat</span>
+          LINE で気軽に相談する
+        </a>
+        <a href="#works" class="btn-outline">
+          <span class="material-icons">work</span>
+          実績を見る
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--white); margin-top: -1px;">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- ===== ABOUT ===== -->
+<section class="about" id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-image-wrap fi">
+        <div class="about-image-placeholder">
+          <span class="material-icons">person</span>
+          <!-- 画像を差し替える場合: <img src="profile.jpg" alt="冴香"> -->
+        </div>
+        <div class="about-image-accent"></div>
+        <div class="about-image-accent-2"></div>
+      </div>
+      <div class="about-text">
+        <p class="section-eyebrow fi">About</p>
+        <h2 class="section-title fi delay-1">珈琲店の娘から、<br><span class="accent">AI社会実装</span>の最前線へ。</h2>
+        <p class="about-lead fi delay-2">冴香（SAEKA） / 岐阜県在住</p>
+        <div class="about-story fi delay-2">
+          <p>自家焙煎珈琲販売店・喫茶店を営む家庭の次女として育つ。高校卒業後、製造業に入社し経理・総務・人事と管理部門を経験。「現場を変えたい」という想いで技術職への異動を直訴し、品質保証・生産技術の世界へ。赤字工場を6ヶ月で黒字化し、歴代最年少・女性初のスピード昇進で課長に就任しました。</p>
+          <p>2017年、父の他界をきっかけに実家の喫茶店の経営企画にも携わり始め、2025年にはAIを活用したマルシェ企画でフォロワー1,000人増加・売上UPを実現。この経験が「AIで身近な困りごとを解決する」という事業の原点になりました。</p>
+          <p>現在はSHIFT AI社のコンサルティングコーチとして150人以上の会員にAI活用支援を実施しながら、本業では製造業のDX推進リーダーも担い、「日本をAIの先進国へ」をモットーにAI社会実装の第一人者として活動しています。</p>
+        </div>
+        <div class="about-timeline fi delay-3">
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2010</span>
+            <span class="about-timeline-text">岐阜商業高校卒業 / 製造業入社（経理・総務・人事）</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2013</span>
+            <span class="about-timeline-text">品質保証・生産技術へ異動 / 赤字工場の黒字化達成</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2017</span>
+            <span class="about-timeline-text">父の他界 / 実家喫茶店の経営企画に携わる</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2023</span>
+            <span class="about-timeline-text">技術部課長就任（部員35名 / 歴代最年少）</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2024</span>
+            <span class="about-timeline-text">15億円 新工場自動化プロジェクトリーダー</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2025.04</span>
+            <span class="about-timeline-text">喫茶店マルシェ企画 / 3ヶ月でフォロワー1,000人増・売上UP</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2025.10</span>
+            <span class="about-timeline-text">AI経営コンサルタント支援を開始</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2025.12</span>
+            <span class="about-timeline-text">SHIFT AI社 コンサルティングコーチに採用</span>
+          </div>
+          <div class="about-timeline-item">
+            <span class="about-timeline-year">2026.02</span>
+            <span class="about-timeline-text">新規事業サービス運営リーダーに抜擢 / DX推進リーダー就任（図面検査システム導入・Lark導入企画立案中）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,50 C240,10 480,80 720,40 C960,0 1200,70 1440,35 L1440,90 L0,90 Z" fill="#0F1B33"/>
+  </svg>
+</div>
+
+<!-- ===== MISSION ===== -->
+<section class="mission" id="mission">
+  <div class="section-inner">
+    <p class="section-eyebrow text-center fi">Mission</p>
+    <div class="mission-quote fi delay-1">AIを通じて、身近な困りごとを解決する。</div>
+    <p class="mission-sub fi delay-2">本業に時間を割きたいのに事務仕事やSNS運用に追われている個人・小規模事業者を、AIの力で支援する。技術は手段、目的は「人が本業に集中できる時間をつくること」。</p>
+    <div class="stats-grid fi delay-3">
+      <div class="stat">
+        <div class="stat-num">15<span>年</span></div>
+        <div class="stat-label">製造業の現場経験</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">150<span>名+</span></div>
+        <div class="stat-label">AI活用コンサル実施</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1,000<span>人</span></div>
+        <div class="stat-label">3ヶ月でフォロワー増加</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--primary-dark);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- ===== SERVICES ===== -->
+<section class="services" id="services">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Services</p>
+      <h2 class="section-title fi delay-1">提供<span class="accent">サービス</span></h2>
+      <p class="section-lead center fi delay-2">経営者の「やりたいけど手が回らない」を、AIの力で解消します。</p>
+    </div>
+    <div class="grid-3">
+      <div class="service-card fi delay-1">
+        <div class="service-card-icon">
+          <span class="material-icons">campaign</span>
+        </div>
+        <h3>SNS運用代行</h3>
+        <p>リフォーム会社・カイロプラクティック・喫茶店・占い・物販など幅広い業種に対応。AIを活用した投稿文作成で、手間なく集客力を高めます。撮影不要で始められます。</p>
+        <div class="service-card-price">1アカウント 月額5万円〜</div>
+        <div class="service-card-detail">週1〜2投稿 / 投稿文AI作成 / 撮影代行・現地訪問は行っておりません</div>
+        <div class="service-card-detail">※ AI画像生成を含む投稿の場合は1アカウント 月額10万円〜</div>
+        <div class="service-card-tags">
+          <span>Instagram</span><span>LINE</span><span>投稿文AI生成</span><span>業種問わず</span>
+        </div>
+      </div>
+      <div class="service-card fi delay-2">
+        <div class="service-card-icon">
+          <span class="material-icons">psychology</span>
+        </div>
+        <h3>企業経営アドバイザー顧問</h3>
+        <p>経営課題の壁打ち相手として、月1回の面談を実施。AI活用アドバイスから業務改善の提案まで、製造業15年の経営視点で伴走します。</p>
+        <div class="service-card-price">月額 8万円〜</div>
+        <div class="service-card-detail">月1回面談 / AI活用アドバイス / 経営相談</div>
+        <div class="service-card-tags">
+          <span>月次面談</span><span>AI活用</span><span>経営相談</span>
+        </div>
+      </div>
+      <div class="service-card fi delay-3">
+        <div class="service-card-icon">
+          <span class="material-icons">terminal</span>
+        </div>
+        <h3>Claude Code 立ち上げ・実装支援</h3>
+        <p>AIエージェントをあなたのビジネスに。初期設定からカスタムスキル作成、セキュリティ設計、ハンズオン研修まで。企業向けには2ヶ月間の本格導入プランもご用意。</p>
+        <div class="service-card-price">個人 25万円〜 / 企業 100万円〜</div>
+        <div class="service-card-detail">個人: 初期設定+研修+2週間サポート / 企業: 2ヶ月間の本格導入</div>
+        <div class="service-card-badge">AIsora Code 事業として立ち上げ中</div>
+        <div class="service-card-tags">
+          <span>初期設定</span><span>スキル作成</span><span>研修</span><span>企業導入</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,50 C240,10 480,80 720,40 C960,0 1200,70 1440,35 L1440,90 L0,90 Z" fill="#FAF8F5"/>
+  </svg>
+</div>
+
+<!-- ===== WORKS ===== -->
+<section class="works" id="works">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Works</p>
+      <h2 class="section-title fi delay-1">Claude Code で<span class="accent">実現した成果</span></h2>
+      <p class="section-lead center fi delay-2">すべてClaude Codeを活用して構築。経営課題から逆算した、実際に動いている仕組みです。</p>
+    </div>
+    <div class="works-grid">
+      <!-- Work 1 -->
+      <div class="work-card fi delay-1">
+        <div class="work-card-visual work-card-visual-1">
+          <span class="material-icons">dashboard</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">SHIFT AI</span>
+          <h3>週次会員分析ダッシュボード</h3>
+          <p>PRO/PREMIUM 55名の稼働・日報・マネタイズデータを自動集計。毎週月曜7:00にSlackへ自動投稿。非アクティブ会員の早期検出で離脱防止に貢献。</p>
+          <div class="work-card-techs">
+            <span>Python</span><span>Google Sheets API</span><span>Slack API</span><span>HTML</span>
+          </div>
+        </div>
+      </div>
+      <!-- Work 2 -->
+      <div class="work-card fi delay-2">
+        <div class="work-card-visual work-card-visual-2">
+          <span class="material-icons">bar_chart</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">SNK</span>
+          <h3>GASコードでPLダッシュボード作成</h3>
+          <p>Excelを使わず、Google Apps Script（GAS）で5部門の月次損益データを自動集計・可視化。さらに製品タスク300アイテムのタスクダッシュボードも構築し実運用中。</p>
+          <div class="work-card-techs">
+            <span>GAS</span><span>Google Sheets</span><span>Chart.js</span><span>HTML</span>
+          </div>
+        </div>
+      </div>
+      <!-- Work 3 -->
+      <div class="work-card fi delay-3">
+        <div class="work-card-visual work-card-visual-3">
+          <span class="material-icons">description</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">SHIFT AI</span>
+          <h3>PRO初回面談マニュアル自動生成</h3>
+          <p>Google Docs APIで34件の面談文字起こしを一括取得・分析。パターン抽出からキャリアパス提案ガイド、対応例集まで体系的なマニュアルを自動生成。</p>
+          <div class="work-card-techs">
+            <span>Python</span><span>Google Docs API</span><span>テキスト分析</span>
+          </div>
+        </div>
+      </div>
+      <!-- Work 4 -->
+      <div class="work-card fi delay-4">
+        <div class="work-card-visual work-card-visual-4">
+          <span class="material-icons">storefront</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">B.C.B.G</span>
+          <h3>喫茶店マルシェ集客AI化</h3>
+          <p>実家喫茶店のSNS運用をAI化。投稿文自動生成、動画サムネイル作成（Playwright + ffmpeg）、LINE配信連携でフォロワー2.3倍・売上前期比増を達成。</p>
+          <div class="work-card-techs">
+            <span>LINE API</span><span>Playwright</span><span>CanvaAI</span><span>ffmpeg</span>
+          </div>
+        </div>
+      </div>
+      <!-- Work 5 -->
+      <div class="work-card fi delay-3">
+        <div class="work-card-visual work-card-visual-5">
+          <span class="material-icons">school</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">関ビズ</span>
+          <h3>AI集客プラン講座パッケージ</h3>
+          <p>小規模事業者向けのAI講座を企画から教材一式まで完全構築。スライド、アクションシート、プロンプト集、QRコード、運営進行ガイドをすべてClaude Codeで制作。</p>
+          <div class="work-card-techs">
+            <span>HTML</span><span>講座設計</span><span>プロンプト設計</span>
+          </div>
+        </div>
+      </div>
+      <!-- Work 6 -->
+      <div class="work-card fi delay-4">
+        <div class="work-card-visual work-card-visual-6">
+          <span class="material-icons">notifications_active</span>
+        </div>
+        <div class="work-card-body">
+          <span class="work-card-tag">全社横断</span>
+          <h3>毎朝タスク配信システム</h3>
+          <p>5クライアントのタスクを自動収集し、毎朝8:00にDiscord + LINEへ配信。期限3日以内の警告表示、遅延分析（928件中189件の遅延を自動検出）も搭載。</p>
+          <div class="work-card-techs">
+            <span>Python</span><span>Discord API</span><span>LINE API</span><span>タスクスケジューラ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--bg);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- ===== SKILLS ===== -->
+<section class="skills" id="skills">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Skills</p>
+      <h2 class="section-title fi delay-1">スキル<span class="accent">セット</span></h2>
+      <p class="section-lead center fi delay-2">AI技術・開発力・経営視点の3軸で、現場で使える仕組みを構築します。</p>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-category fi delay-1">
+        <div class="skill-category-header">
+          <div class="skill-category-icon">
+            <span class="material-icons">smart_toy</span>
+          </div>
+          <h3>AI / プロンプト</h3>
+        </div>
+        <div class="skill-list">
+          <span class="skill-tag highlight">Claude Code</span>
+          <span class="skill-tag">ChatGPT</span>
+          <span class="skill-tag">Gemini</span>
+          <span class="skill-tag">Manus</span>
+          <span class="skill-tag">Base44</span>
+          <span class="skill-tag">イルシル</span>
+          <span class="skill-tag">プロンプトエンジニアリング</span>
+          <span class="skill-tag">AIエージェント設計</span>
+        </div>
+      </div>
+      <div class="skill-category fi delay-2">
+        <div class="skill-category-header">
+          <div class="skill-category-icon">
+            <span class="material-icons">code</span>
+          </div>
+          <h3>開発 / エンジニアリング</h3>
+        </div>
+        <div class="skill-list">
+          <span class="skill-tag highlight">Python</span>
+          <span class="skill-tag highlight">JavaScript</span>
+          <span class="skill-tag">HTML / CSS</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Google API</span>
+          <span class="skill-tag">LINE API</span>
+          <span class="skill-tag">Discord API</span>
+          <span class="skill-tag">Slack API</span>
+        </div>
+      </div>
+      <div class="skill-category fi delay-3">
+        <div class="skill-category-header">
+          <div class="skill-category-icon">
+            <span class="material-icons">business</span>
+          </div>
+          <h3>ビジネス / マネジメント</h3>
+        </div>
+        <div class="skill-list">
+          <span class="skill-tag">マネジメント 13年</span>
+          <span class="skill-tag">採用 130名/年</span>
+          <span class="skill-tag">財務管理</span>
+          <span class="skill-tag">品質保証</span>
+          <span class="skill-tag">技術設計開発</span>
+          <span class="skill-tag">AIカメラ検査導入</span>
+          <span class="skill-tag">ISO 9001</span>
+          <span class="skill-tag">ISO 14001</span>
+          <span class="skill-tag">ISO 45001</span>
+          <span class="skill-tag">IATF 16949</span>
+          <span class="skill-tag">生産技術</span>
+        </div>
+      </div>
+      <div class="skill-category fi delay-4">
+        <div class="skill-category-header">
+          <div class="skill-category-icon">
+            <span class="material-icons">workspace_premium</span>
+          </div>
+          <h3>資格</h3>
+        </div>
+        <div class="skill-list">
+          <span class="skill-tag">生産マイスター 1級</span>
+          <span class="skill-tag">全商簿記 1級</span>
+          <span class="skill-tag">日商簿記 2級</span>
+          <span class="skill-tag">日商販売士 2級</span>
+          <span class="skill-tag">情報処理能力検定 2級</span>
+          <span class="skill-tag">商業経済検定 1級</span>
+          <span class="skill-tag">中国語検定 準4級</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--white);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,50 C240,10 480,80 720,40 C960,0 1200,70 1440,35 L1440,90 L0,90 Z" fill="#FAF8F5"/>
+  </svg>
+</div>
+
+<!-- ===== PROCESS ===== -->
+<section class="process" id="process">
+  <div class="section-inner">
+    <div class="text-center">
+      <p class="section-eyebrow fi">Process</p>
+      <h2 class="section-title fi delay-1">お仕事の依頼・<span class="accent">進め方</span></h2>
+    </div>
+    <div class="steps steps-6">
+      <div class="step fi delay-1">
+        <div class="step-num">01</div>
+        <h3>ヒアリング</h3>
+        <p>事業内容・課題・理想の状態をじっくり伺います。</p>
+      </div>
+      <div class="step fi delay-2">
+        <div class="step-num">02</div>
+        <h3>業務依頼内容決定</h3>
+        <p>ヒアリング内容をもとに、具体的な支援範囲を決定します。</p>
+      </div>
+      <div class="step fi delay-3">
+        <div class="step-num">03</div>
+        <h3>見積り</h3>
+        <p>内容に応じたお見積りをご提示します。</p>
+      </div>
+      <div class="step fi delay-4">
+        <div class="step-num">04</div>
+        <h3>受注決定</h3>
+        <p>内容・金額にご納得いただけたら正式にスタートします。</p>
+      </div>
+      <div class="step fi delay-5">
+        <div class="step-num">05</div>
+        <h3>設計・構築</h3>
+        <p>課題に最適なAI活用プランを設計し、実際に動く仕組みを構築します。</p>
+      </div>
+      <div class="step fi delay-5">
+        <div class="step-num">06</div>
+        <h3>伴走・改善</h3>
+        <p>導入後も定期的にフォロー。自走できるようになるまで一緒に走ります。</p>
+      </div>
+    </div>
+    <p class="process-note fi delay-5">※ 初回カウンセリングは無料です。以降の経営ご相談は1時間1万円〜となります。</p>
+  </div>
+</section>
+
+<!-- ウェーブ -->
+<div class="wave" style="background: var(--bg);">
+  <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C180,90 360,5 540,45 C720,85 900,10 1080,45 C1200,68 1360,28 1440,42 L1440,90 L0,90 Z" fill="#0F1B33"/>
+  </svg>
+</div>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section" id="contact">
+  <div class="section-inner">
+    <p class="section-eyebrow text-center fi" style="color: var(--accent-light);">Contact</p>
+    <h2 class="fi delay-1">まずは気軽に、<span style="color: var(--accent-light);">お話ししませんか？</span></h2>
+    <p class="fi delay-2">「AIって何ができるの？」「うちの業務にも使える？」そんな疑問からで大丈夫。LINEで気軽にご相談ください。</p>
+    <a href="https://line.me/R/ti/p/@410kolrq" class="btn-line fi delay-3">
+      <span class="material-icons">chat</span>
+      LINE で友だち追加する
+    </a>
+    <p class="cta-note fi delay-3">無料相談 / 営業メッセージは送りません</p>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer>
+  <div class="section-inner">
+    <p>&copy; 2025 SAEKA. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+/* スクロールプログレスバー */
+const scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', () => {
+  const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  scrollBar.style.width = scrolled + '%';
+}, { passive: true });
+
+/* ナビスクロール */
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+/* ハンバーガー */
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+});
+
+/* スクロールアニメーション */
+document.addEventListener('DOMContentLoaded', () => {
+  const items = Array.from(document.querySelectorAll('.fi'));
+  const show = el => el.classList.add('visible');
+  if (!('IntersectionObserver' in window)) { items.forEach(show); return; }
+  const io = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { show(entry.target); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.06 });
+  items.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) show(el);
+    else io.observe(el);
+  });
+});
+
+/* スムーズスクロール（ナビリンク） */
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      navLinks.classList.remove('open');
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シマノ 新規製品進捗管理 | トライ段階別スケジュール</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --t0: #e2e8f0;
+    --t1: #f97316;
+    --t2: #eab308;
+    --t3: #22c55e;
+    --t4: #3b82f6;
+    --t5: #a855f7;
+    --mass: #f59e0b;
+    --today: rgba(239,68,68,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI','Meiryo',sans-serif; background:var(--bg); color:var(--text); padding:20px; }
+
+  h1 { font-size:1.5rem; margin-bottom:6px; }
+  .subtitle { color:var(--muted); font-size:.85rem; margin-bottom:20px; }
+
+  /* 凡例 */
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; padding:12px 16px; background:var(--card); border-radius:8px; border:1px solid var(--border); }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:.8rem; }
+  .legend-color { width:16px; height:16px; border-radius:3px; border:1px solid rgba(255,255,255,.15); }
+
+  /* フィルタ */
+  .filters { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+  .filters select, .filters input { padding:8px 12px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:.85rem; }
+
+  /* サマリカード */
+  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:24px; }
+  .summary-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px; text-align:center; }
+  .summary-card .num { font-size:2rem; font-weight:700; }
+  .summary-card .label { font-size:.75rem; color:var(--muted); margin-top:4px; }
+
+  /* ガントチャート */
+  .gantt-wrapper { overflow-x:auto; background:var(--card); border:1px solid var(--border); border-radius:8px; }
+  table.gantt { border-collapse:collapse; min-width:100%; font-size:.7rem; }
+  table.gantt th, table.gantt td { border:1px solid var(--border); padding:3px 4px; white-space:nowrap; }
+  table.gantt thead th { position:sticky; top:0; background:#1a2744; z-index:2; font-weight:600; }
+  table.gantt .month-header { text-align:center; font-size:.8rem; font-weight:700; letter-spacing:1px; }
+  table.gantt .col-part { min-width:140px; position:sticky; left:0; background:var(--card); z-index:3; font-weight:600; }
+  table.gantt .col-process { min-width:100px; position:sticky; left:140px; background:var(--card); z-index:3; }
+  table.gantt .col-person { min-width:60px; position:sticky; left:240px; background:var(--card); z-index:3; }
+  table.gantt .day-cell { min-width:28px; max-width:28px; text-align:center; font-size:.6rem; cursor:default; }
+  table.gantt .day-cell.weekend { background:rgba(100,116,139,.15); }
+  table.gantt .day-cell.today { background:var(--today); border-left:2px solid #ef4444; }
+  table.gantt .part-group { background:rgba(59,130,246,.08); }
+  table.gantt .separator-row td { height:4px; background:var(--border); padding:0; }
+
+  /* セル内のバー */
+  .bar { display:inline-block; width:100%; height:18px; border-radius:3px; line-height:18px; text-align:center; font-size:.55rem; font-weight:600; color:#000; overflow:hidden; text-overflow:ellipsis; }
+  .bar.t0 { background:var(--t0); }
+  .bar.t1 { background:var(--t1); }
+  .bar.t2 { background:var(--t2); }
+  .bar.t3 { background:var(--t3); }
+  .bar.t4 { background:var(--t4); color:#fff; }
+  .bar.t5 { background:var(--t5); color:#fff; }
+  .bar.mass { background:var(--mass); }
+  .bar.plan { opacity:.5; border:2px dashed rgba(0,0,0,.3); }
+
+  /* ツールチップ */
+  .tooltip { position:relative; }
+  .tooltip:hover::after { content:attr(data-tip); position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:#000; color:#fff; padding:4px 8px; border-radius:4px; font-size:.7rem; white-space:pre-line; z-index:99; max-width:300px; }
+
+  /* 品番別 進捗一覧 */
+  .progress-list { margin-top:24px; }
+  .progress-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; }
+  .progress-card h3 { font-size:1rem; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .progress-card .badge { font-size:.65rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .progress-bar-bg { height:8px; background:var(--border); border-radius:4px; overflow:hidden; margin:6px 0; }
+  .progress-bar-fill { height:100%; border-radius:4px; transition:width .3s; }
+  .steps { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px; margin-top:8px; }
+  .step { font-size:.75rem; padding:6px 10px; border-radius:4px; background:rgba(255,255,255,.04); display:flex; justify-content:space-between; }
+  .step .担当 { color:var(--muted); }
+
+  @media print { body { background:#fff; color:#000; } }
+</style>
+</head>
+<body>
+
+<h1>シマノ 新規製品進捗管理</h1>
+<p class="subtitle">トライ段階別スケジュール（2026年1月〜6月）| 最終更新: <span id="lastUpdate"></span></p>
+
+<!-- 凡例 -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-color" style="background:var(--t0)"></div>T0 試作</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--t1)"></div>T1</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--t2)"></div>T2</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--t3)"></div>T3</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--t4)"></div>T4</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--t5)"></div>T5</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--mass)"></div>量産</div>
+  <div class="legend-item"><div class="legend-color" style="background:var(--today);border-color:#ef4444"></div>今日</div>
+</div>
+
+<!-- フィルタ -->
+<div class="filters">
+  <select id="filterPart"><option value="">全品番</option></select>
+  <select id="filterPerson"><option value="">全担当</option></select>
+  <select id="filterMonth">
+    <option value="">全期間</option>
+    <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+    <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+  </select>
+</div>
+
+<!-- サマリ -->
+<div class="summary" id="summary"></div>
+
+<!-- 品番別進捗一覧 -->
+<div class="progress-list" id="progressList"></div>
+
+<!-- ガントチャート -->
+<div class="gantt-wrapper">
+  <table class="gantt" id="ganttTable"></table>
+</div>
+
+<script>
+// === データ定義 ===
+const PRODUCTS = [
+  {
+    part: "FDR9350 BRACKET",
+    steps: [
+      { process:"鋳造", person:"横山", events:[
+        {date:"2026-01-31",text:"初品30個(寸法合格品)持込",stage:"t0"},
+        {date:"2026-02-01",text:"スライドバック修正",stage:"t0"},
+        {date:"2026-02-07",text:"見切り変更品 鋳造",stage:"t1",span:5},
+        {date:"2026-03-16",text:"初品30個(寸法合格品)持込",stage:"t1"},
+        {date:"2026-04-20",text:"量確1",stage:"mass"}
+      ]},
+      { process:"後処理", person:"粟野", events:[
+        {date:"2026-02-07",text:"見切り変更",stage:"t1",span:5}
+      ]},
+      { process:"素材寸検", person:"品管", events:[
+        {date:"2026-02-12",text:"見切り変更品検査",stage:"t1",span:2},
+        {date:"2026-02-15",text:"見切り変更品検査",stage:"t1",span:2}
+      ]},
+      { process:"加工", person:"春近", events:[
+        {date:"2026-02-07",text:"T1品 加工",stage:"t1"},
+        {date:"2026-02-14",text:"T1品 加工",stage:"t1",span:5}
+      ]},
+      { process:"加工寸検", person:"品管", events:[]},
+      { process:"塗装", person:"西日本", events:[
+        {date:"2026-01-22",text:"塗装IN(60個)",stage:"t0"}
+      ]},
+      { process:"塗装後寸検", person:"品管", events:[
+        {date:"2026-01-22",text:"検査+測定 初品準備30個",stage:"t0"}
+      ]},
+      { process:"初期管理", person:"品管", events:[
+        {date:"2026-01-24",text:"検査+測定 初品準備30個",stage:"t0"},
+        {date:"2026-03-05",text:"初品サンプル完",stage:"t0"}
+      ]}
+    ]
+  },
+  {
+    part: "BMEN830 UPPER BRACKET",
+    steps: [
+      { process:"鋳造(44号機)", person:"山田", events:[
+        {date:"2026-01-31",text:"初品30個(予備30個)",stage:"t0"},
+        {date:"2026-03-10",text:"型改造完了(真空引き・EPガス抜きトライ)",stage:"t1"},
+        {date:"2026-03-17",text:"デバイス工事",stage:"t1"},
+        {date:"2026-04-13",text:"量確1 予定仮",stage:"mass"}
+      ]},
+      { process:"熱処理・ショット", person:"粟野", events:[
+        {date:"2026-02-07",text:"持ち込み加工へ",stage:"t0"}
+      ]},
+      { process:"素材寸検", person:"品管", events:[
+        {date:"2026-01-12",text:"本社着 熱処理完測定",stage:"t0"}
+      ]},
+      { process:"素材検査", person:"品管", events:[
+        {date:"2026-01-12",text:"朝一検査",stage:"t0"}
+      ]},
+      { process:"加工", person:"春近", events:[
+        {date:"2026-02-14",text:"持ち込み加工へ",stage:"t0"}
+      ]},
+      { process:"加工寸検", person:"春近", events:[
+        {date:"2026-01-12",text:"加工寸検SNK技術へ展開",stage:"t0"}
+      ]},
+      { process:"アルマイト", person:"丸石", events:[
+        {date:"2026-01-13",text:"丸石引き渡し",stage:"t0"}
+      ]},
+      { process:"アルマイト後寸検", person:"品管", events:[
+        {date:"2026-01-15",text:"アルマイト測定",stage:"t0"},
+        {date:"2026-02-19",text:"寸検完了",stage:"t0"}
+      ]},
+      { process:"初期管理", person:"品管", events:[
+        {date:"2026-01-29",text:"100 シマノ要望 工程検証品",stage:"t0"},
+        {date:"2026-02-10",text:"250 シマノ要望EMCサンプル",stage:"t1"},
+        {date:"2026-03-02",text:"100 シマノ要望 パイロット品",stage:"t2"}
+      ]}
+    ]
+  },
+  {
+    part: "BMEN830 LOWER BRACKET",
+    steps: [
+      { process:"鋳造", person:"横山", events:[
+        {date:"2026-01-31",text:"初品30個(予備30個)",stage:"t0"},
+        {date:"2026-03-12",text:"真空引き連動トライ",stage:"t1"},
+        {date:"2026-03-19",text:"デバイス工事",stage:"t1"},
+        {date:"2026-04-20",text:"量確1 予定仮",stage:"mass"}
+      ]},
+      { process:"熱処理・ショット", person:"粟野", events:[
+        {date:"2026-02-14",text:"持ち込み加工へ",stage:"t0"}
+      ]},
+      { process:"素材寸検", person:"品管", events:[
+        {date:"2026-01-12",text:"本社着 熱処理完測定",stage:"t0"}
+      ]},
+      { process:"素材検査", person:"品管", events:[
+        {date:"2026-01-12",text:"朝一検査",stage:"t0"}
+      ]},
+      { process:"加工", person:"春近", events:[
+        {date:"2026-01-12",text:"春近IN 13:00太田K引き渡し",stage:"t0"}
+      ]},
+      { process:"加工寸検", person:"春近", events:[
+        {date:"2026-01-19",text:"丸石引き渡し",stage:"t0"}
+      ]},
+      { process:"アルマイト", person:"丸石", events:[
+        {date:"2026-01-22",text:"アルマイト測定",stage:"t0"}
+      ]},
+      { process:"アルマイト後寸検", person:"品管", events:[
+        {date:"2026-02-19",text:"寸検完了",stage:"t0"}
+      ]},
+      { process:"初期管理", person:"品管", events:[
+        {date:"2026-01-29",text:"100 シマノ要望 工程検証品",stage:"t0"},
+        {date:"2026-02-10",text:"250 シマノ要望EMCサンプル",stage:"t1"},
+        {date:"2026-03-02",text:"100 シマノ要望 パイロット品",stage:"t2"}
+      ]}
+    ]
+  },
+  {
+    part: "BRG8000 CALIPE L R",
+    steps: [
+      { process:"鋳造(51号機)", person:"横山", events:[
+        {date:"2026-01-26",text:"型UP R予定",stage:"t0"}
+      ]},
+      { process:"バフ", person:"美義", events:[
+        {date:"2026-02-07",text:"Rバフ→バレル進める",stage:"t0"},
+        {date:"2026-02-12",text:"R完了・Lバフバレル",stage:"t0"},
+        {date:"2026-02-14",text:"Lバフバレル完了",stage:"t0"}
+      ]},
+      { process:"バレル", person:"美義", events:[
+        {date:"2026-02-12",text:"Rバフバレル完了 Lバフバレル",stage:"t0"},
+        {date:"2026-02-14",text:"Lバフバレル完了",stage:"t0"}
+      ]},
+      { process:"加工", person:"美義", events:[
+        {date:"2026-01-27",text:"旋盤・加工機UP",stage:"t0"},
+        {date:"2026-02-16",text:"L進める(片岡)20個",stage:"t0"},
+        {date:"2026-02-18",text:"R進める(舟橋)100個",stage:"t0"},
+        {date:"2026-02-20",text:"L:SETUP完",stage:"t0"},
+        {date:"2026-02-21",text:"L:加工開始目標",stage:"t0"},
+        {date:"2026-02-24",text:"L:加工完了目標100個",stage:"t0"},
+        {date:"2026-04-06",text:"初品用完",stage:"t0"}
+      ]},
+      { process:"加工寸検", person:"美義", events:[
+        {date:"2026-02-16",text:"L:測定",stage:"t0",span:2},
+        {date:"2026-03-09",text:"30個 T0",stage:"t0"},
+        {date:"2026-04-06",text:"初品用完",stage:"t0"}
+      ]},
+      { process:"塗装", person:"西日本", events:[
+        {date:"2026-02-19",text:"西日本引き渡し・塗装",stage:"t0"},
+        {date:"2026-04-02",text:"初品用",stage:"t0"}
+      ]},
+      { process:"初期管理", person:"品管", events:[
+        {date:"2026-02-16",text:"L:測定",stage:"t0",span:2},
+        {date:"2026-03-09",text:"30個 T0",stage:"t0"},
+        {date:"2026-04-10",text:"初品準備",stage:"t0"}
+      ]}
+    ]
+  },
+  {
+    part: "RDG8000 OUTER LINK",
+    steps: [
+      { process:"鋳造(44号機)", person:"山田", events:[
+        {date:"2026-02-14",text:"型UP → T0試作",stage:"t0"},
+        {date:"2026-03-16",text:"22号機 カジリ確認トライ",stage:"t1"}
+      ]},
+      { process:"バレル", person:"品管", events:[
+        {date:"2026-02-19",text:"美義 後藤引取済",stage:"t0"},
+        {date:"2026-02-22",text:"太田K引取 約800個",stage:"t0"}
+      ]},
+      { process:"加工", person:"春近", events:[
+        {date:"2026-02-19",text:"春近IN 後藤持込200個",stage:"t0"},
+        {date:"2026-02-23",text:"太田K 加工100個引取",stage:"t0"}
+      ]},
+      { process:"加工寸検", person:"品管", events:[
+        {date:"2026-02-19",text:"完了",stage:"t0"}
+      ]},
+      { process:"マスキング", person:"新家", events:[
+        {date:"2026-02-22",text:"5個 T0品 シルバークリア",stage:"t0"}
+      ]},
+      { process:"塗装", person:"西日本", events:[
+        {date:"2026-01-24",text:"検査+測定 初品準備30個",stage:"t0"},
+        {date:"2026-03-05",text:"塗装完測定もらう予定",stage:"t0"},
+        {date:"2026-03-09",text:"T0出荷 100個",stage:"t0"}
+      ]},
+      { process:"初期管理", person:"品管", events:[]}
+    ]
+  },
+  {
+    part: "HEAT SINK",
+    steps: [
+      { process:"ショット", person:"粟野", events:[
+        {date:"2026-02-07",text:"255ヶ 八神出",stage:"t0"},
+        {date:"2026-02-14",text:"残り分処理完了 八神へ定期便",stage:"t0"}
+      ]},
+      { process:"加工", person:"八神光加工", events:[
+        {date:"2026-02-12",text:"持ち込み 先行250個納入",stage:"t0"}
+      ]},
+      { process:"アルマイト", person:"丸石", events:[
+        {date:"2026-02-22",text:"2末までにアルマイト完了",stage:"t0"}
+      ]}
+    ]
+  },
+  {
+    part: "14-260-01",
+    steps: [
+      { process:"素材検査", person:"品管", events:[
+        {date:"2026-01-12",text:"ブリ検 15:00 神保さん引き",stage:"t0"}
+      ]}
+    ]
+  },
+  {
+    part: "14-267-01",
+    steps: [
+      { process:"熱処理", person:"粟野", events:[]},
+      { process:"素材検査", person:"品管", events:[
+        {date:"2026-01-19",text:"神保さん引き渡し",stage:"t0"}
+      ]}
+    ]
+  },
+  {
+    part: "14-270-01",
+    steps: [
+      { process:"熱処理", person:"粟野", events:[
+        {date:"2026-01-15",text:"熱処理(22:00完)",stage:"t0"}
+      ]},
+      { process:"素材検査", person:"品管", events:[
+        {date:"2026-01-19",text:"神保さん引き渡し",stage:"t0"}
+      ]}
+    ]
+  }
+];
+
+// === ユーティリティ ===
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+function dateStr(d){ return d.toISOString().slice(0,10); }
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function isWeekend(d){ const day=d.getDay(); return day===0||day===6; }
+
+// 日付リスト生成（2026-01-06 ～ 2026-06-30）
+function generateDays(){
+  const days=[];
+  let d=new Date(2026,0,6);
+  const end=new Date(2026,5,30);
+  while(d<=end){ days.push(new Date(d)); d.setDate(d.getDate()+1); }
+  return days;
+}
+const ALL_DAYS = generateDays();
+
+// === 初期化 ===
+document.getElementById('lastUpdate').textContent = dateStr(TODAY);
+
+// フィルタ用セレクト
+const parts = [...new Set(PRODUCTS.map(p=>p.part))];
+const persons = [...new Set(PRODUCTS.flatMap(p=>p.steps.map(s=>s.person)))];
+const selPart = document.getElementById('filterPart');
+const selPerson = document.getElementById('filterPerson');
+parts.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; selPart.appendChild(o); });
+persons.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; selPerson.appendChild(o); });
+
+selPart.addEventListener('change', render);
+selPerson.addEventListener('change', render);
+document.getElementById('filterMonth').addEventListener('change', render);
+
+// === 描画 ===
+function render(){
+  const fPart = selPart.value;
+  const fPerson = selPerson.value;
+  const fMonth = document.getElementById('filterMonth').value;
+
+  let filtered = PRODUCTS;
+  if(fPart) filtered = filtered.filter(p=>p.part===fPart);
+  if(fPerson) filtered = filtered.map(p=>({...p, steps:p.steps.filter(s=>s.person===fPerson)})).filter(p=>p.steps.length);
+
+  let days = ALL_DAYS;
+  if(fMonth){
+    const m = parseInt(fMonth);
+    days = ALL_DAYS.filter(d=>d.getMonth()===m-1);
+  }
+
+  renderSummary(filtered);
+  renderProgressList(filtered);
+  renderGantt(filtered, days);
+}
+
+function renderSummary(products){
+  const totalParts = products.length;
+  const totalSteps = products.reduce((s,p)=>s+p.steps.length,0);
+  const totalEvents = products.reduce((s,p)=>s+p.steps.reduce((s2,st)=>s2+st.events.length,0),0);
+  // 今週のイベント
+  const weekStart = new Date(TODAY); weekStart.setDate(weekStart.getDate()-weekStart.getDay()+1);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6);
+  let thisWeek = 0;
+  products.forEach(p=>p.steps.forEach(s=>s.events.forEach(e=>{
+    const d=parseDate(e.date);
+    if(d>=weekStart && d<=weekEnd) thisWeek++;
+  })));
+
+  document.getElementById('summary').innerHTML = `
+    <div class="summary-card"><div class="num">${totalParts}</div><div class="label">管理品番数</div></div>
+    <div class="summary-card"><div class="num">${totalSteps}</div><div class="label">工程数</div></div>
+    <div class="summary-card"><div class="num">${totalEvents}</div><div class="label">登録イベント数</div></div>
+    <div class="summary-card"><div class="num">${thisWeek}</div><div class="label">今週のイベント</div></div>
+  `;
+}
+
+function renderProgressList(products){
+  const container = document.getElementById('progressList');
+  container.innerHTML = '';
+  const stageColors = {t0:'var(--t0)',t1:'var(--t1)',t2:'var(--t2)',t3:'var(--t3)',t4:'var(--t4)',t5:'var(--t5)',mass:'var(--mass)'};
+  const stageLabels = {t0:'T0 試作',t1:'T1',t2:'T2',t3:'T3',t4:'T4',t5:'T5',mass:'量産'};
+
+  products.forEach(p=>{
+    // 最新ステージ判定
+    let maxStage = 't0';
+    const stageOrder = ['t0','t1','t2','t3','t4','t5','mass'];
+    p.steps.forEach(s=>s.events.forEach(e=>{
+      if(stageOrder.indexOf(e.stage)>stageOrder.indexOf(maxStage)) maxStage=e.stage;
+    }));
+
+    // 完了工程数（イベントがあるもの）
+    const doneSteps = p.steps.filter(s=>s.events.some(e=>parseDate(e.date)<=TODAY)).length;
+    const pct = p.steps.length ? Math.round(doneSteps/p.steps.length*100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'progress-card';
+    card.innerHTML = `
+      <h3>${p.part} <span class="badge" style="background:${stageColors[maxStage]};color:${maxStage==='t4'||maxStage==='t5'?'#fff':'#000'}">${stageLabels[maxStage]}</span></h3>
+      <div style="font-size:.75rem;color:var(--muted)">工程進捗: ${doneSteps}/${p.steps.length} (${pct}%)</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${stageColors[maxStage]}"></div></div>
+      <div class="steps">
+        ${p.steps.map(s=>{
+          const latest = s.events.filter(e=>parseDate(e.date)<=TODAY).pop();
+          const statusText = latest ? latest.text : '未着手';
+          return `<div class="step"><span>${s.process}</span><span class="担当">${s.person}</span></div>`;
+        }).join('')}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderGantt(products, days){
+  const table = document.getElementById('ganttTable');
+  table.innerHTML = '';
+
+  // イベントマップ作成: part+process+date -> event
+  const eventMap = {};
+  products.forEach(p=>{
+    p.steps.forEach(s=>{
+      s.events.forEach(e=>{
+        const key = `${p.part}|${s.process}|${e.date}`;
+        eventMap[key] = e;
+      });
+    });
+  });
+
+  // ヘッダ: 月行
+  const thead = document.createElement('thead');
+
+  // 月ヘッダ
+  const monthRow = document.createElement('tr');
+  monthRow.innerHTML = '<th class="col-part"></th><th class="col-process"></th><th class="col-person"></th>';
+  let prevMonth = -1;
+  let monthSpans = [];
+  days.forEach((d,i)=>{
+    const m = d.getMonth();
+    if(m !== prevMonth){
+      monthSpans.push({month:m, count:1});
+      prevMonth = m;
+    } else {
+      monthSpans[monthSpans.length-1].count++;
+    }
+  });
+  monthSpans.forEach(ms=>{
+    const th = document.createElement('th');
+    th.className = 'month-header';
+    th.colSpan = ms.count;
+    th.textContent = `${2026}/${ms.month+1}`;
+    monthRow.appendChild(th);
+  });
+  thead.appendChild(monthRow);
+
+  // 日ヘッダ
+  const dayRow = document.createElement('tr');
+  dayRow.innerHTML = '<th class="col-part">品番</th><th class="col-process">工程</th><th class="col-person">担当</th>';
+  const weekdays = ['日','月','火','水','木','金','土'];
+  days.forEach(d=>{
+    const th = document.createElement('th');
+    th.className = 'day-cell' + (isWeekend(d)?' weekend':'') + (dateStr(d)===dateStr(TODAY)?' today':'');
+    th.innerHTML = `${d.getDate()}<br>${weekdays[d.getDay()]}`;
+    dayRow.appendChild(th);
+  });
+  thead.appendChild(dayRow);
+  table.appendChild(thead);
+
+  // ボディ
+  const tbody = document.createElement('tbody');
+  products.forEach((p,pi)=>{
+    p.steps.forEach((s,si)=>{
+      const tr = document.createElement('tr');
+      if(si===0) tr.classList.add('part-group');
+
+      // 品番セル（最初の行のみ表示）
+      const tdPart = document.createElement('td');
+      tdPart.className = 'col-part';
+      tdPart.textContent = si===0 ? p.part : '';
+      if(si===0) tdPart.rowSpan = p.steps.length;
+      tr.appendChild(tdPart);
+      if(si>0){/* rowSpanで処理済み */}
+
+      const tdProc = document.createElement('td');
+      tdProc.className = 'col-process';
+      tdProc.textContent = s.process;
+      tr.appendChild(tdProc);
+
+      const tdPerson = document.createElement('td');
+      tdPerson.className = 'col-person';
+      tdPerson.textContent = s.person;
+      tr.appendChild(tdPerson);
+
+      days.forEach(d=>{
+        const td = document.createElement('td');
+        td.className = 'day-cell' + (isWeekend(d)?' weekend':'') + (dateStr(d)===dateStr(TODAY)?' today':'');
+        const key = `${p.part}|${s.process}|${dateStr(d)}`;
+        if(eventMap[key]){
+          const e = eventMap[key];
+          td.innerHTML = `<div class="bar ${e.stage} tooltip" data-tip="${e.text}" title="${e.text}"></div>`;
+        }
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    // 品番区切り
+    if(pi < products.length-1){
+      const sep = document.createElement('tr');
+      sep.className = 'separator-row';
+      sep.innerHTML = `<td colspan="${3+days.length}"></td>`;
+      tbody.appendChild(sep);
+    }
+  });
+
+  table.appendChild(tbody);
+
+  // rowSpan修正: 最初の行以外の品番セルを削除
+  products.forEach(p=>{
+    // Already handled by conditional rendering above
+  });
+
+  // rowSpanの再適用（簡易実装）
+  fixRowSpans(tbody, products);
+}
+
+function fixRowSpans(tbody, products){
+  let rowIdx = 0;
+  products.forEach((p,pi)=>{
+    const stepCount = p.steps.length;
+    if(stepCount > 0){
+      const firstRow = tbody.rows[rowIdx];
+      if(firstRow){
+        const partCell = firstRow.cells[0];
+        partCell.rowSpan = stepCount;
+        // 残りの行から品番セルを削除
+        for(let i=1; i<stepCount; i++){
+          const row = tbody.rows[rowIdx+i];
+          if(row && row.cells[0]) row.deleteCell(0);
+        }
+      }
+    }
+    rowIdx += stepCount;
+    if(pi < products.length-1) rowIdx++; // separator row
+  });
+}
+
+// 初回描画
+render();
+</script>
+</body>
+</html>

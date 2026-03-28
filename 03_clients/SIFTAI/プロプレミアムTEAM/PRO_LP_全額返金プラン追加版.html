@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHIFT AI × PRO / PREMIUM 会員専用ページ | SHIFT AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    /* ===== SHIFT AI OFFICIAL BRAND VARIABLES ===== */
+    :root {
+      --pink:        #A51E6D;
+      --purple:      #7B2DB0;
+      --teal:        #039578;
+      --gold:        #FFBC2A;
+      --grad:        linear-gradient(135deg, #A51E6D 0%, #7B2DB0 100%);
+      --grad-v:      linear-gradient(180deg, #A51E6D 0%, #7B2DB0 100%);
+      --white:       #FFFFFF;
+      --bg:          #FBFBFB;
+      --bg2:         #F3F4F8;
+      --text:        #111118;
+      --text-muted:  #6B6B80;
+      --border:      #E8E8F0;
+      --radius:      16px;
+      --radius-sm:   10px;
+      --shadow:      0 2px 20px rgba(165, 30, 109, 0.10);
+      --shadow-lg:   0 8px 48px rgba(165, 30, 109, 0.18);
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Nunito Sans', 'Noto Sans JP', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== SCROLL PROGRESS ===== */
+    #scrollBar {
+      position: fixed; top: 0; left: 0; z-index: 300;
+      height: 3px; width: 0%;
+      background: var(--grad);
+      transition: width 0.1s linear;
+    }
+
+    /* ===== NAV ===== */
+    #mainNav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    #mainNav.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center;
+    }
+    .nav-logo img {
+      height: 36px;
+      width: auto;
+      display: block;
+    }
+    .nav-chip {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      background: rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 99px;
+      color: var(--text-muted);
+    }
+
+    /* ===== SCROLL ANIMATION ===== */
+    .fi {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fi.visible { opacity: 1; transform: translateY(0); }
+    .fi.delay-1 { transition-delay: 0.1s; }
+    .fi.delay-2 { transition-delay: 0.2s; }
+    .fi.delay-3 { transition-delay: 0.3s; }
+    .fi.delay-4 { transition-delay: 0.4s; }
+
+    /* ===== LAYOUT ===== */
+    .inner { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    section { padding: 100px 0; }
+
+    /* ===== SECTION LABEL ===== */
+    .label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      background: url("https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/n8V43mS64DxP1KVNVazLGwB7AaY2DGTlRq8fLm44.png") center/cover no-repeat;
+      padding-top: 80px;
+    }
+    .hero-bg-grad {
+      position: absolute; inset: 0;
+      background-color: rgba(255,255,255,0.82);
+      background-image:
+        radial-gradient(ellipse 55% 60% at 85% 20%, rgba(165,30,109,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 45% 50% at 10% 80%, rgba(3,149,120,0.07) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-grid-lines { display: none; }
+    .hero-inner { position: relative; z-index: 1; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--grad); flex-shrink: 0;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 900; line-height: 1.12;
+      color: var(--text);
+      word-break: keep-all;
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2.2vw, 20px);
+      color: var(--text);
+      font-weight: 700;
+      max-width: 600px; line-height: 1.85;
+      margin-bottom: 20px;
+      text-shadow: 0 1px 12px rgba(255,255,255,1), 0 2px 24px rgba(255,255,255,0.85);
+    }
+    .hero-entry { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+    .entry-pill {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 22px;
+      box-shadow: var(--shadow);
+    }
+    .entry-pill .material-icons { font-size: 18px; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .entry-pill-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+    .entry-pill-val { font-size: 14px; font-weight: 700; color: var(--text); }
+    .hero-cta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .hero-cta .btn {
+      font-size: 15px; padding: 18px 36px;
+    }
+    .hero-cta .btn-secondary:hover {
+      background: rgba(0,0,0,0.10) !important;
+      transform: translateY(-3px);
+    }
+    @media (max-width: 768px) {
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { width: 100%; justify-content: center; text-align: center; }
+    }
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0.4;
+      animation: scrollBounce 2.6s ease-in-out infinite;
+    }
+    .hero-scroll .material-icons { font-size: 18px; }
+    @keyframes scrollBounce {
+      0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(0); }
+      50% { opacity: 0.6; transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ===== SERVICE DIVIDER ===== */
+    .service-divider {
+      margin: 48px -40px 40px;
+      background: var(--grad);
+      padding: 22px 40px;
+      display: flex; align-items: center; gap: 14px;
+      position: relative; overflow: hidden;
+    }
+    .service-divider::after {
+      content: '';
+      position: absolute; top: -60%; right: -4%;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: rgba(255,255,255,0.09); pointer-events: none;
+    }
+    .service-divider .material-icons { font-size: 20px; color: rgba(255,255,255,0.85); flex-shrink: 0; }
+    .service-divider-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--white);
+    }
+    @media (max-width: 768px) {
+      .service-divider { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+    }
+
+    /* ===== WAVE ===== */
+    .wave { line-height: 0; }
+    .wave svg { display: block; width: 100%; height: 80px; }
+
+    /* ===== INTRO ===== */
+    .intro { background: var(--white); overflow: hidden; }
+    .intro-img-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      background: linear-gradient(135deg, #f5f0ff 0%, #fff5f8 100%);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; color: var(--text-muted);
+      margin: 32px 0;
+    }
+    .intro-img-placeholder .material-icons { font-size: 52px; opacity: 0.25; }
+    .intro-img-placeholder span:last-child { font-size: 13px; letter-spacing: 0.06em; }
+    .intro p {
+      font-size: 16px; color: var(--text-muted);
+      max-width: 600px; line-height: 1.9;
+    }
+    .formula-eq {
+      margin-top: 40px;
+      padding: 28px 36px;
+      background: linear-gradient(135deg, rgba(165,30,109,0.05) 0%, rgba(123,45,176,0.05) 100%);
+      border-radius: 16px;
+      text-align: center;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-size: clamp(13px, 2vw, 16px);
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      line-height: 1.8;
+    }
+    .formula-result {
+      display: block;
+      margin-top: 4px;
+      font-size: clamp(17px, 2.8vw, 22px);
+      font-weight: 900;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.01em;
+    }
+
+    /* ===== STEPS ===== */
+    .steps { background: var(--bg); }
+    .steps-list { display: flex; flex-direction: column; gap: 0; margin-top: 56px; }
+    .step-card {
+      display: grid; grid-template-columns: 84px 1fr;
+      background: transparent;
+      border: none; border-radius: 0; overflow: hidden;
+      box-shadow: none;
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+      transition: none;
+    }
+    .step-card:hover { box-shadow: none; transform: none; }
+    .step-card:last-child { border-bottom: none; }
+    .step-card.highlight {
+      position: relative;
+      margin: 0 -40px;
+      padding: 40px 40px;
+    }
+    .step-card.highlight::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(165,30,109,0.04), rgba(123,45,176,0.03));
+      pointer-events: none;
+    }
+    .step-num-col {
+      background: transparent; border: none;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-start;
+      gap: 0; padding: 2px 0 0;
+      min-width: 0; overflow: hidden;
+    }
+    .step-num-label { display: none; }
+    .step-num-val {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(48px, 5vw, 64px); font-weight: 900; line-height: 0.9;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .step-body { padding: 0 0 0 32px; border-left: 2px solid var(--border); min-width: 0; }
+    .step-card.highlight .step-body { border-left-color: var(--pink); }
+    .step-title { font-size: clamp(16px, 2.5vw, 20px); font-weight: 700; margin-bottom: 10px; word-break: keep-all; color: var(--text); }
+    .step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.85; margin-bottom: 16px; }
+    .step-tags { display: flex; flex-wrap: wrap; gap: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+      background: none; border: none; border-radius: 0; padding: 0;
+    }
+    .tag .material-icons { font-size: 14px; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .step-why {
+      margin-top: 20px;
+      border: 1.5px solid rgba(165,30,109,0.18);
+      border-radius: 12px;
+      padding: 16px 20px;
+      background: rgba(165,30,109,0.03);
+    }
+    .step-why-head {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; color: var(--pink);
+      padding: 0 0 8px; background: none;
+    }
+    .step-why-head .material-icons { font-size: 14px; color: var(--pink); }
+    .step-why-body {
+      padding: 0; background: none; border: none;
+      font-size: 13px; color: var(--text-muted); line-height: 1.85;
+    }
+    /* support flow */
+    .support-flow {
+      display: flex; align-items: center; gap: 6px;
+      margin: 24px 0 4px; padding: 18px 20px;
+      background: linear-gradient(135deg, rgba(165,30,109,0.05), rgba(123,45,176,0.05));
+      border-radius: 14px; flex-wrap: wrap;
+    }
+    .support-flow-item { flex: 1; min-width: 72px; text-align: center; }
+    .support-flow-badge {
+      display: inline-block;
+      font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--grad); color: #fff;
+      padding: 3px 9px; border-radius: 20px; margin-bottom: 7px;
+    }
+    .support-flow-name { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.5; }
+    .support-flow-arrow { font-size: 16px; color: rgba(165,30,109,0.28); flex-shrink: 0; }
+    .step-action-list { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .step-action {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .step-action > .material-icons {
+      font-size: 18px; flex-shrink: 0; margin-top: 2px;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .step-action-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .step-action-note { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .step-action-link {
+      color: var(--pink); font-weight: 700; text-decoration: underline;
+      text-decoration-color: rgba(165,30,109,0.3); text-underline-offset: 2px;
+    }
+    .step-action-link:hover { text-decoration-color: var(--pink); }
+    .step-plan-badge {
+      display: inline-block; font-family: 'Inter', sans-serif;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; vertical-align: middle;
+      background: var(--grad); color: #fff;
+      padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+    }
+    @media (max-width: 768px) {
+      .step-card.highlight { margin: 0; padding: 40px 0; }
+    }
+
+    /* ===== PDCA ===== */
+    .pdca { background: linear-gradient(145deg, #FFF0F8 0%, #F5F0FF 100%); position: relative; overflow: hidden; }
+    .pdca-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 70% at 80% 30%, rgba(165,30,109,0.07) 0%, transparent 55%),
+                  radial-gradient(ellipse 50% 60% at 20% 70%, rgba(3,149,120,0.05) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .pdca-inner { position: relative; z-index: 1; }
+    .pdca .label { -webkit-text-fill-color: initial; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .pdca h2 { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 900; color: var(--text); word-break: keep-all; margin-bottom: 12px; }
+    .pdca-sub { font-size: clamp(16px, 2.2vw, 20px); color: var(--text); font-weight: 700; max-width: 600px; line-height: 1.85; margin-bottom: 60px; }
+    .pdca-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .pdca-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .pdca-card:hover {
+      background: #FFF5FB;
+      border-color: rgba(165,30,109,0.2);
+      box-shadow: var(--shadow);
+    }
+    .pdca-card-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-sm);
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .pdca-card-icon .material-icons { font-size: 22px; color: var(--white); }
+    .pdca-card h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .pdca-card p { font-size: 13px; color: var(--text-muted); line-height: 1.75; }
+
+    /* ===== ENV DIAGRAM ===== */
+    .env-diagram {
+      display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr;
+      align-items: stretch; gap: 0; margin-top: 32px;
+    }
+    .env-card {
+      border: none;
+      border-radius: 20px;
+      padding: 36px 24px;
+      background: linear-gradient(160deg, #FFF8FB, #FFF2F8);
+      box-shadow: 0 2px 12px rgba(165,30,109,0.05), 0 1px 4px rgba(0,0,0,0.02);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .env-card-pro {
+      background: linear-gradient(160deg, #FFE0F0, #E8D0FF);
+      box-shadow: 0 10px 36px rgba(165,30,109,0.16), 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .env-card-premium {
+      background: linear-gradient(160deg, #FFCCE8, #D2AEFF);
+      box-shadow: 0 24px 64px rgba(123,45,176,0.28), 0 8px 24px rgba(0,0,0,0.08);
+      transform: scale(1.03);
+      position: relative; z-index: 1;
+    }
+    .env-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 4px;
+    }
+    .env-card-pro .env-label { color: var(--pink); }
+    .env-card-premium .env-label { color: var(--purple); }
+    .env-name { font-size: 22px; font-weight: 900; margin-bottom: 20px; color: var(--text); }
+    .env-card-pro .env-name { color: var(--pink); }
+    .env-card-premium .env-name { color: var(--purple); }
+    .env-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .env-list li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: var(--text-muted); line-height: 1.55;
+    }
+    .env-list li .material-icons { font-size: 14px; color: var(--text-muted); flex-shrink: 0; margin-top: 1px; }
+    .env-list-dark li { color: var(--text); }
+    .env-list-dark li .material-icons { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .env-arrow {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .env-arrow .material-icons { font-size: 18px; color: rgba(165,30,109,0.25); }
+    @media (max-width: 768px) {
+      .env-card-premium { transform: none; }
+      .env-diagram { margin-top: 16px; }
+    }
+
+    /* ===== PRO CYCLE ===== */
+    .pro-cycle {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; flex-wrap: wrap; margin-top: 48px;
+    }
+    .pro-cycle-item {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 36px;
+      text-align: center; min-width: 140px;
+      box-shadow: var(--shadow);
+    }
+    .pro-cycle-item .material-icons {
+      font-size: 32px; background: var(--grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .pro-cycle-item span:last-child {
+      font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4;
+    }
+    .pro-cycle-arrow {
+      font-size: 24px; color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* ===== PLAN ===== */
+    .plans { background: var(--white); overflow: hidden; }
+    .plans h2 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 900; word-break: keep-all; margin-bottom: 10px; }
+    .plans-sub { font-size: 15px; color: var(--text-muted); margin-bottom: 28px; }
+    .plans-track {
+      display: grid;
+      grid-template-columns: 1fr 32px 1fr 32px 1fr;
+      align-items: center; gap: 0;
+    }
+    .plan-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+      background: var(--bg);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .plan-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+    .plan-card.current {
+      background: var(--white);
+      border-color: transparent;
+      box-shadow: 0 0 0 2px var(--pink), var(--shadow-lg);
+      transform: scale(1.04);
+      position: relative; z-index: 1;
+    }
+    .plan-card.current:hover { transform: scale(1.04) translateY(-4px); }
+    .plan-icon-box {
+      width: 56px; height: 56px;
+      border-radius: 50%; margin: 0 auto 18px;
+      background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plan-card.current .plan-icon-box { background: var(--grad); }
+    .plan-icon-box .material-icons { font-size: 26px; color: var(--text-muted); }
+    .plan-card.current .plan-icon-box .material-icons { color: var(--white); }
+    .plan-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+    .plan-speed { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+    .plan-card.current .plan-speed {
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .plan-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 14px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--grad); color: var(--white);
+      padding: 4px 12px; border-radius: 99px;
+    }
+    .plan-badge .material-icons { font-size: 12px; }
+    .plan-arrow { display: flex; align-items: center; justify-content: center; }
+    .plan-arrow .material-icons { font-size: 20px; color: var(--border); }
+
+    /* ===== HERO IMAGE AREA ===== */
+    .hero-img-area {
+      width: 100%; max-width: 780px;
+      margin-top: 40px;
+    }
+    .hero-img-placeholder {
+      background: linear-gradient(135deg, #f5f0ff 0%, #fff5f8 100%);
+      border: 2px dashed rgba(105,59,159,0.2);
+      border-radius: var(--radius);
+      height: 320px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 13px; letter-spacing: 0.05em;
+    }
+    .hero-img-placeholder .material-icons { font-size: 44px; opacity: 0.25; }
+    .hero-img-placeholder img {
+      width: 100%; height: 100%; object-fit: cover;
+      border-radius: calc(var(--radius) - 2px);
+      display: block;
+    }
+
+    /* ===== PREMIUM VIP ===== */
+    .premium-vip {
+      background: linear-gradient(145deg, #F5EEFF 0%, #FFF0F8 100%);
+      position: relative; overflow: hidden;
+      padding: 96px 0;
+    }
+    .premium-vip-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 65% at 85% 15%, rgba(165,30,109,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 15% 85%, rgba(3,149,120,0.05) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .premium-vip .inner { position: relative; z-index: 1; }
+    .premium-vip .label { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .pv-header {
+      display: flex; align-items: center; gap: 28px;
+      margin-bottom: 56px;
+    }
+    .pv-icon {
+      width: 72px; height: 72px; border-radius: var(--radius);
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 8px 32px rgba(165,30,109,0.4);
+    }
+    .pv-icon .material-icons { font-size: 36px; color: var(--white); }
+    .premium-vip h2 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 900;
+      color: var(--text); word-break: keep-all; margin-bottom: 6px;
+    }
+    .pv-sub { font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+    .pv-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+    }
+    /* 上段：3枚均等 */
+    .pv-card:nth-child(1) { grid-column: 1 / 3; }
+    .pv-card:nth-child(2) { grid-column: 3 / 5; }
+    .pv-card:nth-child(3) { grid-column: 5 / 7; }
+    /* 下段：2枚中央寄せ */
+    .pv-card:nth-child(4) { grid-column: 1 / 4; }
+    .pv-card:nth-child(5) { grid-column: 4 / 7; }
+    .pv-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      position: relative; overflow: hidden;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .pv-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--grad);
+    }
+    .pv-card:hover { background: #FFF5FB; border-color: rgba(165,30,109,0.2); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .pv-card-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(165,30,109,0.35); margin-bottom: 18px;
+    }
+    .pv-card h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .pv-card p { font-size: 13px; color: var(--text-muted); line-height: 1.8; }
+    .pv-badge {
+      display: inline-block; margin-top: 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      background: rgba(165,30,109,0.08);
+      border: 1px solid rgba(165,30,109,0.2);
+      color: var(--pink);
+      padding: 4px 14px; border-radius: 99px;
+    }
+    .pv-note {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 44px; padding: 18px 22px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--text-muted); line-height: 1.7;
+    }
+    .pv-note .material-icons { font-size: 17px; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); opacity: 0.6; }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #A51E6D 0%, #7B2DB0 100%);
+      padding: 120px 0; text-align: center;
+    }
+    .cta-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(255,255,255,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-section .label { justify-content: center; background: none; -webkit-text-fill-color: rgba(255,255,255,0.75); color: rgba(255,255,255,0.75); }
+    .cta-section h2 { font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 900; color: var(--white); word-break: keep-all; margin-bottom: 16px; }
+    .cta-section p { font-size: 15px; color: rgba(255,255,255,0.8); max-width: 440px; margin: 0 auto 52px; line-height: 1.8; }
+    .cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 36px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer; border: none;
+    }
+    .btn .material-icons { font-size: 18px; }
+    .btn-primary {
+      background: var(--grad);
+      color: var(--white);
+      box-shadow: 0 4px 28px rgba(165,30,109,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(165,30,109,0.55); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.25); color: var(--white); transform: translateY(-3px); }
+    /* CTA専用ボタン */
+    .btn-cta-white {
+      background: var(--white);
+      color: var(--pink);
+      box-shadow: 0 4px 28px rgba(0,0,0,0.15);
+    }
+    .btn-cta-white:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+    .btn-cta-outline {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.6);
+    }
+    .btn-cta-outline:hover { background: rgba(255,255,255,0.22); transform: translateY(-3px); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #07030D;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 40px 32px; text-align: center;
+    }
+    .footer-logo {
+      margin-bottom: 12px;
+      display: flex; justify-content: center;
+    }
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      display: block;
+      /* ダーク背景なのでロゴを白抜きに */
+      filter: brightness(0) invert(1);
+      opacity: 0.85;
+    }
+    footer p { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+    /* ===== STATS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 32px 16px;
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+    .stat-num {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .stat-plus {
+      font-size: 0.5em;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ===== FAQ ===== */
+    .faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 4px; }
+    .faq-item {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item.open { border-color: rgba(165,30,109,0.35); }
+    .faq-q {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px 24px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      outline: none; user-select: none;
+      transition: color 0.2s;
+    }
+    .faq-item.open .faq-q { color: var(--pink); }
+    .faq-q .q-icon {
+      font-size: 20px; flex-shrink: 0;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .faq-chevron {
+      margin-left: auto; flex-shrink: 0;
+      font-size: 20px; color: var(--text-muted);
+      transition: transform 0.25s ease;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--pink); }
+    .faq-a {
+      display: none;
+      padding: 0 24px 20px 56px;
+      font-size: 14px; color: var(--text-muted); line-height: 1.8;
+    }
+    .faq-item.open .faq-a { display: block; }
+    /* 返金制度の条件リスト */
+    .refund-block { margin-top: 16px; padding: 20px 24px; background: linear-gradient(135deg, rgba(165,30,109,0.04), rgba(123,45,176,0.03)); border-radius: 12px; border: 1px solid rgba(165,30,109,0.12); }
+    .refund-block + .refund-block { margin-top: 12px; }
+    .refund-block-title { font-size: 14px; font-weight: 700; color: var(--pink); margin-bottom: 4px; }
+    .refund-block-sub { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.7; }
+    .refund-block-note { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .refund-conditions { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .refund-conditions li { font-size: 13px; color: var(--text); line-height: 1.7; display: flex; align-items: flex-start; gap: 8px; }
+    .refund-conditions li .cond-num { font-weight: 700; color: var(--pink); flex-shrink: 0; min-width: 24px; }
+    .refund-conditions li .cond-note { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ===== SECTION BANNER IMAGES ===== */
+    .section-banner {
+      width: calc(100% + 80px);
+      margin-left: -40px; margin-right: -40px;
+      margin-bottom: 48px;
+      border-radius: 0;
+      display: block;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.10);
+    }
+    .pdca-banner {
+      width: calc(100% + 80px);
+      margin-left: -40px; margin-right: -40px;
+      border-radius: 0;
+      display: block;
+      margin-bottom: 48px;
+    }
+    .pro-sub-images {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 40px;
+    }
+    .pro-sub-images img {
+      width: 100%;
+      border-radius: 6px;
+      display: block;
+      box-shadow: 0 4px 20px rgba(165,30,109,0.14);
+    }
+    .pv-banner {
+      width: calc(100% + 80px);
+      margin-left: -40px; margin-right: -40px;
+      border-radius: 0;
+      display: block;
+      margin-bottom: 48px;
+    }
+    .plans-hero-img {
+      width: 88%;
+      max-width: 820px;
+      margin: 0 auto 48px;
+      display: block;
+      border-radius: 14px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+    }
+    @media (max-width: 768px) {
+      .pro-sub-images { grid-template-columns: 1fr; }
+      .section-banner, .pdca-banner, .pv-banner, .plans-hero-img {
+        width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .faq-a { padding: 0 16px 16px 44px; }
+      #mainNav { padding: 14px 20px; }
+      .inner { padding: 0 20px; }
+      section { padding: 64px 0; }
+      .hero h1 { font-size: clamp(1.9rem, 8vw, 2.8rem); }
+      .hero-entry { flex-direction: column; }
+      .hero-img-placeholder { height: 200px; }
+      .step-card { grid-template-columns: 48px 1fr; overflow: hidden; }
+      .step-body { padding: 0 0 0 16px; min-width: 0; }
+      .step-num-val { font-size: 36px !important; }
+      .step-num-col { overflow: hidden; min-width: 0; }
+      .step-title { font-size: 15px; overflow-wrap: break-word; word-break: break-word; }
+      .step-plan-badge { font-size: 8px; padding: 2px 6px; }
+      .plans-track { grid-template-columns: 1fr; gap: 12px; }
+      .plan-arrow { display: none; }
+      .plan-card.current { transform: none; }
+      .plan-card.current:hover { transform: translateY(-4px); }
+      .pdca-grid { grid-template-columns: 1fr 1fr; }
+      .pv-grid { grid-template-columns: 1fr; }
+      .pv-card:nth-child(n) { grid-column: 1; }
+      .pv-header { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .cta-section { padding: 72px 0; }
+    }
+    @media (max-width: 480px) {
+      .pdca-grid { grid-template-columns: 1fr; }
+      .intro-img-placeholder { aspect-ratio: 16 / 9; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div id="scrollBar"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-logo">
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/gP7UiVNmyYKec1QOcnDeLswnHwrZZ5ujSrBSdqgR.png" alt="SHIFT AI" />
+  </div>
+  <div class="nav-chip">Member Page</div>
+</nav>
+
+<!-- ====== HERO ====== -->
+<section class="hero">
+  <div class="hero-bg-grad"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="inner hero-inner">
+    <div class="hero-eyebrow fi">
+      <div class="hero-eyebrow-dot"></div>
+      SHIFT AI PRO / PREMIUM &mdash; Member Welcome
+    </div>
+    <h1 class="fi delay-1">
+      最高の舞台が、<br><span class="grad-text">今日から始まる。</span>
+    </h1>
+    <p class="hero-sub fi delay-2">AI時代を再現性高く走り抜けるための<br>最高の環境が揃いました。<br>4ステップでスタートを切りましょう！</p>
+    <div class="hero-cta fi delay-3">
+      <a href="#steps" class="btn btn-primary">
+        <span class="material-icons">rocket_launch</span>
+        Step 1 を始める
+      </a>
+      <a href="#" class="btn btn-secondary" style="background:rgba(0,0,0,0.06);color:var(--text);border:1px solid var(--border);">
+        <span class="material-icons">calendar_month</span>
+        マンツーマンを予約する
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span class="material-icons">keyboard_arrow_down</span>
+    Scroll
+  </div>
+</section>
+
+<!-- WAVE hero (light) to white -->
+<div class="wave" style="background:linear-gradient(150deg,#FFFFFF,#FFF5F8);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,10 1440,40 L1440,80 L0,80 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- ====== INTRO ====== -->
+<section class="intro">
+  <div class="inner">
+    <div class="label fi">Congratulations</div>
+    <h2 class="fi delay-1">おめでとうございます！<br>あなたは今日から"特急ルート"に乗りました。</h2>
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/ZYT1DAEV4mbbSIsKv3GkUrWS4SaumJGrlNLnF9k3.png" alt="SHIFT AI PRO / PREMIUM" class="section-banner fi delay-2" style="margin-bottom:32px;" />
+    <p class="fi delay-3">通常の学習よりも圧倒的に速く、再現性高く目標へたどり着けるプログラムです。AI時代で生き抜くための最高の環境を、今日から手に入れましょう。</p>
+    <div class="formula-eq fi delay-4">
+      あなたの学び &times; あなた専用のフィードバック
+      <span class="formula-result">= 最短で結果を出し続ける</span>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PLANS ====== -->
+<section class="plans">
+  <div class="inner">
+    <div class="label fi">3つの環境の違い</div>
+    <h2 class="fi delay-1">環境が、成長スピードを決める</h2>
+    <p class="plans-sub fi delay-2">どの環境にいるかで、同じ時間でも到達できる場所が変わります。</p>
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/5ZZRa1caOoIEFJzVMF9spj04OkWgbCOxvmZe1Krq.png" alt="あなた専用の加速装置 - 通常プラン・PRO・PREMIUM比較" class="plans-hero-img fi delay-3" />
+    <div class="env-diagram fi delay-2">
+      <div class="env-card">
+        <div class="env-label">通常プラン</div>
+        <div class="env-name">特急</div>
+        <ul class="env-list">
+          <li><span class="material-icons">check</span>AI基礎を体系的に学べる</li>
+          <li><span class="material-icons">check</span>動画・コンテンツが充実</li>
+          <li><span class="material-icons">check</span>コミュニティで質問できる</li>
+        </ul>
+      </div>
+      <div class="env-arrow"><span class="material-icons">arrow_forward</span></div>
+      <div class="env-card env-card-pro">
+        <div class="env-label">PRO プラン</div>
+        <div class="env-name">新幹線</div>
+        <ul class="env-list env-list-dark">
+          <li><span class="material-icons">add_circle</span>PROコンサルタントによる正しい目標設定</li>
+          <li><span class="material-icons">add_circle</span>実践フィードバック会（毎日参加可）</li>
+          <li><span class="material-icons">add_circle</span>合宿 参加し放題</li>
+          <li><span class="material-icons">add_circle</span>PROコミュニティで切磋琢磨</li>
+        </ul>
+      </div>
+      <div class="env-arrow"><span class="material-icons">arrow_forward</span></div>
+      <div class="env-card env-card-premium">
+        <div class="env-label">PREMIUM プラン</div>
+        <div class="env-name">リニア</div>
+        <ul class="env-list env-list-dark">
+          <li><span class="material-icons">add_circle</span>PROの全環境 ＋</li>
+          <li><span class="material-icons">add_circle</span>専用AI戦略・カリキュラム設計</li>
+          <li><span class="material-icons">add_circle</span>PROコンサルタントのマンツーマン伴走</li>
+          <li><span class="material-icons">add_circle</span>24時間チャットサポート</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE plans to steps -->
+<div class="wave" style="background:var(--white);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,20 C360,80 720,0 1080,50 C1260,72 1380,20 1440,40 L1440,80 L0,80 Z" fill="#FBFBFB"/>
+  </svg>
+</div>
+
+<!-- ====== STEPS ====== -->
+<section class="steps" id="steps">
+  <div class="inner">
+    <div class="label fi">Getting Started</div>
+    <h2 class="fi delay-1">4ステップで、最高のスタートを切ろう！</h2>
+
+    <div class="steps-list">
+
+      <div class="step-card fi">
+        <div class="step-num-col">
+          <span class="step-num-label">Step</span>
+          <span class="step-num-val">01</span>
+        </div>
+        <div class="step-body">
+          <h3 class="step-title">三種の神器を整えましょう</h3>
+          <p class="step-desc">SHIFT AI のサービスを使える状態にしましょう。以下の3つが揃えば完了です。</p>
+          <div class="step-action-list">
+            <div class="step-action">
+              <span class="material-icons">chat</span>
+              <div>
+                <div class="step-action-title">会員限定LINE に登録しよう</div>
+                <div class="step-action-note">契約時のメールに登録リンクがあります。メールをご確認ください。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">language</span>
+              <div>
+                <div class="step-action-title">会員サイトに登録しよう</div>
+                <div class="step-action-note">契約時のメールに登録リンクがあります。メールをご確認ください。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">forum</span>
+              <div>
+                <div class="step-action-title">Discord コミュニティに参加しよう</div>
+                <div class="step-action-note">会員限定LINE から届くメッセージに参加リンクがあります。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card fi delay-1">
+        <div class="step-num-col">
+          <span class="step-num-label">Step</span>
+          <span class="step-num-val">02</span>
+        </div>
+        <div class="step-body">
+          <h3 class="step-title">4つの初期サポート・事前学習を実施しよう</h3>
+          <p class="step-desc">SHIFT AIが用意した強力な初期サポートをフル活用して、AI時代を最高のスタートで駆け上がりましょう。</p>
+          <!-- Support flow visual -->
+          <div class="support-flow">
+            <div class="support-flow-item">
+              <div class="support-flow-badge">Start</div>
+              <div class="support-flow-name">マンツーマン<br>サポート</div>
+            </div>
+            <span class="material-icons support-flow-arrow">arrow_forward</span>
+            <div class="support-flow-item">
+              <div class="support-flow-badge">Checkpoints</div>
+              <div class="support-flow-name">ロードマップ作成会<br>＆学習ガイドツアー</div>
+            </div>
+            <span class="material-icons support-flow-arrow">arrow_forward</span>
+            <div class="support-flow-item">
+              <div class="support-flow-badge">Safety Net</div>
+              <div class="support-flow-name">なんでも<br>相談室</div>
+            </div>
+          </div>
+          <!-- 4 actions -->
+          <div class="step-action-list">
+            <div class="step-action">
+              <span class="material-icons">support_agent</span>
+              <div>
+                <div class="step-action-title">マンツーマンサポートを受けよう</div>
+                <div class="step-action-note">専任コンサルタントがあなたの目標・ロードマップを一緒に設計します。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">map</span>
+              <div>
+                <div class="step-action-title">初期サポートをフル活用しよう</div>
+                <div class="step-action-note">ロードマップ作成会・学習ガイドツアー・なんでも相談室を活用して疑問ゼロで進みましょう。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">school</span>
+              <div>
+                <div class="step-action-title">事前学習内容を確認しよう</div>
+                <div class="step-action-note"><a href="#" class="step-action-link">事前学習はこちら →</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="service-divider fi">
+        <span class="material-icons">bolt</span>
+        <span class="service-divider-text">Step 03 · 04 — PRO メンバー専用サービス</span>
+      </div>
+
+      <div class="step-card highlight fi delay-2">
+        <div class="step-num-col">
+          <span class="step-num-label">Step</span>
+          <span class="step-num-val">03</span>
+        </div>
+        <div class="step-body">
+          <h3 class="step-title">PRO / PREMIUM プランをフルスタートさせよう</h3>
+          <p class="step-desc">PROコンサルタントとのマンツーマン面談を実施し、面談にて正しい目標を設定します。<br>スタート質問会に参加して疑問をゼロにしてから、本格始動しましょう。</p>
+          <div class="step-why">
+            <div class="step-why-head">
+              <span class="material-icons">lightbulb</span>
+              なぜ大切なのか？
+            </div>
+            <div class="step-why-body">目標がズレたまま進むと、努力が遠回りになります。最初の面談で正しい道筋を設定し、スタート質問会で不安を全て解消してから走り出すことが、最短で結果を出す秘訣です。</div>
+          </div>
+          <div class="step-action-list" style="margin-top:20px;">
+            <div class="step-action">
+              <span class="material-icons">handshake</span>
+              <div>
+                <div class="step-action-title">初回面談を受けよう <span class="step-plan-badge">PRO / PREMIUM</span></div>
+                <div class="step-action-note">PROコンサルタントとマンツーマンで正しい目標設定・ロードマップを作成します。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">groups</span>
+              <div>
+                <div class="step-action-title">スタート質問会に参加しよう <span class="step-plan-badge">PRO</span></div>
+                <div class="step-action-note">PRO実践フィードバック会のスタート質問会で、疑問・不安をゼロにして本格始動しましょう。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card fi delay-3">
+        <div class="step-num-col">
+          <span class="step-num-label">Step</span>
+          <span class="step-num-val">04</span>
+        </div>
+        <div class="step-body">
+          <h3 class="step-title">PRO / PREMIUM プランに参加する</h3>
+          <p class="step-desc">いよいよ PRO・PREMIUM プランがスタートします。<br>各プランの専用サービスをフル活用して、爆発的成長曲線を描きましょう。</p>
+          <div class="step-action-list">
+            <div class="step-action">
+              <span class="material-icons">rate_review</span>
+              <div>
+                <div class="step-action-title">実践フィードバック会に参加しよう <span class="step-plan-badge">PRO</span></div>
+                <div class="step-action-note">毎日参加可能なフィードバック会で、実践量を最大化しながら着実に成長します。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">celebration</span>
+              <div>
+                <div class="step-action-title">合宿に参加しよう <span class="step-plan-badge">PRO</span></div>
+                <div class="step-action-note">仲間と集まり、刺激と学びを一気に加速させましょう。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">calendar_month</span>
+              <div>
+                <div class="step-action-title">PROコンサルタントとの定期面談 <span class="step-plan-badge" style="background:var(--purple);">PREMIUM</span></div>
+                <div class="step-action-note">PROコンサルタントとのマンツーマン定期面談で、進捗確認と軌道修正を継続的に行います。</div>
+              </div>
+            </div>
+            <div class="step-action">
+              <span class="material-icons">bar_chart</span>
+              <div>
+                <div class="step-action-title">カルテで進捗管理しよう <span class="step-plan-badge">PRO / PREMIUM</span></div>
+                <div class="step-action-note">学習カルテで自分の成長を可視化し、常に最適な方向へ進み続けましょう。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WAVE steps to pro (light pink) -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,20 C480,80 960,0 1440,50 L1440,80 L0,80 Z" fill="#FFF0F8"/>
+  </svg>
+</div>
+
+<!-- ====== PDCA ====== -->
+<section class="pdca">
+  <div class="pdca-bg"></div>
+  <div class="inner pdca-inner">
+    <div class="label fi">SHIFT AI PRO とは</div>
+    <h2 class="fi delay-1">毎日の実践とフィードバックで、<br>学びを成果に変える。</h2>
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/23wWcDLJE9CAOC79zzgxrnXRk8ElwwsuhQ1aC99k.png" alt="SHIFT AI PRO" class="pdca-banner fi delay-2" style="margin-top:36px;" />
+    <p class="pdca-sub fi delay-3">実践量を最大化し、プロの視点でズレを即修正。<br>AI時代を再現性高く駆け上がる環境です。</p>
+
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/w5Jwsro1ofzPdWJUe7XS84PDdOf5PsMCcKdIOuRo.png" alt="成果を最大化する「SHIFT AI」の核" class="fi delay-2" style="width:100%;max-width:1000px;margin:0 auto;display:block;border-radius:16px;" />
+
+    <div class="pdca-grid" style="margin-top:48px;">
+      <div class="pdca-card fi">
+        <div class="pdca-card-icon"><span class="material-icons">celebration</span></div>
+        <h4>合宿 1年間参加し放題</h4>
+        <p>座学で終わらせない。AIを実際に使う機会を圧倒的に増やす。オンライン合宿への参加が無料で可能。忙しくても参加しやすい環境で、「知っている」から「使える」へ。</p>
+      </div>
+      <div class="pdca-card fi delay-1">
+        <div class="pdca-card-icon"><span class="material-icons">rate_review</span></div>
+        <h4>実践フィードバック会<br>（毎日開催）</h4>
+        <p>月曜〜日曜まで毎日開催。<br>曜日別テーマ制で、自分に合った実践機会を選べる。<br>PROコンサルタントから直接フィードバックを受け、方向性のズレを即修正。</p>
+      </div>
+      <div class="pdca-card fi delay-2">
+        <div class="pdca-card-icon"><span class="material-icons">diversity_3</span></div>
+        <h4>PROコミュニティ</h4>
+        <p>本気で成果を出そうとしている仲間との交流。<br>PRO限定のイベントで、常に最新の実践機会にアクセス。<br>モチベーションが途切れない、孤独に頑張らなくていい環境。</p>
+      </div>
+      <div class="pdca-card fi delay-3">
+        <div class="pdca-card-icon"><span class="material-icons">assignment</span></div>
+        <h4>カルテで進捗を管理する</h4>
+        <p>目標・日報・進捗を一元管理。正しい方向で努力が積み上がっているか毎日確認できます。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WAVE pro to premium (light purple) -->
+<div class="wave" style="background:linear-gradient(145deg,#FFF0F8,#F5F0FF);">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,4 720,40 C960,76 1200,10 1440,40 L1440,80 L0,80 Z" fill="#F5EEFF"/>
+  </svg>
+</div>
+
+<!-- ====== PREMIUM VIP ====== -->
+<section class="premium-vip">
+  <div class="premium-vip-bg"></div>
+  <div class="inner">
+    <div class="label fi">PREMIUM Members Only</div>
+    <div class="pv-header fi delay-1">
+      <div class="pv-icon">
+        <span class="material-icons">diamond</span>
+      </div>
+      <div>
+        <h2>PREMIUMの方へ</h2>
+        <p class="pv-sub">あなた専用の戦略と、専属の伴走者。PROの全サービスに加えて、以下が追加されます。</p>
+      </div>
+    </div>
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/K3zo7jGxsrvAxeSAY0RO1eWktxLfK5yxO2hcbOVL.png" alt="SHIFT AI PREMIUM" class="pv-banner fi delay-2" style="margin-top:36px;" />
+    <div class="pv-grid">
+      <div class="pv-card fi delay-1">
+        <div class="pdca-card-icon"><span class="material-icons">route</span></div>
+        <h4>あなた専用のカリキュラム設計</h4>
+        <p>PROコンサルタントが、あなたの目標・現状・業務内容をヒアリングし、あなた専用のAI活用カリキュラムを設計。何を・どの順番で・いつまでに学ぶかが明確になります。</p>
+      </div>
+      <div class="pv-card fi delay-2">
+        <div class="pdca-card-icon"><span class="material-icons">person</span></div>
+        <h4>PROコンサルタントのマンツーマン伴走</h4>
+        <p>定期面談で進捗を確認し、軌道修正を実施。「正しい方向に進んでいるか」を常にプロがチェックするので、迷わず突き進めます。</p>
+      </div>
+      <div class="pv-card fi delay-3">
+        <div class="pdca-card-icon"><span class="material-icons">chat_bubble</span></div>
+        <h4>24時間チャットサポート</h4>
+        <p>学習中に詰まったら、いつでもチャットで質問OK。面談日まで待つ必要はありません。</p>
+      </div>
+      <div class="pv-card fi delay-4">
+        <div class="pdca-card-icon"><span class="material-icons">workspace_premium</span></div>
+        <h4>AI戦略の策定</h4>
+        <p>あなたのビジネスや目標に合わせて、PROコンサルタントが最適なAI活用戦略を策定します。</p>
+      </div>
+      <div class="pv-card fi delay-4">
+        <div class="pdca-card-icon"><span class="material-icons">group_work</span></div>
+        <h4>PREMIUM限定イベント</h4>
+        <p>PREMIUMメンバーだけが参加できる特別イベントで、さらに深い学びと交流を得られます。</p>
+      </div>
+    </div>
+    <div class="pv-note">
+      <span class="material-icons">info</span>
+      PREMIUMプランには、PROプランの全サービスが含まれています。上記はPREMIUMで追加される専用サービスです。
+    </div>
+    <div class="pv-note" style="margin-top:12px; border-left:3px solid var(--pink);">
+      <span class="material-icons" style="color:var(--pink); opacity:1;">warning</span>
+      <div>※全額返金制度の適用には、活動した日の日報を24時間以内に抜け漏れなくご提出いただく必要がございます。詳しい条件は以下をご確認ください。<br><a href="#faq" style="color:var(--pink); font-weight:700; font-size:12px; text-decoration:underline; text-underline-offset:2px; margin-top:6px; display:inline-block;">全額返金制度の詳細はこちら →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FAQ ====== -->
+<section class="faq" id="faq" style="background:var(--white);">
+  <div class="inner">
+    <div class="label fi">FAQ</div>
+    <h2 class="fi delay-1" style="font-size:clamp(1.6rem,4vw,2.6rem);font-weight:900;">よくあるご質問</h2>
+    <div class="faq-list">
+      <div class="faq-item fi">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span class="material-icons q-icon">help</span>
+          PRO / PREMIUMは途中解約できますか？
+          <span class="material-icons faq-chevron">expand_more</span>
+        </div>
+        <div class="faq-a">はい、可能です。詳細は契約時の規約をご確認ください。</div>
+      </div>
+      <div class="faq-item fi delay-1">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span class="material-icons q-icon">help</span>
+          PROからPREMIUMへのアップグレードは可能ですか？
+          <span class="material-icons faq-chevron">expand_more</span>
+        </div>
+        <div class="faq-a">はい、いつでもアップグレード可能です。担当コンサルタントまたはサポートLINEにご連絡ください。</div>
+      </div>
+      <div class="faq-item fi delay-2">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span class="material-icons q-icon">help</span>
+          実践フィードバック会は毎日参加しなければなりませんか？
+          <span class="material-icons faq-chevron">expand_more</span>
+        </div>
+        <div class="faq-a">毎日参加の義務はありません。ご自身のペースで参加いただけます。ただし、参加頻度が高いほど成長スピードが加速します。</div>
+      </div>
+      <div class="faq-item fi delay-3">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span class="material-icons q-icon">help</span>
+          AI初心者でも大丈夫ですか？
+          <span class="material-icons faq-chevron">expand_more</span>
+        </div>
+        <div class="faq-a">もちろん大丈夫です。初回面談で現在のレベルを確認し、あなたに合ったロードマップを作成します。初心者の方も多く在籍されています。</div>
+      </div>
+      <div class="faq-item fi delay-4">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span class="material-icons q-icon">help</span>
+          全額返金制度について教えてください
+          <span class="material-icons faq-chevron">expand_more</span>
+        </div>
+        <div class="faq-a">
+          <p style="margin-bottom:16px;">SHIFT AI では、PRO・PREMIUM それぞれに<strong>利用期間満了後の全額返金制度</strong>をご用意しています。所定の条件をすべて満たした場合、全額返金いたします。</p>
+
+          <!-- PRO 返金条件 -->
+          <div class="refund-block">
+            <div class="refund-block-title">SHIFT AI PRO　全額返金制度</div>
+            <div class="refund-block-sub">PROプランの利用期間満了後に、下記すべての条件に当てはまる場合、全額返金いたします。</div>
+            <ul class="refund-conditions">
+              <li>
+                <span class="cond-num">(1)</span>
+                <div>本サービスの契約成立日から起算して12ヶ月の間に、「一ヶ月に5万円以上の収益」を一度も達成できなかった場合。
+                  <span class="cond-note">※契約成立日が月の中旬や後半である場合は、翌月の1日から起算して12ヶ月間とします。※クラウドソーシングサービスを利用した業務案件の受注や、企業または個人から依頼された業務の対価、自身が運営するビジネスの売上等を収益の対象とみなします。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(2)</span>
+                <div>12ヶ月分のクラウドソーシングサービス等の受注履歴の証左を提出している場合。
+                  <span class="cond-note">※返金請求者は、以下プラットフォームの報酬管理画面の画面収録（操作の様子を含む動画形式）により提出するものとする。クラウドワークス、ランサーズ、ココナラ、その他当社が指定するプラットフォームにて、ログイン画面から操作する様子を収録し、月次の「確定報酬額」が確認（「仮払い中」は除外）でき、ユーザー名／日付も画面内に表示されていることを条件とする。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(3)</span>
+                <div>本サービスの講師や当社スタッフが指定した「合宿」への参加率が7割を越えている場合。
+                  <span class="cond-note">※1年を通しての参加率／合宿のアーカイブ動画視聴も参加にカウントします。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(4)</span>
+                <div>本サービスの講師や当社スタッフが指定した業務案件への応募や指定した学習行動の実施率が5割を越えている場合。
+                  <span class="cond-note">※1年を通しての実施率。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(5)</span>
+                <div>年間平均して月に45時間以上、合宿参加や営業活動等を行っている場合。
+                  <span class="cond-note">※下記の日報等をもとに算出。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(6)</span>
+                <div>活動した日の日報を抜け漏れなく提出していること。
+                  <span class="cond-note">※Discord上で当社が指定する形式にて、原則、活動開始時から24時間後までに提出。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(7)</span>
+                <div>本サービスの講師や当社スタッフが指定する「実践フィードバック会」にて、最低月2回のアウトプット提出と添削依頼を出していること。
+                  <span class="cond-note">※実践フィードバック会は年末年始等を除き週7回、年間で最大約360回開催。実施時間は20時〜22時の間で1時間。</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- PREMIUM 返金条件 -->
+          <div class="refund-block">
+            <div class="refund-block-title">SHIFT AI PREMIUM　全額返金制度</div>
+            <div class="refund-block-sub">PREMIUM「6ヶ月プラン」の利用期間満了後に、下記すべての条件に当てはまる場合、全額返金いたします。</div>
+            <div class="refund-block-note">※SHIFT AI PREMIUM「2ヶ月プラン」は対象外です。</div>
+            <ul class="refund-conditions">
+              <li>
+                <span class="cond-num">(1)</span>
+                <div>本サービスの利用開始日（＝最初のマンツーマン伴走サービス利用時）から起算して6ヶ月の間に、「一ヶ月に5万円以上の収益」を一度も達成できなかった場合。
+                  <span class="cond-note">※利用開始日が月の中旬や後半である場合は、翌月の1日から起算して6ヶ月間とします。※クラウドソーシングサービスを利用した業務案件の受注や、企業または個人から依頼された業務の対価、自身が運営するビジネスの売上等を収益の対象とみなします。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(2)</span>
+                <div>6ヶ月分のクラウドソーシングサービス等の受注履歴の証左を提出している場合。
+                  <span class="cond-note">※返金請求者は、以下プラットフォームの報酬管理画面の画面収録（操作の様子を含む動画形式）により提出するものとする。クラウドワークス、ランサーズ、ココナラ、その他当社が指定するプラットフォームにて、ログイン画面から操作する様子を収録し、月次の「確定報酬額」が確認（「仮払い中」は除外）でき、ユーザー名／日付も画面内に表示されていることを条件とする。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(3)</span>
+                <div>担当講師またはコンサルタントとのマンツーマン伴走の消化率を9割以上消化している場合。
+                  <span class="cond-note">※11回以上のマンツーマン伴走サービスの利用が目安。</span>
+                </div>
+              </li>
+              <li>
+                <span class="cond-num">(4)</span>
+                <div>担当講師またはコンサルタントが提出指定した課題等を8割以上提出している場合。
+                  <span class="cond-note">※10回以上の課題提出が目安。</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="inner cta-inner">
+    <div class="label fi">Start Now</div>
+    <h2 class="fi delay-1">さぁ、最高の舞台を<br>走り始めましょう。</h2>
+    <p class="fi delay-2">まずは Step 1 から。<br>一つずつ進めれば、あなたの成長は加速します。</p>
+    <div class="cta-buttons fi delay-3">
+      <a href="#steps" class="btn btn-cta-white">
+        <span class="material-icons">rocket_launch</span>
+        Step 1 を始める
+      </a>
+      <a href="#" class="btn btn-cta-outline">
+        <span class="material-icons">calendar_month</span>
+        マンツーマンを予約する
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer>
+  <div class="footer-logo">
+    <img src="https://utagesystem.s3.ap-northeast-1.amazonaws.com/doINdtEp4Yfj/gP7UiVNmyYKec1QOcnDeLswnHwrZZ5ujSrBSdqgR.png" alt="SHIFT AI" />
+  </div>
+  <p>&copy; 2025 SHIFT AI Inc. All rights reserved.</p>
+</footer>
+
+<!-- ===== JS ===== -->
+<script>
+  // Scroll progress bar
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('scrollBar');
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (window.scrollY / h * 100) + '%';
+  });
+  // Nav scroll effect
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+  // Intersection observer for fade-in
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
