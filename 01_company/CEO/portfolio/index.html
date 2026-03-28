@@ -535,20 +535,19 @@ section { padding: 100px 0; }
   border-color: var(--accent);
 }
 .work-card-visual {
-  height: 180px;
+  height: 200px;
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
+  background: var(--bg-dark);
 }
-.work-card-visual .material-icons {
-  font-size: 40px; color: rgba(255, 255, 255, 0.3);
-  position: relative; z-index: 1;
+.work-card-visual img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top left;
+  transition: transform 0.5s ease;
 }
-.work-card-visual-1 { background: linear-gradient(135deg, #1B2A4A, #2C4070); }
-.work-card-visual-2 { background: linear-gradient(135deg, #2C4070, #4A6FA5); }
-.work-card-visual-3 { background: linear-gradient(135deg, #4A6FA5, #6A8FC5); }
-.work-card-visual-4 { background: linear-gradient(135deg, #8D6748, #C9A96E); }
-.work-card-visual-5 { background: linear-gradient(135deg, #3D5A3E, #6D9B4A); }
-.work-card-visual-6 { background: linear-gradient(135deg, #6B3A7D, #9B59B6); }
+.work-card:hover .work-card-visual img {
+  transform: scale(1.05);
+}
 
 .work-card-body { padding: 24px; }
 .work-card-tag {
@@ -786,8 +785,8 @@ footer a { color: var(--accent-light); }
   </div>
   <div class="section-inner">
     <div class="hero-content">
-      <p class="hero-eyebrow fi">AI Consultant / DX Leader / Business Architect</p>
-      <h1 class="fi delay-1">製造業15年の現場知見 ×<br>最新AI。<span class="accent">事業の「困った」を、<br>仕組みで解決する。</span></h1>
+      <p class="hero-eyebrow fi">SAEKA's Portfolio</p>
+      <h1 class="fi delay-1">人が本業に集中できる<br>時間を、<span class="accent">AIでつくる。</span></h1>
       <p class="hero-sub fi delay-2">150人以上のAI活用コンサルティングを実施。製造業DX推進リーダーとSHIFT AIコンサルティングコーチの二足の草鞋で、日本をAIの先進国へ。</p>
       <div class="hero-cta-group fi delay-3">
         <a href="#contact" class="btn-primary">
@@ -816,8 +815,7 @@ footer a { color: var(--accent-light); }
     <div class="about-grid">
       <div class="about-image-wrap fi">
         <div class="about-image-placeholder">
-          <span class="material-icons">person</span>
-          <!-- 画像を差し替える場合: <img src="profile.jpg" alt="冴香"> -->
+          <img src="profile.jpg" alt="冴香">
         </div>
         <div class="about-image-accent"></div>
         <div class="about-image-accent-2"></div>
@@ -980,8 +978,8 @@ footer a { color: var(--accent-light); }
     <div class="works-grid">
       <!-- Work 1 -->
       <div class="work-card fi delay-1">
-        <div class="work-card-visual work-card-visual-1">
-          <span class="material-icons">dashboard</span>
+        <div class="work-card-visual">
+          <img src="works/work1.png" alt="週次会員分析ダッシュボード">
         </div>
         <div class="work-card-body">
           <span class="work-card-tag">SHIFT AI</span>
@@ -994,8 +992,8 @@ footer a { color: var(--accent-light); }
       </div>
       <!-- Work 2 -->
       <div class="work-card fi delay-2">
-        <div class="work-card-visual work-card-visual-2">
-          <span class="material-icons">bar_chart</span>
+        <div class="work-card-visual">
+          <img src="works/work2.png" alt="PLダッシュボード">
         </div>
         <div class="work-card-body">
           <span class="work-card-tag">SNK</span>
@@ -1008,8 +1006,8 @@ footer a { color: var(--accent-light); }
       </div>
       <!-- Work 3 -->
       <div class="work-card fi delay-3">
-        <div class="work-card-visual work-card-visual-3">
-          <span class="material-icons">description</span>
+        <div class="work-card-visual">
+          <img src="works/work3.png" alt="PRO初回面談マニュアル">
         </div>
         <div class="work-card-body">
           <span class="work-card-tag">SHIFT AI</span>
@@ -1022,8 +1020,8 @@ footer a { color: var(--accent-light); }
       </div>
       <!-- Work 4 -->
       <div class="work-card fi delay-4">
-        <div class="work-card-visual work-card-visual-4">
-          <span class="material-icons">storefront</span>
+        <div class="work-card-visual">
+          <img src="works/work4.png" alt="B.C.B.Gマルシェ">
         </div>
         <div class="work-card-body">
           <span class="work-card-tag">B.C.B.G</span>
@@ -1036,8 +1034,8 @@ footer a { color: var(--accent-light); }
       </div>
       <!-- Work 5 -->
       <div class="work-card fi delay-3">
-        <div class="work-card-visual work-card-visual-5">
-          <span class="material-icons">school</span>
+        <div class="work-card-visual">
+          <img src="works/work5.png" alt="AI集客プラン講座">
         </div>
         <div class="work-card-body">
           <span class="work-card-tag">関ビズ</span>
@@ -1050,15 +1048,15 @@ footer a { color: var(--accent-light); }
       </div>
       <!-- Work 6 -->
       <div class="work-card fi delay-4">
-        <div class="work-card-visual work-card-visual-6">
-          <span class="material-icons">notifications_active</span>
+        <div class="work-card-visual">
+          <img src="works/work6.png" alt="タスクダッシュボード">
         </div>
         <div class="work-card-body">
-          <span class="work-card-tag">全社横断</span>
-          <h3>毎朝タスク配信システム</h3>
-          <p>5クライアントのタスクを自動収集し、毎朝8:00にDiscord + LINEへ配信。期限3日以内の警告表示、遅延分析（928件中189件の遅延を自動検出）も搭載。</p>
+          <span class="work-card-tag">SNK</span>
+          <h3>タスク一覧表</h3>
+          <p>300個の製品アイテムのタスクボードをチームで共有するダッシュボードを作成。ステータス管理・担当別フィルタ・期日遅れ検出でプロジェクト進捗を一目で把握。</p>
           <div class="work-card-techs">
-            <span>Python</span><span>Discord API</span><span>LINE API</span><span>タスクスケジューラ</span>
+            <span>GAS</span><span>Google Sheets</span><span>HTML</span><span>Chart.js</span>
           </div>
         </div>
       </div>
