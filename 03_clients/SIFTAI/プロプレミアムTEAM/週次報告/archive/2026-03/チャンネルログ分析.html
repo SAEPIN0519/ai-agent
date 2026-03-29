@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PREMIUM専用ルーム チャットログ分析</title>
+<style>
+:root {
+  --primary: #4c1d95; --accent: #7c3aed; --accent-light: #f5f3ff;
+  --success: #16a34a; --warning: #d97706; --danger: #dc2626;
+  --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif; background:var(--gray-100); color:var(--gray-800); line-height:1.7; }
+.header { background:linear-gradient(135deg,#4c1d95,#7c3aed); color:#fff; padding:32px 40px 24px; }
+.header-inner { max-width:1100px; margin:0 auto; }
+.header h1 { font-size:26px; font-weight:700; }
+.header .subtitle { font-size:14px; opacity:0.85; margin-top:4px; }
+.main { max-width:1100px; margin:0 auto; padding:28px 20px 60px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:32px; }
+.kpi-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.kpi-label { font-size:12px; color:var(--gray-400); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.kpi-value { font-size:28px; font-weight:700; color:var(--primary); margin:4px 0; }
+.kpi-sub { font-size:12px; color:var(--gray-400); margin-top:2px; }
+.section { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:24px; overflow:hidden; }
+.section-header { display:flex; align-items:center; gap:10px; padding:16px 24px; border-bottom:1px solid var(--gray-200); cursor:pointer; user-select:none; }
+.section-header:hover { background:var(--gray-50); }
+.section-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; background:var(--accent); color:#fff; border-radius:50%; font-size:13px; font-weight:700; flex-shrink:0; }
+.section-title { font-size:16px; font-weight:700; color:var(--gray-800); flex:1; }
+.section-toggle { font-size:18px; color:var(--gray-400); transition:transform 0.2s; }
+.section.collapsed .section-toggle { transform:rotate(-90deg); }
+.section.collapsed .section-body { display:none; }
+.section-body { padding:20px 24px; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+th { background:var(--primary); color:#fff; padding:10px 12px; text-align:left; font-weight:600; font-size:12px; white-space:nowrap; }
+td { padding:8px 12px; border-bottom:1px solid var(--gray-200); }
+tr:nth-child(even) td { background:var(--gray-50); }
+tr:hover td { background:var(--accent-light); }
+.bar-container { display:flex; align-items:center; gap:8px; }
+.bar { height:20px; border-radius:4px; min-width:2px; }
+.bar-purple { background:linear-gradient(90deg,#a78bfa,#7c3aed); }
+.bar-blue { background:linear-gradient(90deg,#60a5fa,#3b82f6); }
+.bar-green { background:linear-gradient(90deg,#4ade80,#22c55e); }
+.bar-orange { background:linear-gradient(90deg,#fbbf24,#f59e0b); }
+.bar-value { font-size:12px; color:var(--gray-600); white-space:nowrap; }
+.staff-profile { border:1px solid var(--gray-200); border-radius:12px; padding:24px; margin-bottom:20px; }
+.staff-header { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+.staff-avatar { width:48px; height:48px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; }
+.staff-name { font-size:18px; font-weight:700; }
+.staff-meta { font-size:12px; color:var(--gray-400); }
+.staff-kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin:16px 0; }
+.staff-kpi { text-align:center; padding:12px; background:var(--gray-50); border-radius:8px; }
+.staff-kpi .value { font-size:1.4rem; font-weight:800; color:var(--primary); }
+.staff-kpi .label { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.team-avg { font-size:12px; color:var(--gray-400); margin-top:4px; }
+.team-avg span { font-weight:700; color:var(--accent); }
+.response-indicator { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+.response-fast { background:#dcfce7; color:#166534; }
+.response-normal { background:#fef3c7; color:#92400e; }
+.response-slow { background:#fef2f2; color:#991b1b; }
+.note { font-size:12px; color:var(--gray-400); padding:12px 16px; background:var(--gray-50); border-radius:8px; margin-top:16px; line-height:1.6; }
+.footer { text-align:center; padding:24px; color:var(--gray-400); font-size:12px; }
+@media (max-width:768px) {
+  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+  .staff-kpi-row { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>PREMIUM専用ルーム チャットログ分析</h1>
+    <div class="subtitle">生成日時: 2026年03月29日 23:25 | データ期間: 全期間</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- KPIサマリー -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">総メッセージ数</div>
+    <div class="kpi-value">830</div>
+    <div class="kpi-sub">BOT除外後</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">会員メッセージ</div>
+    <div class="kpi-value">401</div>
+    <div class="kpi-sub">12名</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">スタッフ返信</div>
+    <div class="kpi-value">429</div>
+    <div class="kpi-sub">3名</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">チャンネル数</div>
+    <div class="kpi-value">14</div>
+    <div class="kpi-sub">PREMIUM専用ルーム</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">チーム平均応答時間</div>
+    <div class="kpi-value">13時間54分</div>
+    <div class="kpi-sub">会員投稿→初回スタッフ返信</div>
+  </div>
+</div>
+
+<div class="section" id="sec-staff">
+  <div class="section-header" onclick="toggleSection('sec-staff')">
+    <span class="section-num">1</span>
+    <span class="section-title">コンシェルジュ別 対応プロファイル</span>
+    <span class="section-toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="note">
+      各コンシェルジュの対応状況を「チーム平均」と比較して表示しています。
+      チャットログ上の数値であり、面談・音声対応等は含みません。
+    </div>
+
+    <div class="staff-profile">
+      <div class="staff-header">
+        <div class="staff-avatar">山</div>
+        <div>
+          <div class="staff-name">山本大輔</div>
+          <div class="staff-meta">担当: 8チャンネル</div>
+        </div>
+      </div>
+      <div class="staff-kpi-row">
+        <div class="staff-kpi">
+          <div class="value">231</div>
+          <div class="label">総返信数</div>
+          <div class="team-avg">チーム平均: <span>143.0</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">240</div>
+          <div class="label">平均文字数/返信</div>
+          <div class="team-avg">チーム平均: <span>183</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">28.9</div>
+          <div class="label">会員1人あたり返信</div>
+          <div class="team-avg">チーム平均: <span>21.3</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">16時間11分</div>
+          <div class="label">平均応答時間 <span class="response-normal response-indicator">平均的</span></div>
+          <div class="team-avg">チーム平均: <span>13時間54分</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">57.8h</div>
+          <div class="label">Discord稼働（累計）</div>
+          <div class="team-avg">週あたり: <span>8.4h</span>（月36.1h）</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:13px;">担当チャンネル:</strong>
+        <span style="font-size:13px; color:var(--gray-600);">みよしゆうき, マーガレット, stylish_rabbit_63856, 森-美恵子, えりか💅, あぐる, naoya102639, 鍋島佑太</span>
+      </div>
+    </div>
+
+    <div class="staff-profile">
+      <div class="staff-header">
+        <div class="staff-avatar">安</div>
+        <div>
+          <div class="staff-name">安部友博</div>
+          <div class="staff-meta">担当: 6チャンネル</div>
+        </div>
+      </div>
+      <div class="staff-kpi-row">
+        <div class="staff-kpi">
+          <div class="value">173</div>
+          <div class="label">総返信数</div>
+          <div class="team-avg">チーム平均: <span>143.0</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">139</div>
+          <div class="label">平均文字数/返信</div>
+          <div class="team-avg">チーム平均: <span>183</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">28.8</div>
+          <div class="label">会員1人あたり返信</div>
+          <div class="team-avg">チーム平均: <span>21.3</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">11時間11分</div>
+          <div class="label">平均応答時間 <span class="response-normal response-indicator">平均的</span></div>
+          <div class="team-avg">チーム平均: <span>13時間54分</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">43.2h</div>
+          <div class="label">Discord稼働（累計）</div>
+          <div class="team-avg">週あたり: <span>6.3h</span>（月27.1h）</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:13px;">担当チャンネル:</strong>
+        <span style="font-size:13px; color:var(--gray-600);">やよい, さち, とっしー, チアキ, li, 手塚</span>
+      </div>
+    </div>
+
+    <div class="staff-profile">
+      <div class="staff-header">
+        <div class="staff-avatar">安</div>
+        <div>
+          <div class="staff-name">安永智也</div>
+          <div class="staff-meta">担当: 4チャンネル</div>
+        </div>
+      </div>
+      <div class="staff-kpi-row">
+        <div class="staff-kpi">
+          <div class="value">25</div>
+          <div class="label">総返信数</div>
+          <div class="team-avg">チーム平均: <span>143.0</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">170</div>
+          <div class="label">平均文字数/返信</div>
+          <div class="team-avg">チーム平均: <span>183</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">6.2</div>
+          <div class="label">会員1人あたり返信</div>
+          <div class="team-avg">チーム平均: <span>21.3</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">10時間30分</div>
+          <div class="label">平均応答時間 <span class="response-fast response-indicator">速い</span></div>
+          <div class="team-avg">チーム平均: <span>13時間54分</span></div>
+        </div>
+        <div class="staff-kpi">
+          <div class="value">6.2h</div>
+          <div class="label">Discord稼働（累計）</div>
+          <div class="team-avg">週あたり: <span>0.9h</span>（月3.9h）</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:13px;">担当チャンネル:</strong>
+        <span style="font-size:13px; color:var(--gray-600);">naoya102639, やよい, li, とっしー</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" id="sec-member">
+  <div class="section-header" onclick="toggleSection('sec-member')">
+    <span class="section-num">2</span>
+    <span class="section-title">会員別 チャット活用状況</span>
+    <span class="section-toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr>
+          <th>会員名</th>
+          <th>担当</th>
+          <th>投稿数</th>
+          <th>総文字数</th>
+          <th>平均文字数</th>
+          <th>利用期間</th>
+          <th>主な相談内容</th>
+          <th>投稿数（ビジュアル）</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><strong>森　美恵子</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>93</td>
+          <td>4,757</td>
+          <td>51</td>
+          <td>38日間</td>
+          <td style="font-size:11px; max-width:200px;">その他(27)、案件活動・営業(23)、面談・日程調整(16)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:200px;"></div>
+              <span class="bar-value">93件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>やよい</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安部友博</td>
+          <td>74</td>
+          <td>8,351</td>
+          <td>112</td>
+          <td>41日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(46)、面談・日程調整(38)、案件活動・営業(28)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:159px;"></div>
+              <span class="bar-value">74件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>えりか💅</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>40</td>
+          <td>3,250</td>
+          <td>81</td>
+          <td>35日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(16)、スキル・学習(11)、AIツール活用(9)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:86px;"></div>
+              <span class="bar-value">40件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>チアキ</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安部友博</td>
+          <td>36</td>
+          <td>2,688</td>
+          <td>74</td>
+          <td>20日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(19)、スキル・学習(12)、面談・日程調整(8)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:77px;"></div>
+              <span class="bar-value">36件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>とっしー</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安部友博</td>
+          <td>34</td>
+          <td>6,422</td>
+          <td>188</td>
+          <td>46日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(33)、案件活動・営業(16)、面談・日程調整(15)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:73px;"></div>
+              <span class="bar-value">34件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>みよしゆうき</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>25</td>
+          <td>6,614</td>
+          <td>264</td>
+          <td>34日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(24)、面談・日程調整(13)、AIツール活用(12)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:53px;"></div>
+              <span class="bar-value">25件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>鍋島佑太</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>24</td>
+          <td>1,599</td>
+          <td>66</td>
+          <td>30日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(6)、AIツール活用(5)、成果・報告(5)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:51px;"></div>
+              <span class="bar-value">24件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>li</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安永智也</td>
+          <td>20</td>
+          <td>1,168</td>
+          <td>58</td>
+          <td>24日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(14)、面談・日程調整(12)、相談・悩み(4)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:43px;"></div>
+              <span class="bar-value">20件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>NAOYA102639</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>20</td>
+          <td>1,031</td>
+          <td>51</td>
+          <td>31日間</td>
+          <td style="font-size:11px; max-width:200px;">面談・日程調整(8)、挨拶・返信(7)、ビジネス・マネタイズ(4)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:43px;"></div>
+              <span class="bar-value">20件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>マーガレット</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">山本大輔</td>
+          <td>14</td>
+          <td>501</td>
+          <td>35</td>
+          <td>35日間</td>
+          <td style="font-size:11px; max-width:200px;">相談・悩み(5)、その他(4)、挨拶・返信(4)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:30px;"></div>
+              <span class="bar-value">14件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>手塚</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安部友博</td>
+          <td>14</td>
+          <td>541</td>
+          <td>38</td>
+          <td>14日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(5)、AIツール活用(4)、面談・日程調整(3)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:30px;"></div>
+              <span class="bar-value">14件</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>さち</strong></td>
+          <td style="font-size:12px; color:var(--gray-600);">安部友博</td>
+          <td>7</td>
+          <td>267</td>
+          <td>38</td>
+          <td>1日間</td>
+          <td style="font-size:11px; max-width:200px;">挨拶・返信(5)、面談・日程調整(3)、その他(2)</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:15px;"></div>
+              <span class="bar-value">7件</span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="sec-response">
+  <div class="section-header" onclick="toggleSection('sec-response')">
+    <span class="section-num">3</span>
+    <span class="section-title">チャンネル別 平均応答時間</span>
+    <span class="section-toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="note">
+      会員様の投稿から最初のスタッフ返信までの平均時間です。短いほど迅速な対応を示します。
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>チャンネル</th>
+          <th>平均応答時間</th>
+          <th>速度</th>
+          <th>応答時間（ビジュアル）</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><strong>さち</strong></td>
+          <td>1時間53分</td>
+          <td><span class="response-fast response-indicator">速い</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:14px;"></div>
+              <span class="bar-value">1時間53分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>手塚</strong></td>
+          <td>3時間47分</td>
+          <td><span class="response-fast response-indicator">速い</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:29px;"></div>
+              <span class="bar-value">3時間47分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>チアキ</strong></td>
+          <td>6時間17分</td>
+          <td><span class="response-fast response-indicator">速い</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:48px;"></div>
+              <span class="bar-value">6時間17分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>やよい</strong></td>
+          <td>8時間30分</td>
+          <td><span class="response-fast response-indicator">速い</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:64px;"></div>
+              <span class="bar-value">8時間30分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>マーガレット</strong></td>
+          <td>11時間30分</td>
+          <td><span class="response-normal response-indicator">平均的</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:87px;"></div>
+              <span class="bar-value">11時間30分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>naoya102639</strong></td>
+          <td>12時間5分</td>
+          <td><span class="response-normal response-indicator">平均的</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:92px;"></div>
+              <span class="bar-value">12時間5分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>li</strong></td>
+          <td>12時間30分</td>
+          <td><span class="response-normal response-indicator">平均的</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:95px;"></div>
+              <span class="bar-value">12時間30分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>森-美恵子</strong></td>
+          <td>14時間35分</td>
+          <td><span class="response-normal response-indicator">平均的</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:111px;"></div>
+              <span class="bar-value">14時間35分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>みよしゆうき</strong></td>
+          <td>17時間</td>
+          <td><span class="response-slow response-indicator">ゆっくり</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:129px;"></div>
+              <span class="bar-value">17時間</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>えりか💅</strong></td>
+          <td>19時間48分</td>
+          <td><span class="response-slow response-indicator">ゆっくり</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:151px;"></div>
+              <span class="bar-value">19時間48分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>鍋島佑太</strong></td>
+          <td>21時間53分</td>
+          <td><span class="response-slow response-indicator">ゆっくり</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:167px;"></div>
+              <span class="bar-value">21時間53分</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>とっしー</strong></td>
+          <td>1日2時間</td>
+          <td><span class="response-slow response-indicator">ゆっくり</span></td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:200px;"></div>
+              <span class="bar-value">1日2時間</span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="sec-discord-hours">
+  <div class="section-header" onclick="toggleSection('sec-discord-hours')">
+    <span class="section-num">4</span>
+    <span class="section-title">コンシェルジュ別 Discord稼働時間</span>
+    <span class="section-toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="note">
+      1返信 = 15分として算出した推定稼働時間です。面談・音声対応等は含みません。<br>
+      データ期間: 02/09〜03/29（約6.9週間）
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>コンシェルジュ</th>
+          <th>総返信数</th>
+          <th>受け持ち会員数</th>
+          <th>累計稼働時間</th>
+          <th>週あたり稼働時間</th>
+          <th>月換算</th>
+          <th>1人あたり月稼働</th>
+          <th>稼働時間（ビジュアル）</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><strong>山本大輔</strong></td>
+          <td>231件</td>
+          <td>8名</td>
+          <td><strong>57.8時間</strong></td>
+          <td>8.4時間/週</td>
+          <td>（月36.1時間）</td>
+          <td>4.5時間</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-blue" style="width:200px;"></div>
+              <span class="bar-value">57.8h</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>安部友博</strong></td>
+          <td>173件</td>
+          <td>6名</td>
+          <td><strong>43.2時間</strong></td>
+          <td>6.3時間/週</td>
+          <td>（月27.1時間）</td>
+          <td>4.5時間</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-blue" style="width:149px;"></div>
+              <span class="bar-value">43.2h</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>安永智也</strong></td>
+          <td>25件</td>
+          <td>4名</td>
+          <td><strong>6.2時間</strong></td>
+          <td>0.9時間/週</td>
+          <td>（月3.9時間）</td>
+          <td>1.0時間</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-blue" style="width:21px;"></div>
+              <span class="bar-value">6.2h</span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--gray-100); font-weight:700;">
+          <td>チーム合計</td>
+          <td>429件</td>
+          <td>18名</td>
+          <td>107.2時間</td>
+          <td>15.5時間/週</td>
+          <td>（月66.6時間）</td>
+          <td>—</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="sec-categories">
+  <div class="section-header" onclick="toggleSection('sec-categories')">
+    <span class="section-num">5</span>
+    <span class="section-title">チャット内容分類（全体）</span>
+    <span class="section-toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="note">
+      会員様の投稿をキーワードベースで自動分類しています（1投稿が複数カテゴリに該当する場合あり）。
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>カテゴリ</th>
+          <th>該当数</th>
+          <th>割合</th>
+          <th>分布（ビジュアル）</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><strong>挨拶・返信</strong></td>
+          <td>192件</td>
+          <td>22.7%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:250px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">22.7%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>面談・日程調整</strong></td>
+          <td>131件</td>
+          <td>15.5%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:170px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">15.5%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>案件活動・営業</strong></td>
+          <td>92件</td>
+          <td>10.9%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:119px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">10.9%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>相談・悩み</strong></td>
+          <td>68件</td>
+          <td>8.1%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar" style="background:#ef4444; width:88px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">8.1%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>AIツール活用</strong></td>
+          <td>67件</td>
+          <td>7.9%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:87px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">7.9%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>スキル・学習</strong></td>
+          <td>67件</td>
+          <td>7.9%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-blue" style="width:87px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">7.9%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>ビジネス・マネタイズ</strong></td>
+          <td>64件</td>
+          <td>7.6%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-orange" style="width:83px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">7.6%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>その他</strong></td>
+          <td>57件</td>
+          <td>6.8%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar" style="background:#94a3b8; width:74px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">6.8%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>成果・報告</strong></td>
+          <td>48件</td>
+          <td>5.7%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar" style="background:#10b981; width:62px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">5.7%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>コンテンツ制作</strong></td>
+          <td>40件</td>
+          <td>4.7%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-green" style="width:52px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">4.7%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>事務・手続き</strong></td>
+          <td>9件</td>
+          <td>1.1%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar bar-purple" style="width:11px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">1.1%</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>技術・開発</strong></td>
+          <td>9件</td>
+          <td>1.1%</td>
+          <td>
+            <div class="bar-container">
+              <div class="bar" style="background:#6366f1; width:11px; height:20px; border-radius:4px; min-width:2px;"></div>
+              <span class="bar-value">1.1%</span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  PREMIUM専用ルーム チャットログ分析 | 自動生成: 2026-03-29 23:25 | BOTメッセージ除外済み
+</div>
+
+</div><!-- /main -->
+
+<script>
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+</script>
+</body>
+</html>

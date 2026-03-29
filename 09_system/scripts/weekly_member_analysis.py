@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).parent.parent.parent
 CONFIG_DIR = BASE_DIR / "09_system" / "config"
 REPORT_DIR = BASE_DIR / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "会員管理" / "週次レポート"
 SA_FILE = CONFIG_DIR / "google_service_account.json"
-SLACK_TOKEN_FILE = CONFIG_DIR / "slack_bot_token.txt"
+SLACK_TOKEN_FILE = CONFIG_DIR / "slack_user_token.txt"  # 冴香名義で投稿
 
 SPREADSHEET_ID = "1EHKgmE1d7T5N9GbT_QJV72Q8Dh91iNysHHkz6LEWJy4"
 SLACK_CHANNEL = "C0AC8404FPE"
@@ -405,6 +405,138 @@ def analyze_week(all_data, start_date, end_date, member_list, plan_type):
     }
 
 
+def merge_results(pro, prem):
+    """PRO結果とPREMIUM結果を単純合算してALL結果を作る"""
+    # ランキング系: 両方のリストを結合して再ソート（併用メンバーは両方から加算）
+    hours_map = {}
+    for name, hours, count in pro['hours_ranking'] + prem['hours_ranking']:
+        if name in hours_map:
+            hours_map[name] = (hours_map[name][0] + hours, hours_map[name][1] + count)
+        else:
+            hours_map[name] = (hours, count)
+    hours_ranking = sorted([(n, h, c) for n, (h, c) in hours_map.items()], key=lambda x: -x[1])
+
+    count_map = {}
+    for name, count in pro['count_ranking'] + prem['count_ranking']:
+        count_map[name] = count_map.get(name, 0) + count
+    count_ranking = sorted(count_map.items(), key=lambda x: -x[1])
+
+    # FB: 合算
+    fb_map = {}
+    for name, count in pro['fb_ranking'] + prem['fb_ranking']:
+        fb_map[name] = fb_map.get(name, 0) + count
+    fb_ranking = sorted(fb_map.items(), key=lambda x: -x[1])
+
+    fb_by_day = defaultdict(int)
+    for d_idx in range(7):
+        fb_by_day[d_idx] = pro['fb_by_day'].get(d_idx, 0) + prem['fb_by_day'].get(d_idx, 0)
+
+    # 感情: 加重平均
+    total_sub = pro['submitters'] + prem['submitters']
+    active_rate = int((pro['active_rate'] * pro['submitters'] + prem['active_rate'] * prem['submitters']) / total_sub) if total_sub else 0
+    stagnant_rate = 100 - active_rate
+
+    # フェーズ: マージ
+    phases = {}
+    for phase, members in pro['phases'].items():
+        phases.setdefault(phase, []).extend(members)
+    for phase, members in prem['phases'].items():
+        phases.setdefault(phase, []).extend(members)
+
+    # マネタイズ: 結合して再ソート（併用メ���バーは合算）
+    money_map = {}
+    text_map = {}
+    for name, amount, text in pro['monetize'] + prem['monetize']:
+        money_map[name] = money_map.get(name, 0) + amount
+        text_map[name] = text
+    monetize = sorted([(n, a, text_map[n]) for n, a in money_map.items()], key=lambda x: -x[1])
+    total_money = sum(a for _, a, _ in monetize)
+    avg_money = total_money // len(monetize) if monetize else 0
+
+    # 非アクティブ: 結合（重複除外）
+    inactive = list(set(pro['inactive'] + prem['inactive']))
+    active_set = pro['active_set'] | prem['active_set']
+
+    # 声: 結合
+    positive_voices = pro['positive_voices'] + prem['positive_voices']
+    negative_voices = pro['negative_voices'] + prem['negative_voices']
+
+    # member_daily / fb_members: マージ
+    member_daily = dict(pro['member_daily'])
+    for name, posts in prem['member_daily'].items():
+        if name in member_daily:
+            member_daily[name] = member_daily[name] + posts
+        else:
+            member_daily[name] = posts
+    fb_members = dict(pro['fb_members'])
+    for name, count in prem['fb_members'].items():
+        fb_members[name] = fb_members.get(name, 0) + count
+
+    # member_kpi: マージ（併用メンバーは加算）
+    member_kpi = dict(pro['member_kpi'])
+    for name, kpi in prem['member_kpi'].items():
+        if name in member_kpi:
+            existing = member_kpi[name]
+            member_kpi[name] = {
+                'hours': existing['hours'] + kpi['hours'],
+                'daily_count': existing['daily_count'] + kpi['daily_count'],
+                'fb_count': existing['fb_count'] + kpi['fb_count'],
+                'monetize': existing['monetize'] + kpi['monetize'],
+                'phase': existing['phase'] if existing['phase'] != '未報告' else kpi['phase'],
+                'achievements': existing['achievements'] + kpi['achievements'],
+                'id': existing['id'],
+            }
+        else:
+            member_kpi[name] = kpi
+
+    # concierge_map: マージ
+    concierge_map = dict(pro['concierge_map'])
+    concierge_map.update(prem['concierge_map'])
+
+    total_members = pro['total_members'] + prem['total_members']
+    total_hours = pro['total_hours'] + prem['total_hours']
+    submitters = pro['submitters'] + prem['submitters']
+    total_submissions = pro['total_submissions'] + prem['total_submissions']
+    two_plus = pro['two_plus'] + prem['two_plus']
+    weekly_submitters = pro['weekly_submitters'] + prem['weekly_submitters']
+
+    return {
+        'plan_type': 'ALL',
+        'start_date': pro['start_date'],
+        'end_date': pro['end_date'],
+        'total_members': total_members,
+        'total_hours': total_hours,
+        'avg_hours': total_hours / submitters if submitters else 0,
+        'submitters': submitters,
+        'total_submissions': total_submissions,
+        'two_plus': two_plus,
+        'submission_rate': int(two_plus / total_members * 100) if total_members else 0,
+        'hours_ranking': hours_ranking,
+        'count_ranking': count_ranking,
+        'fb_total': pro['fb_total'] + prem['fb_total'],
+        'fb_participants': pro['fb_participants'] + prem['fb_participants'],
+        'fb_ranking': fb_ranking,
+        'fb_by_day': dict(fb_by_day),
+        'active_rate': active_rate,
+        'stagnant_rate': stagnant_rate,
+        'phases': phases,
+        'monetize': monetize,
+        'total_money': total_money,
+        'avg_money': avg_money,
+        'weekly_submitters': weekly_submitters,
+        'weekly_rate': int(weekly_submitters / total_members * 100) if total_members else 0,
+        'inactive': inactive,
+        'inactive_count': len(inactive),
+        'active_set': active_set,
+        'positive_voices': positive_voices,
+        'negative_voices': negative_voices,
+        'member_daily': member_daily,
+        'fb_members': fb_members,
+        'member_kpi': member_kpi,
+        'concierge_map': concierge_map,
+    }
+
+
 # ==================== HTML生成 ====================
 CSS = """
 :root {
@@ -419,6 +551,7 @@ body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-seri
 .header { color:#fff; padding:32px 40px 24px; }
 .header.pro { background:linear-gradient(135deg,#1e3a5f,#2b6cb0); }
 .header.premium { background:linear-gradient(135deg,#4c1d95,#7c3aed); }
+.header.all { background:linear-gradient(135deg,#1e3a5f,#7c3aed); }
 .header-inner { max-width:1100px; margin:0 auto; }
 .header h1 { font-size:26px; font-weight:700; }
 .header .subtitle { font-size:14px; opacity:0.85; margin-top:4px; }
@@ -429,6 +562,7 @@ body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-seri
 .plan-tab:hover { color:var(--accent); }
 .plan-tab.active-pro { color:var(--pro-color); border-bottom-color:var(--pro-color); }
 .plan-tab.active-premium { color:var(--premium-color); border-bottom-color:var(--premium-color); }
+.plan-tab.active-all { color:#4f46e5; border-bottom-color:#4f46e5; }
 .view-tabs { display:flex; border-right:1px solid var(--gray-200); }
 .view-tab { padding:12px 20px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border:none; background:none; border-bottom:3px solid transparent; }
 .view-tab.active { color:#059669; border-bottom-color:#059669; }
@@ -457,6 +591,7 @@ body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-seri
 .section-header:hover { background:var(--gray-50); }
 .section-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; background:var(--accent); color:#fff; border-radius:50%; font-size:13px; font-weight:700; flex-shrink:0; }
 .section-num.premium { background:var(--premium-color); }
+.section-num.all { background:#4f46e5; }
 .section-title { font-size:16px; font-weight:700; color:var(--gray-800); flex:1; }
 .section-toggle { font-size:18px; color:var(--gray-400); transition:transform 0.2s; }
 .section.collapsed .section-toggle { transform:rotate(-90deg); }
@@ -498,6 +633,7 @@ body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-seri
 table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
 th { background:var(--primary); color:#fff; padding:10px 12px; text-align:left; font-weight:600; font-size:12px; white-space:nowrap; }
 th.premium-th { background:var(--premium-color); }
+th.all-th { background:#4f46e5; }
 td { padding:8px 12px; border-bottom:1px solid var(--gray-200); }
 tr:nth-child(even) td { background:var(--gray-50); } tr:hover td { background:var(--accent-light); }
 .zero { color:var(--danger); font-weight:600; } .low { color:var(--warning); }
@@ -510,6 +646,7 @@ tr:nth-child(even) td { background:var(--gray-50); } tr:hover td { background:va
 .day-bar { width:100%; max-width:50px; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; font-size:12px; font-weight:700; color:#fff; }
 .day-bar.pro-bar { background:linear-gradient(180deg,#3b82f6,#2563eb); }
 .day-bar.premium-bar { background:linear-gradient(180deg,#a78bfa,#7c3aed); }
+.day-bar.all-bar { background:linear-gradient(180deg,#6366f1,#4f46e5); }
 .day-label { font-size:12px; color:var(--gray-600); font-weight:600; }
 .footer { text-align:center; padding:24px; color:var(--gray-400); font-size:12px; }
 .float-top { position:fixed; bottom:24px; right:24px; width:48px; height:48px; background:var(--accent); color:#fff; border:none; border-radius:50%; font-size:20px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none; align-items:center; justify-content:center; z-index:100; }
@@ -538,24 +675,24 @@ tr:nth-child(even) td { background:var(--gray-50); } tr:hover td { background:va
 .bar-fill-h { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:12px; font-weight:600; color:#fff; }
 .bar-fill-pro { background:linear-gradient(90deg,#3b82f6,#2563eb); }
 .bar-fill-premium { background:linear-gradient(90deg,#a78bfa,#7c3aed); }
+.bar-fill-all { background:linear-gradient(90deg,#6366f1,#4f46e5); }
 @media print { .nav-bar { position:static; } .section.collapsed .section-body { display:block; } body { background:#fff; } }
 """
 
 
 def build_nav_html(plan_type, weeks, current_idx):
     """ナビゲーションバーのHTMLを生成（ビュー切り替えボタン付き）"""
-    other_plan = 'PREMIUM' if plan_type == 'PRO' else 'PRO'
 
-    # プラン切り替えタブ
+    # プラン切り替えタブ（PRO / PREMIUM / ALL）
     plan_tabs = '<div class="plan-tabs">'
-    for p in ['PRO', 'PREMIUM']:
+    for p in ['PRO', 'PREMIUM', 'ALL']:
+        label = p if p != 'ALL' else '合算'
         if p == plan_type:
             cls = f'active-{p.lower()}'
-            plan_tabs += f'<div class="plan-tab {cls}">{p}</div>'
+            plan_tabs += f'<div class="plan-tab {cls}">{label}</div>'
         else:
-            # 同じ週の別プランへリンク
             fname = get_filename(p, weeks[current_idx][0], weeks[current_idx][1])
-            plan_tabs += f'<a class="plan-tab" href="{fname}">{p}</a>'
+            plan_tabs += f'<a class="plan-tab" href="{fname}">{label}</a>'
     plan_tabs += '</div>'
 
     # ビュー切り替えタブ（日報分析 / 成果報告）
@@ -645,7 +782,7 @@ def build_kpi_html(data, prev_data):
 
 def build_section_html(num, title, body, plan_type='PRO'):
     """折りたたみセクションのラッパー"""
-    num_cls = 'premium' if plan_type == 'PREMIUM' else ''
+    num_cls = 'premium' if plan_type == 'PREMIUM' else 'all' if plan_type == 'ALL' else ''
     return f'''<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num {num_cls}">{num}</span><span class="section-title">{title}</span><span class="section-toggle">&#9660;</span>
 </div><div class="section-body">{body}</div></div>'''
@@ -711,7 +848,7 @@ def build_report_view_html(data):
     # バーチャート（全員）
     if data['monetize']:
         max_amount = data['monetize'][0][1] if data['monetize'] else 1
-        bar_cls = 'bar-fill-premium' if plan == 'PREMIUM' else 'bar-fill-pro'
+        bar_cls = 'bar-fill-premium' if plan == 'PREMIUM' else 'bar-fill-all' if plan == 'ALL' else 'bar-fill-pro'
         ranking_html += '<div class="bar-chart-h">'
         for name, amount, _ in data['monetize']:
             width_pct = int(amount / max_amount * 100) if max_amount else 0
@@ -722,7 +859,7 @@ def build_report_view_html(data):
         ranking_html += '</div>'
 
         # ランキングテーブル
-        th_cls = 'premium-th' if plan == 'PREMIUM' else ''
+        th_cls = 'premium-th' if plan == 'PREMIUM' else 'all-th' if plan == 'ALL' else ''
         ranking_html += f'<table><thead><tr><th class="{th_cls}">順位</th><th class="{th_cls}">会員名</th><th class="{th_cls}">金額</th><th class="{th_cls}">フェーズ</th></tr></thead><tbody>'
         for i, (name, amount, _) in enumerate(data['monetize'], start=1):
             phase = member_kpi.get(name, {}).get('phase', '未報告')
@@ -846,9 +983,10 @@ def build_html_report(data, prev_data, weeks, current_idx):
     start = data['start_date']
     end = data['end_date']
 
-    # ヘッダー（PRO BADGEは削除済み）
+    # ヘッダー
+    header_title = 'PRO + PREMIUM 合算 週次レポート' if plan == 'ALL' else f'{plan} TEAM 週次レポート'
     header = f'''<div class="header {plan_lower}"><div class="header-inner">
-  <h1>{plan} TEAM 週次レポート</h1>
+  <h1>{header_title}</h1>
   <div class="subtitle">成功習慣行動率100% — 会員分析ダッシュボード</div>
 </div></div>'''
 
@@ -874,7 +1012,7 @@ def build_html_report(data, prev_data, weeks, current_idx):
 
     # ② FB会
     day_names = ['月', '火', '水', '木', '金', '土', '日']
-    bar_cls = 'premium-bar' if plan == 'PREMIUM' else 'pro-bar'
+    bar_cls = 'premium-bar' if plan == 'PREMIUM' else 'all-bar' if plan == 'ALL' else 'pro-bar'
     max_fb = max(data['fb_by_day'].values()) if data['fb_by_day'] else 1
     s2_body = '<div class="day-chart">'
     for d_idx in range(7):
@@ -958,7 +1096,7 @@ def build_html_report(data, prev_data, weeks, current_idx):
   <div class="podium-item bronze"><div class="podium-medal">\U0001f949</div><div class="podium-name">{m[2][0]}</div><div class="podium-amount">{m[2][1]:,}円</div></div>
 </div>'''
     if len(data['monetize']) > 3:
-        th_cls = 'premium-th' if plan == 'PREMIUM' else ''
+        th_cls = 'premium-th' if plan == 'PREMIUM' else 'all-th' if plan == 'ALL' else ''
         s6_body += f'<table><thead><tr><th class="{th_cls}">順位</th><th class="{th_cls}">会員名</th><th class="{th_cls}">金額</th></tr></thead><tbody>'
         for i, (name, amount, _) in enumerate(data['monetize'][3:10], start=4):
             s6_body += f'<tr><td>{i}位</td><td>{name}</td><td>{amount:,}円</td></tr>'
@@ -986,7 +1124,7 @@ def build_html_report(data, prev_data, weeks, current_idx):
     section7 = build_section_html(7, '会員様の生の声', s7_body, plan)
 
     # ⑨ 非アクティブ
-    th_cls = 'premium-th' if plan == 'PREMIUM' else ''
+    th_cls = 'premium-th' if plan == 'PREMIUM' else 'all-th' if plan == 'ALL' else ''
     s9_body = f'''<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
   <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
     <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（{jp_date(start)}\u2013{jp_date(end)}）</div>
@@ -1080,7 +1218,8 @@ function switchConcierge(con) {{
 
 def get_filename(plan_type, start_date, end_date):
     """ファイル名を生成"""
-    return f"{plan_type}_{start_date.month}月{start_date.day}日-{end_date.month}月{end_date.day}日.html"
+    prefix = '合算' if plan_type == 'ALL' else plan_type
+    return f"{prefix}_{start_date.month}月{start_date.day}日-{end_date.month}月{end_date.day}日.html"
 
 
 # ==================== Slack投稿 ====================
@@ -1091,49 +1230,68 @@ def get_slack_client():
     return WebClient(token=token)
 
 
-def build_slack_text(data):
-    """Slack投稿用テキストを生成"""
-    d = data
-    plan = d['plan_type']
-    start = d['start_date']
-    end = d['end_date']
-    money_display = f"約{int(d['total_money']//10000)}万円" if d['total_money'] >= 10000 else f"{int(d['total_money']):,}円"
+def upload_html_file(client, filepath, title):
+    """HTMLファイルをSlackにアップロードしてパーマリンクを取得"""
+    result = client.files_upload_v2(
+        file=str(filepath),
+        title=title,
+        filename=filepath.name,
+    )
+    # files_upload_v2 のレスポンスからパーマリンクを取得
+    file_obj = result.get('file', {})
+    return file_obj.get('permalink', '')
+
+
+def post_weekly_slack(client, html_files, start_date, end_date, channel=SLACK_CHANNEL):
+    """スクリーンショット形式でSlack投稿（ファイルアップロード + リンク付きメッセージ）"""
+    date_range = f"{start_date.month}/{start_date.day}〜{end_date.month}/{end_date.day}"
+
+    # HTMLファイルをアップロードしてリンク取得
+    links = {}
+    for plan_label, filepath in html_files.items():
+        title = f"{plan_label} {date_range}"
+        permalink = upload_html_file(client, filepath, title)
+        links[plan_label] = permalink
+        print(f"  アップロード完了: {plan_label} → {permalink}")
+
+    # メッセージ本文を組み立て
+    # 週次レポートとチャットログ分析を分けて表示
+    weekly_links = []
+    chatlog_link = ""
+    for label, permalink in links.items():
+        if not permalink:
+            continue
+        if 'チャットログ' in label:
+            chatlog_link = f"<{permalink}|{label}>"
+        else:
+            weekly_links.append(f"<{permalink}|{label}>")
 
     lines = [
-        f"【{plan}】週次報告書 — 成功習慣行動率100％",
-        f"集計期間：{start.strftime('%Y年%m月%d日')}〜{end.strftime('%m月%d日')}",
+        f"お疲れ様です。{date_range}の週次報告内容になります。",
         "",
-        f"① 基本統計: 総稼働{int(d['total_hours'])}h / 平均{int(d['avg_hours'])}h / 提出者{d['submitters']}名（{d['total_submissions']}件）",
+        ":bar_chart: *週次レポート*",
+        "  ".join(weekly_links),
     ]
-    if d['hours_ranking']:
-        top = d['hours_ranking'][:3]
-        lines.append("  稼働TOP: " + " / ".join(f"{n}({int(h)}h)" for n, h, _ in top))
 
-    lines.append(f"② FB会: {d['fb_total']}件 / {d['fb_participants']}名参加")
-    lines.append(f"③ 感情: アクティブ{d['active_rate']}% / 停滞{d['stagnant_rate']}%")
-    lines.append(f"⑥ マネタイズ: {money_display}（{len(d['monetize'])}名報告）")
-    if d['monetize']:
-        lines.append("  " + " / ".join(f"{n}({a:,}円)" for n, a, _ in d['monetize'][:3]))
-    lines.append(f"⑨ 非アクティブ: {d['inactive_count']}名 / {plan}全体{d['total_members']}名")
+    if chatlog_link:
+        lines += [
+            "",
+            ":speech_balloon: *PREMIUM専用ルーム チャットログ分析*",
+            chatlog_link,
+            "会員別の相談内容・コンシェルジュ別の稼働時間・応答速度・チャット内容分類を掲載しています。",
+        ]
 
-    return "\n".join(lines)
+    lines += [
+        "",
+        "皆さんからのTODOのコメント宜しくお願い致します！",
+        "また、私よりclaudecodeで生成自動配信しておりますが、まだまだ改良の余地があるかと存じますので、お気軽にご意見いただけますと幸いです:pray:",
+        "",
+        "「日報分析」「成果報告」ボタンでビュー切り替えできます。",
+    ]
 
-
-def post_to_slack(client, text, channel=SLACK_CHANNEL):
-    """Slackにメッセージ投稿"""
-    chunks = []
-    current = ""
-    for line in text.split("\n"):
-        if len(current) + len(line) + 1 > 3900:
-            chunks.append(current)
-            current = line
-        else:
-            current += "\n" + line if current else line
-    if current:
-        chunks.append(current)
-    for chunk in chunks:
-        client.chat_postMessage(channel=channel, text=f"```{chunk}```", unfurl_links=False)
-    return len(chunks)
+    text = "\n".join(lines)
+    client.chat_postMessage(channel=channel, text=text, unfurl_links=False)
+    return len(html_files)
 
 
 # ==================== メイン ====================
@@ -1142,6 +1300,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Slack投稿なし（テスト用）")
     parser.add_argument("--weeks-ago", type=int, default=1, help="何週間前を分析するか")
     parser.add_argument("--backfill", action="store_true", help="2/8〜直近全週のHTMLを一括生成")
+    parser.add_argument("--combined", action="store_true", help="PRO+PREMIUM合算ページも生成")
     args = parser.parse_args()
 
     print("Google Sheets接続中...")
@@ -1191,18 +1350,22 @@ def main():
         prev_monday = target_monday - timedelta(weeks=1)
         prev_sunday = prev_monday + timedelta(days=6)
 
-        # 直近の全週リスト（ナビ用）
-        recent_end = this_monday - timedelta(days=1)
+        # 直近の全週リスト（ナビ用 — 対象週も必ず含める）
+        recent_end = max(this_monday - timedelta(days=1), target_sunday)
         weeks = get_weeks(DATA_START, recent_end)
 
         # 現在の週のインデックスを特定
         current_idx = next((i for i, (s, e) in enumerate(weeks) if s == target_monday), len(weeks) - 1)
 
-        slack_texts = []
+        html_files = {}  # Slack投稿用のファイルパス
+        results = {}   # PRO/PREMIUM結果を保持（合算用）
+        prev_results = {}
         for plan_type, member_list in [('PRO', pro_list), ('PREMIUM', premium_list)]:
             print(f"\n=== {plan_type} レポート ===")
             result = analyze_week(all_data, start_date, end_date, member_list, plan_type)
             prev_result = analyze_week(all_data, prev_monday, prev_sunday, member_list, plan_type)
+            results[plan_type] = result
+            prev_results[plan_type] = prev_result
 
             # HTML保存
             html = build_html_report(result, prev_result, weeks, current_idx)
@@ -1210,20 +1373,50 @@ def main():
             filepath = REPORT_DIR / filename
             filepath.write_text(html, encoding='utf-8')
             print(f"  HTML保存: {filepath}")
+            html_files[plan_type] = filepath
 
-            # Slack用テキスト
-            slack_texts.append(build_slack_text(result))
+        # 合算ページ生成（PRO + PREMIUM を単純合算）
+        if args.combined:
+            print(f"\n=== 合算（PRO+PREMIUM）レポート ===")
+            all_result = merge_results(results['PRO'], results['PREMIUM'])
+            all_prev = merge_results(prev_results['PRO'], prev_results['PREMIUM'])
+            print(f"  合算会員数: {all_result['total_members']}名（PRO {results['PRO']['total_members']} + PREMIUM {results['PREMIUM']['total_members']}）")
+            all_html = build_html_report(all_result, all_prev, weeks, current_idx)
+            all_filename = get_filename('ALL', start_date, end_date)
+            all_filepath = REPORT_DIR / all_filename
+            all_filepath.write_text(all_html, encoding='utf-8')
+            print(f"  HTML保存: {all_filepath}")
+            html_files['合算'] = all_filepath
 
-        # Slack投稿
-        combined_text = "\n\n".join(slack_texts)
+        # チャンネルログ分析（PREMIUM専用ルーム）を実行して結果を追加
+        try:
+            # 同ディレクトリのスクリプトをインポート
+            sys.path.insert(0, str(Path(__file__).parent))
+            from channel_log_analysis import get_access_token as cl_get_token, fetch_channel_log, analyze_channel_log, generate_html as cl_generate_html
+            print(f"\n=== PREMIUM チャンネルログ分析 ===")
+            cl_token = cl_get_token()
+            cl_data = fetch_channel_log(cl_token)
+            print(f"  取得完了: {len(cl_data)}行")
+            cl_analysis = analyze_channel_log(cl_data)
+            cl_html = cl_generate_html(cl_analysis)
+            cl_filepath = REPORT_DIR / "チャンネルログ分析.html"
+            cl_filepath.write_text(cl_html, encoding='utf-8')
+            print(f"  HTML保存: {cl_filepath}")
+            html_files['チャットログ分析（全期間）'] = cl_filepath
+        except Exception as e:
+            print(f"\nチャンネルログ分析エラー: {e}")
+            print("週次レポートのみ投稿します。")
+
+        # Slack投稿（HTMLファイルアップロード + リンク付きメッセージ）
         if args.dry_run:
             print("\n=== DRY RUN（Slack投稿スキップ）===")
-            print(combined_text)
+            for label, path in html_files.items():
+                print(f"  {label}: {path}")
         else:
             try:
                 client = get_slack_client()
-                chunks = post_to_slack(client, combined_text)
-                print(f"\nSlack投稿完了（{chunks}メッセージ）")
+                post_weekly_slack(client, html_files, start_date, end_date)
+                print(f"\nSlack投稿完了（{len(html_files)}ファイル + メッセージ）")
             except Exception as e:
                 print(f"\nSlack投稿エラー: {e}")
                 print("レポートはローカルに保存済みです。")

@@ -71,7 +71,22 @@
 - 読み取りスクリプト: [09_system/slack_reader.py](../../../../09_system/slack_reader.py)
 - 活用方法: メンバーのSlack投稿数・スレッド参加状況をアクティブ判定の補助指標として使用
 
+## 必須ルール：カルテ同期（SAEPIN指示）
+
+**週次レポート生成時、member_roster.md・kpi_progress.md は必ず最新カルテから同期すること。**
+
+- 週次レポート（HTML）を生成する際は、同時に `sync_member_data.py` も実行する
+- 同期スクリプト: `09_system/scripts/sync_member_data.py`
+- データソース: Google Sheets カルテ（DB_Pro-Members / DB_Premium-Members / DB_Weekly-Report）
+- 同期対象:
+  - `03_clients/SIFTAI/プロプレミアムTEAM/会員管理/member_roster.md`（会員ロースター）
+  - `03_clients/SIFTAI/プロプレミアムTEAM/コーチング/kpi_progress.md`（KPIダッシュボード）
+- タイミング: 週次レポート生成時 + 手動で `python sync_member_data.py` 実行可
+- 理由: HTMLレポートはGoogle Sheetsから直接取得するが、MDファイルは自動同期されないため、データの不一致が発生する
+
+---
+
 ## 次のアクション（冴香さん確認事項）
-- [ ] 現在の会員名簿の管理ツールを確認（Notion? スプレッドシート?）
+- [x] 現在の会員名簿の管理ツールを確認 → Google Sheets 確定
 - [ ] Lv.アップフォームの回答をどこで受け取っているか確認
 - [ ] KPIの目標値設定（プラン別・入会月別）
