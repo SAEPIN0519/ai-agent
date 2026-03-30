@@ -152,6 +152,17 @@ def fetch_all_data(token):
                 members.append((member_id, name, concierge))
         return members
 
+    # 氏名列の全角・半角スペースを除去（表記揺れ対策）
+    def clean_name_col(rows, name_col):
+        for r in rows:
+            if len(r) > name_col and r[name_col]:
+                r[name_col] = r[name_col].strip().replace('\u3000', '')
+        return rows
+
+    daily_rows = clean_name_col(daily_rows, 1)
+    weekly_rows = clean_name_col(weekly_rows, 1)
+    fb_rows = clean_name_col(fb_rows, 2)  # FB会はcol2が氏名
+
     return {
         'daily': daily_rows,
         'weekly': weekly_rows,
@@ -439,24 +450,27 @@ def analyze_week(all_data, start_date, end_date, member_list, plan_type):
 
 def merge_results(pro, prem):
     """PRO結果とPREMIUM結果を単純合算してALL結果を作る"""
-    # ランキング系: 両方のリストを結合して再ソート（併用メンバーは両方から加算）
+    # ランキング系: 両方のリストを結合して再ソート（併用メンバーは重複排除、PREMIUM側を優先）
     hours_map = {}
-    for name, hours, count in pro['hours_ranking'] + prem['hours_ranking']:
-        if name in hours_map:
-            hours_map[name] = (hours_map[name][0] + hours, hours_map[name][1] + count)
-        else:
-            hours_map[name] = (hours, count)
+    for name, hours, count in pro['hours_ranking']:
+        hours_map[name] = (hours, count)
+    for name, hours, count in prem['hours_ranking']:
+        hours_map[name] = (hours, count)  # PREMIUM側で上書き（同じデータなので重複排除）
     hours_ranking = sorted([(n, h, c) for n, (h, c) in hours_map.items()], key=lambda x: -x[1])
 
     count_map = {}
-    for name, count in pro['count_ranking'] + prem['count_ranking']:
-        count_map[name] = count_map.get(name, 0) + count
+    for name, count in pro['count_ranking']:
+        count_map[name] = count
+    for name, count in prem['count_ranking']:
+        count_map[name] = count  # 重複排除
     count_ranking = sorted(count_map.items(), key=lambda x: -x[1])
 
-    # FB: 合算
+    # FB: 合算（重複排除）
     fb_map = {}
-    for name, count in pro['fb_ranking'] + prem['fb_ranking']:
-        fb_map[name] = fb_map.get(name, 0) + count
+    for name, count in pro['fb_ranking']:
+        fb_map[name] = count
+    for name, count in prem['fb_ranking']:
+        fb_map[name] = count  # 重複排除
     fb_ranking = sorted(fb_map.items(), key=lambda x: -x[1])
 
     fb_by_day = defaultdict(int)
@@ -475,11 +489,14 @@ def merge_results(pro, prem):
     for phase, members in prem['phases'].items():
         phases.setdefault(phase, []).extend(members)
 
-    # マネタイズ: 結合して再ソート（併用メ���バーは合算）
+    # マネタイズ: 結合して再ソート（併用メンバーは重複排除）
     money_map = {}
     text_map = {}
-    for name, amount, text in pro['monetize'] + prem['monetize']:
-        money_map[name] = money_map.get(name, 0) + amount
+    for name, amount, text in pro['monetize']:
+        money_map[name] = amount
+        text_map[name] = text
+    for name, amount, text in prem['monetize']:
+        money_map[name] = amount  # 重複排除
         text_map[name] = text
     monetize = sorted([(n, a, text_map[n]) for n, a in money_map.items()], key=lambda x: -x[1])
     total_money = sum(a for _, a, _ in monetize)
@@ -489,48 +506,48 @@ def merge_results(pro, prem):
     inactive = list(set(pro['inactive'] + prem['inactive']))
     active_set = pro['active_set'] | prem['active_set']
 
-    # 声: 結合
-    positive_voices = pro['positive_voices'] + prem['positive_voices']
-    negative_voices = pro['negative_voices'] + prem['negative_voices']
+    # 声: 結合（重複排除）
+    seen_pos = set()
+    positive_voices = []
+    for name, text in pro['positive_voices'] + prem['positive_voices']:
+        if (name, text) not in seen_pos:
+            seen_pos.add((name, text))
+            positive_voices.append((name, text))
+    seen_neg = set()
+    negative_voices = []
+    for name, text in pro['negative_voices'] + prem['negative_voices']:
+        if (name, text) not in seen_neg:
+            seen_neg.add((name, text))
+            negative_voices.append((name, text))
 
-    # member_daily / fb_members: マージ
+    # member_daily / fb_members: マージ（併用メンバーは重複排除、PREMIUM優先）
     member_daily = dict(pro['member_daily'])
     for name, posts in prem['member_daily'].items():
-        if name in member_daily:
-            member_daily[name] = member_daily[name] + posts
-        else:
-            member_daily[name] = posts
+        member_daily[name] = posts  # 重複排除（同じデータなので上書きでOK）
     fb_members = dict(pro['fb_members'])
     for name, count in prem['fb_members'].items():
-        fb_members[name] = fb_members.get(name, 0) + count
+        fb_members[name] = count  # 重複排除
 
-    # member_kpi: マージ（併用メンバーは加算）
+    # member_kpi: マージ（併用メンバーは重複排除、PREMIUM優先）
     member_kpi = dict(pro['member_kpi'])
     for name, kpi in prem['member_kpi'].items():
-        if name in member_kpi:
-            existing = member_kpi[name]
-            member_kpi[name] = {
-                'hours': existing['hours'] + kpi['hours'],
-                'daily_count': existing['daily_count'] + kpi['daily_count'],
-                'fb_count': existing['fb_count'] + kpi['fb_count'],
-                'monetize': existing['monetize'] + kpi['monetize'],
-                'phase': existing['phase'] if existing['phase'] != '未報告' else kpi['phase'],
-                'achievements': existing['achievements'] + kpi['achievements'],
-                'id': existing['id'],
-            }
-        else:
-            member_kpi[name] = kpi
+        member_kpi[name] = kpi  # 重複排除（同じ日報データなので上書きでOK）
 
     # concierge_map: マージ
     concierge_map = dict(pro['concierge_map'])
     concierge_map.update(prem['concierge_map'])
 
-    total_members = pro['total_members'] + prem['total_members']
-    total_hours = pro['total_hours'] + prem['total_hours']
-    submitters = pro['submitters'] + prem['submitters']
-    total_submissions = pro['total_submissions'] + prem['total_submissions']
-    two_plus = pro['two_plus'] + prem['two_plus']
-    weekly_submitters = pro['weekly_submitters'] + prem['weekly_submitters']
+    # 併用メンバーの重複を除いた集計
+    # member_dailyから正しい値を再計算
+    total_members = len(set(list(pro['concierge_map'].keys()) + list(prem['concierge_map'].keys())))
+    total_hours = sum(sum(p['hours'] for p in posts) for posts in member_daily.values())
+    submitters = len(member_daily)
+    total_submissions = sum(len(posts) for posts in member_daily.values())
+    two_plus = sum(1 for posts in member_daily.values() if len(posts) >= 2)
+    # weekly_submittersも重複排除
+    pro_weekly_names = set(pro.get('weekly_submitter_names', []))
+    prem_weekly_names = set(prem.get('weekly_submitter_names', []))
+    weekly_submitters = len(pro_weekly_names | prem_weekly_names) if pro_weekly_names or prem_weekly_names else pro['weekly_submitters'] + prem['weekly_submitters']
 
     return {
         'plan_type': 'ALL',
@@ -545,8 +562,8 @@ def merge_results(pro, prem):
         'submission_rate': int(two_plus / total_members * 100) if total_members else 0,
         'hours_ranking': hours_ranking,
         'count_ranking': count_ranking,
-        'fb_total': pro['fb_total'] + prem['fb_total'],
-        'fb_participants': pro['fb_participants'] + prem['fb_participants'],
+        'fb_total': sum(fb_members.values()),
+        'fb_participants': len(fb_members),
         'fb_ranking': fb_ranking,
         'fb_by_day': dict(fb_by_day),
         'active_rate': active_rate,
@@ -821,20 +838,37 @@ def build_section_html(num, title, body, plan_type='PRO'):
 
 
 def build_top3_html(items, show_detail=True):
-    """TOP3表示のHTML"""
+    """TOP3表示のHTML（同率は同じメダル、順位は1→2→3で進む）"""
     medals = ['\U0001f947', '\U0001f948', '\U0001f949']
     html = '<div class="top3">'
-    for i, item in enumerate(items[:3]):
-        medal = medals[i] if i < 3 else ''
+
+    # 比較値を取得
+    def get_sort_val(item):
+        if isinstance(item, tuple) and len(item) >= 2:
+            return item[1]
+        return 0
+
+    # 同率は同じメダル、メダル種類が3つ使い切ったら終了
+    medal_idx = 0  # 現在のメダル種類（0=金, 1=銀, 2=銅）
+    prev_val = None
+    for i, item in enumerate(items):
+        val = get_sort_val(item)
+        if prev_val is not None and val != prev_val:
+            medal_idx += 1  # 値が変わったら次のメダルへ
+        if medal_idx >= 3:
+            break
+        prev_val = val
+        medal = medals[medal_idx]
         if isinstance(item, tuple) and len(item) >= 3:
-            name, val, count = item[0], item[1], item[2]
-            detail = f'{int(val)}h（平均 {int(val//count)}h/日）' if show_detail else f'{count}回'
+            name, v, count = item[0], item[1], item[2]
+            detail = f'{int(v)}h（平均 {int(v//count)}h/日）' if show_detail else f'{count}回'
         elif isinstance(item, tuple) and len(item) == 2:
-            name, val = item
-            detail = f'{val}回'
+            name, v = item
+            detail = f'{v}回'
         else:
             continue
         html += f'<div class="top3-item"><span class="rank">{medal}</span><div><div class="top3-name">{name}</div><div class="top3-detail">{detail}</div></div></div>'
+
     html += '</div>'
     return html
 
@@ -861,21 +895,40 @@ def build_report_view_html(data):
     # ========== b. マネタイズ成果ランキング ==========
     ranking_html = ''
 
-    # 表彰台（1〜3位）
-    if len(data['monetize']) >= 3:
-        m = data['monetize']
-        ranking_html += f'''<div class="monetize-podium">
-  <div class="podium-item silver"><div class="podium-medal">\U0001f948</div><div class="podium-name">{m[1][0]}</div><div class="podium-amount">{m[1][1]:,}円</div></div>
-  <div class="podium-item gold"><div class="podium-medal">\U0001f947</div><div class="podium-name">{m[0][0]}</div><div class="podium-amount">{m[0][1]:,}円</div></div>
-  <div class="podium-item bronze"><div class="podium-medal">\U0001f949</div><div class="podium-name">{m[2][0]}</div><div class="podium-amount">{m[2][1]:,}円</div></div>
-</div>'''
-    elif len(data['monetize']) > 0:
-        ranking_html += '<div class="monetize-podium">'
+    # 表彰台（同率は同じメダル、メダル種類3つまで）
+    if len(data['monetize']) > 0:
         medals_cls = ['gold', 'silver', 'bronze']
         medal_icons = ['\U0001f947', '\U0001f948', '\U0001f949']
-        for i, (name, amount, _) in enumerate(data['monetize'][:3]):
-            ranking_html += f'<div class="podium-item {medals_cls[i]}"><div class="podium-medal">{medal_icons[i]}</div><div class="podium-name">{name}</div><div class="podium-amount">{amount:,}円</div></div>'
-        ranking_html += '</div>'
+        # 同率判定してメダルを割り当て
+        podium_items = []  # (name, amount, medal_idx)
+        medal_idx = 0
+        prev_amount = None
+        for name, amount, _ in data['monetize']:
+            if prev_amount is not None and amount != prev_amount:
+                medal_idx += 1
+            if medal_idx >= 3:
+                break
+            podium_items.append((name, amount, medal_idx))
+            prev_amount = amount
+        # 表彰台レイアウト（金を中央に配置）
+        if len(podium_items) >= 3:
+            # 最初の銀・金・銅を表示（同率で4人以上の場合は全員表示）
+            gold = [(n, a, mi) for n, a, mi in podium_items if mi == 0]
+            silver = [(n, a, mi) for n, a, mi in podium_items if mi == 1]
+            bronze = [(n, a, mi) for n, a, mi in podium_items if mi == 2]
+            ranking_html += '<div class="monetize-podium">'
+            for n, a, _ in silver:
+                ranking_html += f'<div class="podium-item silver"><div class="podium-medal">{medal_icons[1]}</div><div class="podium-name">{n}</div><div class="podium-amount">{a:,}円</div></div>'
+            for n, a, _ in gold:
+                ranking_html += f'<div class="podium-item gold"><div class="podium-medal">{medal_icons[0]}</div><div class="podium-name">{n}</div><div class="podium-amount">{a:,}円</div></div>'
+            for n, a, _ in bronze:
+                ranking_html += f'<div class="podium-item bronze"><div class="podium-medal">{medal_icons[2]}</div><div class="podium-name">{n}</div><div class="podium-amount">{a:,}円</div></div>'
+            ranking_html += '</div>'
+        elif len(podium_items) > 0:
+            ranking_html += '<div class="monetize-podium">'
+            for n, a, mi in podium_items:
+                ranking_html += f'<div class="podium-item {medals_cls[mi]}"><div class="podium-medal">{medal_icons[mi]}</div><div class="podium-name">{n}</div><div class="podium-amount">{a:,}円</div></div>'
+            ranking_html += '</div>'
 
     # バーチャート（全員）
     if data['monetize']:
