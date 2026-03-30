@@ -30,6 +30,8 @@ BASE_DIR = Path(__file__).parent.parent.parent
 CONFIG_DIR = BASE_DIR / "09_system" / "config"
 REPORT_DIR = BASE_DIR / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "会員管理" / "週次レポート"
 SA_FILE = CONFIG_DIR / "google_service_account.json"
+OAUTH_CLIENT_FILE = CONFIG_DIR / "google_oauth_client.json"
+OAUTH_TOKEN_FILE = CONFIG_DIR / "google_oauth_token.pickle"
 SLACK_TOKEN_FILE = CONFIG_DIR / "slack_user_token.txt"  # 冴香名義で投稿
 
 SPREADSHEET_ID = "1EHKgmE1d7T5N9GbT_QJV72Q8Dh91iNysHHkz6LEWJy4"
@@ -45,15 +47,45 @@ NEGATIVE_WORDS = ['難しい', '不安', '分からな', 'わからな', 'つま
 
 # ==================== Google Sheets アクセス ====================
 def get_access_token():
-    """サービスアカウントのアクセストークンを取得"""
-    from google.oauth2.service_account import Credentials
+    """Google Sheets APIのアクセストークンを取得（SA優先、なければOAuth）"""
     from google.auth.transport.requests import Request
-    creds = Credentials.from_service_account_file(
-        str(SA_FILE),
-        scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
-    )
-    creds.refresh(Request())
-    return creds.token
+
+    # サービスアカウントがあればそちらを使う（Windows環境）
+    if SA_FILE.exists():
+        from google.oauth2.service_account import Credentials
+        creds = Credentials.from_service_account_file(
+            str(SA_FILE),
+            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
+        )
+        creds.refresh(Request())
+        return creds.token
+
+    # OAuthトークン（Mac環境）
+    if OAUTH_TOKEN_FILE.exists():
+        import pickle
+        with open(OAUTH_TOKEN_FILE, 'rb') as f:
+            creds = pickle.load(f)
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            with open(OAUTH_TOKEN_FILE, 'wb') as f:
+                pickle.dump(creds, f)
+        return creds.token
+
+    # どちらもない場合はOAuthクライアントから新規認証
+    if OAUTH_CLIENT_FILE.exists():
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        flow = InstalledAppFlow.from_client_secrets_file(
+            str(OAUTH_CLIENT_FILE),
+            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
+        )
+        creds = flow.run_local_server(port=0)
+        OAUTH_TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
+        import pickle
+        with open(OAUTH_TOKEN_FILE, 'wb') as f:
+            pickle.dump(creds, f)
+        return creds.token
+
+    raise FileNotFoundError("Google認証ファイルが見つかりません。SA keyまたはOAuthクライアントを配置してください。")
 
 
 def fetch_sheet_data(token, sheet_name, range_suffix="A:Z"):
@@ -1230,29 +1262,28 @@ def get_slack_client():
     return WebClient(token=token)
 
 
-def upload_html_file(client, filepath, title):
-    """HTMLファイルをSlackにアップロードしてパーマリンクを取得"""
-    result = client.files_upload_v2(
-        file=str(filepath),
-        title=title,
-        filename=filepath.name,
-    )
-    # files_upload_v2 のレスポンスからパーマリンクを取得
-    file_obj = result.get('file', {})
-    return file_obj.get('permalink', '')
+GITHUB_PAGES_BASE = "https://saepin0519.github.io/ai-agent"
+
+
+def get_github_pages_url(filepath):
+    """ローカルファイルパスからGitHub PagesのURLを生成"""
+    from urllib.parse import quote
+    rel_path = filepath.relative_to(BASE_DIR)
+    # パスの各部分をURLエンコード
+    encoded_parts = [quote(str(part)) for part in rel_path.parts]
+    return f"{GITHUB_PAGES_BASE}/{'/'.join(encoded_parts)}"
 
 
 def post_weekly_slack(client, html_files, start_date, end_date, channel=SLACK_CHANNEL):
-    """スクリーンショット形式でSlack投稿（ファイルアップロード + リンク付きメッセージ）"""
+    """GitHub PagesのURLリンクをSlackに投稿"""
     date_range = f"{start_date.month}/{start_date.day}〜{end_date.month}/{end_date.day}"
 
-    # HTMLファイルをアップロードしてリンク取得
+    # GitHub Pages URLを生成
     links = {}
     for plan_label, filepath in html_files.items():
-        title = f"{plan_label} {date_range}"
-        permalink = upload_html_file(client, filepath, title)
-        links[plan_label] = permalink
-        print(f"  アップロード完了: {plan_label} → {permalink}")
+        url = get_github_pages_url(filepath)
+        links[plan_label] = url
+        print(f"  URL生成: {plan_label} → {url}")
 
     # メッセージ本文を組み立て
     # 週次レポートとチャットログ分析を分けて表示

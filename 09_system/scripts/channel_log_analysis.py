@@ -26,6 +26,8 @@ BASE_DIR = Path(__file__).parent.parent.parent
 CONFIG_DIR = BASE_DIR / "09_system" / "config"
 REPORT_DIR = BASE_DIR / "03_clients" / "SIFTAI" / "プロプレミアムTEAM" / "会員管理" / "週次レポート"
 SA_FILE = CONFIG_DIR / "google_service_account.json"
+OAUTH_CLIENT_FILE = CONFIG_DIR / "google_oauth_client.json"
+OAUTH_TOKEN_FILE = CONFIG_DIR / "google_oauth_token.pickle"
 
 SPREADSHEET_ID = "1EHKgmE1d7T5N9GbT_QJV72Q8Dh91iNysHHkz6LEWJy4"
 SHEET_NAME = "全チャンネルログ"
@@ -43,15 +45,45 @@ STAFF_NAME_MAP = {
 
 # ==================== Google Sheets アクセス ====================
 def get_access_token():
-    """サービスアカウントのアクセストークンを取得"""
-    from google.oauth2.service_account import Credentials
+    """Google Sheets APIのアクセストークンを取得（SA優先、なければOAuth）"""
     from google.auth.transport.requests import Request
-    creds = Credentials.from_service_account_file(
-        str(SA_FILE),
-        scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
-    )
-    creds.refresh(Request())
-    return creds.token
+
+    # サービスアカウントがあればそちらを使う（Windows環境）
+    if SA_FILE.exists():
+        from google.oauth2.service_account import Credentials
+        creds = Credentials.from_service_account_file(
+            str(SA_FILE),
+            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
+        )
+        creds.refresh(Request())
+        return creds.token
+
+    # OAuthトークン（Mac環境）
+    if OAUTH_TOKEN_FILE.exists():
+        import pickle
+        with open(OAUTH_TOKEN_FILE, 'rb') as f:
+            creds = pickle.load(f)
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            with open(OAUTH_TOKEN_FILE, 'wb') as f:
+                pickle.dump(creds, f)
+        return creds.token
+
+    # どちらもない場合はOAuthクライアントから新規認証
+    if OAUTH_CLIENT_FILE.exists():
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        flow = InstalledAppFlow.from_client_secrets_file(
+            str(OAUTH_CLIENT_FILE),
+            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
+        )
+        creds = flow.run_local_server(port=0)
+        OAUTH_TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
+        import pickle
+        with open(OAUTH_TOKEN_FILE, 'wb') as f:
+            pickle.dump(creds, f)
+        return creds.token
+
+    raise FileNotFoundError("Google認証ファイルが見つかりません。")
 
 
 def fetch_channel_log(token):
