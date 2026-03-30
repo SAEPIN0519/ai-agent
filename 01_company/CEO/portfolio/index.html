@@ -610,6 +610,20 @@ section { padding: 100px 0; }
   border-color: var(--primary);
 }
 
+.skills-legend {
+  font-size: 0.78rem; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  margin-top: -28px; margin-bottom: 12px;
+}
+.legend-chip {
+  display: inline-block; width: 14px; height: 14px; border-radius: 3px;
+  border: 1px solid var(--primary); vertical-align: middle;
+  margin-right: 4px; position: relative; top: -1px;
+}
+.legend-chip.highlight {
+  background: var(--primary);
+}
+
 /* Process */
 .process { background: var(--bg); }
 .steps {
@@ -687,7 +701,8 @@ footer {
   background: var(--primary-dark); color: rgba(255, 255, 255, 0.5);
   padding: 40px 0; text-align: center; font-size: 0.82rem;
 }
-footer a { color: var(--accent-light); }
+footer a { color: var(--accent-light); text-decoration: underline; }
+.footer-contact { font-size: 0.95rem; margin-bottom: 12px; color: rgba(255,255,255,0.7); }
 
 /* スクロールアニメーション */
 .fi {
@@ -758,7 +773,6 @@ footer a { color: var(--accent-light); }
     <li><a href="#works">Works</a></li>
     <li><a href="#skills">Skills</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">LINE で相談する</a>
   <button class="nav-hamburger" id="hamburger" aria-label="メニューを開く">
     <span></span><span></span><span></span>
   </button>
@@ -786,13 +800,9 @@ footer a { color: var(--accent-light); }
   <div class="section-inner">
     <div class="hero-content">
       <p class="hero-eyebrow fi">SAEKA's Portfolio</p>
-      <h1 class="fi delay-1">人が本業に集中できる<br>時間を、<span class="accent">AIでつくる。</span></h1>
-      <p class="hero-sub fi delay-2">150人以上のAI活用コンサルティングを実施。製造業DX推進リーダーとSHIFT AIコンサルティングコーチの二足の草鞋で、日本をAIの先進国へ。</p>
+      <h1 class="fi delay-1">本業に集中できる<br>時間を、<span class="accent">AIでつくる。</span></h1>
+      <p class="hero-sub fi delay-2">150人以上のAI活用コンサルティングを実施。製造業DX推進リーダーと日本トップクラスのAIスクールビジネスのコンサルティングコーチの二足の草鞋で、日本をAIの先進国へ。</p>
       <div class="hero-cta-group fi delay-3">
-        <a href="#contact" class="btn-primary">
-          <span class="material-icons">chat</span>
-          LINE で気軽に相談する
-        </a>
         <a href="#works" class="btn-outline">
           <span class="material-icons">work</span>
           実績を見る
@@ -822,12 +832,12 @@ footer a { color: var(--accent-light); }
       </div>
       <div class="about-text">
         <p class="section-eyebrow fi">About</p>
-        <h2 class="section-title fi delay-1">珈琲店の娘から、<br><span class="accent">AI社会実装</span>の最前線へ。</h2>
+        <h2 class="section-title fi delay-1">現場から、<br><span class="accent">AI社会実装</span>の最前線へ。</h2>
         <p class="about-lead fi delay-2">冴香（SAEKA） / 岐阜県在住</p>
         <div class="about-story fi delay-2">
           <p>自家焙煎珈琲販売店・喫茶店を営む家庭の次女として育つ。高校卒業後、製造業に入社し経理・総務・人事と管理部門を経験。「現場を変えたい」という想いで技術職への異動を直訴し、品質保証・生産技術の世界へ。赤字工場を6ヶ月で黒字化し、歴代最年少・女性初のスピード昇進で課長に就任しました。</p>
           <p>2017年、父の他界をきっかけに実家の喫茶店の経営企画にも携わり始め、2025年にはAIを活用したマルシェ企画でフォロワー1,000人増加・売上UPを実現。この経験が「AIで身近な困りごとを解決する」という事業の原点になりました。</p>
-          <p>現在はSHIFT AI社のコンサルティングコーチとして150人以上の会員にAI活用支援を実施しながら、本業では製造業のDX推進リーダーも担い、「日本をAIの先進国へ」をモットーにAI社会実装の第一人者として活動しています。</p>
+          <p>現在は日本トップクラスのAIスクールビジネスのコンサルティングコーチとして150人以上の会員にAI活用支援を実施しながら、本業では製造業のDX推進リーダーも担い、「日本をAIの先進国へ」をモットーにAI社会実装の第一人者として活動しています。</p>
         </div>
         <div class="about-timeline fi delay-3">
           <div class="about-timeline-item">
@@ -860,7 +870,7 @@ footer a { color: var(--accent-light); }
           </div>
           <div class="about-timeline-item">
             <span class="about-timeline-year">2025.12</span>
-            <span class="about-timeline-text">SHIFT AI社 コンサルティングコーチに採用</span>
+            <span class="about-timeline-text">日本トップクラスのAIスクールビジネスにてコンサルティングコーチに採用</span>
           </div>
           <div class="about-timeline-item">
             <span class="about-timeline-year">2026.02</span>
@@ -982,7 +992,7 @@ footer a { color: var(--accent-light); }
           <img src="works/work1.png" alt="週次会員分析ダッシュボード">
         </div>
         <div class="work-card-body">
-          <span class="work-card-tag">SHIFT AI</span>
+          <span class="work-card-tag">AIスクール</span>
           <h3>週次会員分析ダッシュボード</h3>
           <p>PRO/PREMIUM 55名の稼働・日報・マネタイズデータを自動集計。毎週月曜7:00にSlackへ自動投稿。非アクティブ会員の早期検出で離脱防止に貢献。</p>
           <div class="work-card-techs">
@@ -996,7 +1006,7 @@ footer a { color: var(--accent-light); }
           <img src="works/work2.png" alt="PLダッシュボード">
         </div>
         <div class="work-card-body">
-          <span class="work-card-tag">SNK</span>
+          <span class="work-card-tag">アルミダイキャスト製造業</span>
           <h3>GASコードでPLダッシュボード作成</h3>
           <p>Excelを使わず、Google Apps Script（GAS）で5部門の月次損益データを自動集計・可視化。さらに製品タスク300アイテムのタスクダッシュボードも構築し実運用中。</p>
           <div class="work-card-techs">
@@ -1010,7 +1020,7 @@ footer a { color: var(--accent-light); }
           <img src="works/work3.png" alt="PRO初回面談マニュアル">
         </div>
         <div class="work-card-body">
-          <span class="work-card-tag">SHIFT AI</span>
+          <span class="work-card-tag">AIスクール</span>
           <h3>PRO初回面談マニュアル自動生成</h3>
           <p>Google Docs APIで34件の面談文字起こしを一括取得・分析。パターン抽出からキャリアパス提案ガイド、対応例集まで体系的なマニュアルを自動生成。</p>
           <div class="work-card-techs">
@@ -1052,7 +1062,7 @@ footer a { color: var(--accent-light); }
           <img src="works/work6.png" alt="タスクダッシュボード">
         </div>
         <div class="work-card-body">
-          <span class="work-card-tag">SNK</span>
+          <span class="work-card-tag">アルミダイキャスト製造業</span>
           <h3>タスク一覧表</h3>
           <p>300個の製品アイテムのタスクボードをチームで共有するダッシュボードを作成。ステータス管理・担当別フィルタ・期日遅れ検出でプロジェクト進捗を一目で把握。</p>
           <div class="work-card-techs">
@@ -1078,6 +1088,7 @@ footer a { color: var(--accent-light); }
       <p class="section-eyebrow fi">Skills</p>
       <h2 class="section-title fi delay-1">スキル<span class="accent">セット</span></h2>
       <p class="section-lead center fi delay-2">AI技術・開発力・経営視点の3軸で、現場で使える仕組みを構築します。</p>
+      <p class="skills-legend fi delay-2"><span class="legend-chip highlight"></span>メインスキル <span class="legend-chip"></span>対応可能</p>
     </div>
     <div class="skills-grid">
       <div class="skill-category fi delay-1">
@@ -1215,23 +1226,11 @@ footer a { color: var(--accent-light); }
   </svg>
 </div>
 
-<!-- ===== CTA ===== -->
-<section class="cta-section" id="contact">
-  <div class="section-inner">
-    <p class="section-eyebrow text-center fi" style="color: var(--accent-light);">Contact</p>
-    <h2 class="fi delay-1">まずは気軽に、<span style="color: var(--accent-light);">お話ししませんか？</span></h2>
-    <p class="fi delay-2">「AIって何ができるの？」「うちの業務にも使える？」そんな疑問からで大丈夫。LINEで気軽にご相談ください。</p>
-    <a href="https://line.me/R/ti/p/@410kolrq" class="btn-line fi delay-3">
-      <span class="material-icons">chat</span>
-      LINE で友だち追加する
-    </a>
-    <p class="cta-note fi delay-3">無料相談 / 営業メッセージは送りません</p>
-  </div>
-</section>
 
 <!-- フッター -->
 <footer>
   <div class="section-inner">
+    <p class="footer-contact"><a href="https://line.me/R/ti/p/@410kolrq" target="_blank" rel="noopener">お仕事の依頼はこちらから</a></p>
     <p>&copy; 2025 SAEKA. All Rights Reserved.</p>
   </div>
 </footer>
