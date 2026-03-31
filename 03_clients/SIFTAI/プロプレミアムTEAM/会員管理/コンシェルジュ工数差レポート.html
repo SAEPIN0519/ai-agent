@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>コンシェルジュ工数差レポート | 2026年3月</title>
+<style>
+@page { size: A4; margin: 20mm 15mm; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif; color:#1e293b; line-height:1.7; padding:32px 40px; max-width:820px; margin:0 auto; }
+
+/* ヘッダー */
+.header { border-bottom:3px solid #1e3a5f; padding-bottom:12px; margin-bottom:24px; }
+.header h1 { font-size:20px; color:#1e3a5f; }
+.header .meta { font-size:11px; color:#94a3b8; margin-top:2px; }
+
+/* セクション */
+h2 { font-size:15px; color:#1e3a5f; border-left:4px solid #2563eb; padding-left:10px; margin:28px 0 12px; }
+h2:first-of-type { margin-top:0; }
+
+/* テーブル */
+table { width:100%; border-collapse:collapse; font-size:12px; margin:8px 0 16px; }
+th { background:#1e3a5f; color:#fff; padding:8px 10px; text-align:left; font-weight:600; font-size:11px; }
+td { padding:7px 10px; border-bottom:1px solid #e2e8f0; }
+tr:nth-child(even) td { background:#f8fafc; }
+.total-row td { font-weight:700; background:#e0e7ff !important; border-top:2px solid #2563eb; }
+.highlight-red { color:#dc2626; font-weight:700; }
+.highlight-orange { color:#d97706; font-weight:700; }
+.highlight-blue { color:#2563eb; font-weight:700; }
+
+/* サマリーカード */
+.summary-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px; }
+.summary-card { border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center; }
+.summary-card .label { font-size:10px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+.summary-card .value { font-size:22px; font-weight:800; color:#1e3a5f; margin:4px 0 2px; }
+.summary-card .sub { font-size:10px; color:#94a3b8; }
+.summary-card.danger .value { color:#dc2626; }
+.summary-card.warning .value { color:#d97706; }
+
+/* インサイト */
+.insight { padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.7; margin:12px 0; }
+.insight-danger { background:#fef2f2; border-left:4px solid #dc2626; }
+.insight-info { background:#eff6ff; border-left:4px solid #2563eb; }
+
+/* バー比較 */
+.bar-row { display:flex; align-items:center; gap:8px; margin:4px 0; }
+.bar-name { width:50px; font-size:11px; text-align:right; flex-shrink:0; }
+.bar { height:20px; border-radius:3px; display:flex; align-items:center; padding-left:6px; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
+.bar-abe { background:#7c3aed; }
+.bar-yamamoto { background:#2563eb; }
+.bar span { font-size:10px; color:#fff; font-weight:600; white-space:nowrap; }
+.bar-pair { margin-bottom:12px; }
+.bar-category { font-size:12px; font-weight:700; margin-bottom:4px; }
+
+/* 差分表示 */
+.diff { display:inline-block; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:700; }
+.diff-red { background:#fef2f2; color:#dc2626; }
+.diff-orange { background:#fef3c7; color:#d97706; }
+
+/* フッター */
+.footer { margin-top:32px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:10px; color:#94a3b8; text-align:center; }
+
+/* 印刷最適化 */
+* { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+@media print {
+  body { padding:0; }
+  .summary-card { break-inside:avoid; }
+  table { break-inside:avoid; }
+  .insight { break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>コンシェルジュ 工数差分析レポート</h1>
+  <div class="meta">PRO PREMIUM チーム | 2026年3月 | データソース: 自己申告レポート + Discordチャットログ</div>
+</div>
+
+<!-- サマリー -->
+<div class="summary-grid">
+  <div class="summary-card warning">
+    <div class="label">工数差（1名あたり/月）</div>
+    <div class="value">1.7〜2.4h</div>
+    <div class="sub">山本さんが安部さんの 1.4〜1.5倍</div>
+  </div>
+  <div class="summary-card danger">
+    <div class="label">工数差（月間合計）</div>
+    <div class="value">20〜23.5h</div>
+    <div class="sub">安部さん 21〜22.5h / 山本さん 41〜46h</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">差の最大要因</div>
+    <div class="value" style="font-size:16px;">Discord対応</div>
+    <div class="sub">差の72〜88%を占める</div>
+  </div>
+</div>
+
+<!-- 1. 月間工数の全体比較 -->
+<h2>1. 月間工数の全体比較</h2>
+<table>
+  <thead>
+    <tr>
+      <th>業務カテゴリ</th>
+      <th>安部さん（6名担当）</th>
+      <th>山本さん（6名アクティブ）</th>
+      <th>差分</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>面談</strong>（月2回/人）</td>
+      <td>約16.5h</td>
+      <td>約15.0〜16.0h</td>
+      <td><span class="diff diff-orange">△0〜1.5h</span> 安部さんがやや多い</td>
+    </tr>
+    <tr>
+      <td><strong>面談前後準備</strong></td>
+      <td>約3.0h</td>
+      <td>約6.0h</td>
+      <td><span class="diff diff-red">+3.0h</span> 山本さんが2倍</td>
+    </tr>
+    <tr>
+      <td><strong>Discord対応</strong></td>
+      <td>約1.5〜3.0h</td>
+      <td>約20.0〜24.0h</td>
+      <td><span class="diff diff-red">+17〜21h</span> 山本さんが8〜13倍</td>
+    </tr>
+    <tr class="total-row">
+      <td>月間合計</td>
+      <td><strong>約21.0〜22.5h</strong></td>
+      <td class="highlight-red"><strong>約41.0〜46.0h</strong></td>
+      <td class="highlight-red">+20.0〜23.5h</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 2. 1名あたり工数比較 -->
+<h2>2. 1名あたり月間実工数（統合推計）</h2>
+<table>
+  <thead>
+    <tr>
+      <th>業務カテゴリ</th>
+      <th>安部さん</th>
+      <th>山本さん</th>
+      <th>差分</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>面談</strong></td>
+      <td>2.75h</td>
+      <td>2.5〜2.6h</td>
+      <td>ほぼ同等</td>
+    </tr>
+    <tr>
+      <td><strong>面談前後準備</strong></td>
+      <td>0.5h</td>
+      <td>1.0h</td>
+      <td><span class="diff diff-orange">+0.5h</span></td>
+    </tr>
+    <tr>
+      <td><strong>Discord対応</strong>（ログ推計）</td>
+      <td>0.9〜1.5h</td>
+      <td>2.4〜3.6h</td>
+      <td><span class="diff diff-red">+1.5〜2.1h</span></td>
+    </tr>
+    <tr class="total-row">
+      <td>1名あたり月間実工数</td>
+      <td class="highlight-blue"><strong>4.2〜4.8h</strong></td>
+      <td class="highlight-red"><strong>5.9〜7.2h</strong></td>
+      <td class="highlight-red">+1.7〜2.4h</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ビジュアル -->
+<div style="margin:16px 0 24px;">
+  <div class="bar-pair">
+    <div class="bar-category">面談（1名あたり）</div>
+    <div class="bar-row"><div class="bar-name">安部さん</div><div class="bar bar-abe" style="width:220px;"><span>2.75h</span></div></div>
+    <div class="bar-row"><div class="bar-name">山本さん</div><div class="bar bar-yamamoto" style="width:208px;"><span>2.5〜2.6h</span></div></div>
+  </div>
+  <div class="bar-pair">
+    <div class="bar-category">面談準備（1名あたり）</div>
+    <div class="bar-row"><div class="bar-name">安部さん</div><div class="bar bar-abe" style="width:60px;"><span>0.5h</span></div></div>
+    <div class="bar-row"><div class="bar-name">山本さん</div><div class="bar bar-yamamoto" style="width:120px;"><span>1.0h</span></div></div>
+  </div>
+  <div class="bar-pair">
+    <div class="bar-category">Discord対応（1名あたり）</div>
+    <div class="bar-row"><div class="bar-name">安部さん</div><div class="bar bar-abe" style="width:96px;"><span>0.9〜1.5h</span></div></div>
+    <div class="bar-row"><div class="bar-name">山本さん</div><div class="bar bar-yamamoto" style="width:240px;"><span>2.4〜3.6h</span></div></div>
+  </div>
+</div>
+
+<!-- 3. Discord対応の詳細比較 -->
+<h2>3. Discord対応の詳細比較（差の主因）</h2>
+<table>
+  <thead>
+    <tr>
+      <th>指標</th>
+      <th>安部さん</th>
+      <th>山本さん</th>
+      <th>倍率</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>返信数（7週間累計）</td>
+      <td>173件</td>
+      <td>235件</td>
+      <td>×1.4</td>
+    </tr>
+    <tr>
+      <td>1返信あたり文字数</td>
+      <td>139文字</td>
+      <td>237文字</td>
+      <td>×1.7</td>
+    </tr>
+    <tr>
+      <td>1返信あたり所要時間（推定）</td>
+      <td>3〜5分</td>
+      <td>8〜12分</td>
+      <td>×2.4〜2.7</td>
+    </tr>
+    <tr>
+      <td>月間Discord工数（自己申告）</td>
+      <td>1.5〜3.0h</td>
+      <td class="highlight-red">20.0〜24.0h</td>
+      <td class="highlight-red">×8〜13</td>
+    </tr>
+    <tr>
+      <td>平均応答時間</td>
+      <td>11時間11分</td>
+      <td>16時間6分</td>
+      <td>×1.4</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="insight insight-danger">
+  <strong>工数差の構造:</strong> 面談時間はほぼ同等（安部さん2.75h vs 山本さん2.5h/名/月）。差の主因はDiscord対応で、山本さんは「毎日の日報添削」+「パーソナライズ長文返答」を全会員に実施しており、テキスト対応だけで月20h超を費やしている。件数差（×1.4）以上に、1件あたりの密度差（文字数×1.7・所要時間×2.5）が工数を押し上げている。
+</div>
+
+<!-- 4. サポートスタイルの違い -->
+<h2>4. サポートスタイルの違い</h2>
+<table>
+  <thead>
+    <tr>
+      <th>項目</th>
+      <th>安部さん</th>
+      <th>山本さん</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>スタイル</td>
+      <td><strong>面談集中型</strong></td>
+      <td><strong>面談+テキスト密着型</strong></td>
+    </tr>
+    <tr>
+      <td>面談時間</td>
+      <td>平均 約1時間22分</td>
+      <td>平均 約1時間15〜20分</td>
+    </tr>
+    <tr>
+      <td>面談準備</td>
+      <td>事前15分のみ</td>
+      <td>事前15分 + 事後15分</td>
+    </tr>
+    <tr>
+      <td>テキスト対応</td>
+      <td>24h以内返答・短文中心</td>
+      <td>毎日1〜3回の長文返答<br>日報添削+パーソナライズ</td>
+    </tr>
+    <tr>
+      <td>スケーラビリティ</td>
+      <td class="highlight-blue">+2名まで対応可能</td>
+      <td class="highlight-red">余裕なし（上限到達）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="insight insight-info">
+  <strong>まとめ:</strong> 山本さんの手厚いサポートは会員満足度に貢献する一方、1名あたり工数が安部さんの約1.5倍となりスケーラビリティに課題がある。Discord対応の効率化（テンプレ化・AI補助による日報添削の省力化）が工数差の解消と体制拡大の鍵となる。
+</div>
+
+<!-- 5. 必要コンシェルジュ人数シミュレーション -->
+<h2>5. 必要コンシェルジュ人数シミュレーション</h2>
+
+<div style="border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:16px; background:#f8fafc;">
+  <div style="font-size:12px; font-weight:700; margin-bottom:6px;">前提条件</div>
+  <div style="font-size:11px; line-height:1.8; color:#475569;">
+    対象: PREMIUM会員 <strong>18名</strong>（アクティブ8名 + 非アクティブ10名）<br>
+    コンシェルジュ1名の月間稼働上限: <strong>30h</strong>（他業務との兼務を考慮）<br>
+    ※ コンシェルジュはPREMIUM会員のみ対象（PRO会員は不要）
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>シナリオ</th>
+      <th>1名あたり工数</th>
+      <th>18名の総工数</th>
+      <th>必要人数</th>
+      <th>備考</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>A. 安部さんモデル</strong><br><span style="font-size:10px;color:#94a3b8;">面談集中・テキスト最小限</span></td>
+      <td>4.2〜4.8h</td>
+      <td>75.6〜86.4h</td>
+      <td class="highlight-blue"><strong>3名</strong></td>
+      <td style="font-size:11px;">1人あたり6名担当<br>余裕あり（1人25〜29h）</td>
+    </tr>
+    <tr>
+      <td><strong>B. 中間モデル</strong><br><span style="font-size:10px;color:#94a3b8;">面談+適度なテキスト対応</span></td>
+      <td>5.0〜5.5h</td>
+      <td>90〜99h</td>
+      <td class="highlight-orange"><strong>3〜4名</strong></td>
+      <td style="font-size:11px;">3名だと1人30〜33h（ギリギリ）<br>4名なら余裕あり</td>
+    </tr>
+    <tr>
+      <td><strong>C. 山本さんモデル</strong><br><span style="font-size:10px;color:#94a3b8;">毎日の日報添削+密着サポート</span></td>
+      <td>5.9〜7.2h</td>
+      <td>106〜130h</td>
+      <td class="highlight-red"><strong>4〜5名</strong></td>
+      <td style="font-size:11px;">4名で1人26〜32h<br>5名なら余裕あり</td>
+    </tr>
+    <tr class="total-row">
+      <td colspan="3"><strong>現状（2名体制）でカバーできる会員数</strong></td>
+      <td class="highlight-red"><strong>12〜14名</strong></td>
+      <td style="font-size:11px;">18名に対し4〜6名が未カバー</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 style="margin:20px 0 10px;">非アクティブ10名が復帰した場合の影響</h4>
+<table>
+  <thead>
+    <tr>
+      <th>シナリオ</th>
+      <th>復帰想定</th>
+      <th>実対応人数</th>
+      <th>総工数</th>
+      <th>必要人数</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>現実的（半数復帰）</td>
+      <td>+5名</td>
+      <td>13名</td>
+      <td>65〜94h</td>
+      <td class="highlight-orange"><strong>3名</strong></td>
+    </tr>
+    <tr>
+      <td>楽観的（全員復帰）</td>
+      <td>+10名</td>
+      <td>18名</td>
+      <td>90〜130h</td>
+      <td class="highlight-red"><strong>3〜5名</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="insight insight-danger">
+  <strong>結論: 現在の2名体制では足りない。最低3名が必要。</strong><br><br>
+  <strong>推奨:</strong> 中間モデル（5h/名）を標準とした場合、<strong>18名に対して3名体制</strong>（1人6名担当・月30h）が最低ライン。<br>
+  非アクティブ会員の復帰リスクや今後の新規加入を考慮すると、<strong>4名体制が安全圏</strong>。<br><br>
+  <strong>現実的なステップ:</strong><br>
+  ・新規PREMIUM会員の増加に合わせて4人目を採用 → <strong>4名体制</strong>へ
+</div>
+
+<div class="footer">
+  PRO PREMIUM コンシェルジュ 工数差分析レポート | 作成日: 2026年3月31日<br>
+  データ: 自己申告レポート（安部さん 3/24・山本さん 3/27）+ Discordログ分析（3/30 全期間）
+</div>
+
+</body>
+</html>

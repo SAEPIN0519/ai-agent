@@ -19,7 +19,7 @@ const EXCEL_PATH = path.join(
   '技術部進捗管理部屋 - 修正',
   '【技術】更新型進捗管理一覧表.xlsx'
 );
-const HTML_PATH = path.join(__dirname, 'dashboard.html');
+const HTML_PATH = path.join(__dirname, '更新型ダッシュボード.html');
 const SHEET_NAME = '更新型';
 
 // === ユーティリティ ===
@@ -94,7 +94,7 @@ function main() {
 
   // HTML更新
   if (!fs.existsSync(HTML_PATH)) {
-    console.error('エラー: dashboard.html が見つかりません。');
+    console.error('エラー: 更新型ダッシュボード.html が見つかりません。');
     process.exit(1);
   }
 
@@ -103,7 +103,7 @@ function main() {
   html = html.replace(/const RAW_DATA = \[.*?\];/s, 'const RAW_DATA = ' + jsonStr + ';');
   fs.writeFileSync(HTML_PATH, html);
 
-  console.log('dashboard.html 更新完了 (' + Math.round(fs.statSync(HTML_PATH).size / 1024) + 'KB)');
+  console.log('更新型ダッシュボード.html 更新完了 (' + Math.round(fs.statSync(HTML_PATH).size / 1024) + 'KB)');
   console.log('--- 完了 ---');
 }
 

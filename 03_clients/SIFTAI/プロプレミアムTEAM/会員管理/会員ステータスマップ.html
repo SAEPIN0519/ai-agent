@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会員ステータスマップ（Discord特別選抜除外）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+    background: #ffffff;
+    color: #333;
+    padding: 30px 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 30px;
+  }
+
+  /* ===== ツリー構造 ===== */
+  .tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ノード */
+  .node {
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 140px;
+    position: relative;
+    transition: transform .2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .node:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+  .node .label { font-weight: 700; font-size: 0.95rem; }
+  .node .count { font-size: 1.6rem; font-weight: 800; margin: 4px 0; }
+  .node .sub { font-size: 0.75rem; opacity: 0.8; }
+  .node .rate { font-size: 0.8rem; margin-top: 4px; }
+
+  /* 色テーマ */
+  .root       { background: linear-gradient(135deg, #1a73e8, #4fc3f7); color: #fff; min-width: 260px; }
+  .pro        { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: #fff; }
+  .premium    { background: linear-gradient(135deg, #e17055, #fab1a0); color: #fff; }
+  .active     { background: linear-gradient(135deg, #00b894, #55efc4); color: #1a1a2e; }
+  .inactive   { background: linear-gradient(135deg, #636e72, #b2bec3); color: #fff; }
+  .monetized  { background: linear-gradient(135deg, #f39c12, #f1c40f); color: #1a1a2e; }
+  .not-monetized { background: #f0f0f0; color: #555; border: 2px solid #ccc; }
+  .breakdown-urgent   { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; min-width: 100px; padding: 10px 14px; }
+  .breakdown-caution  { background: linear-gradient(135deg, #f39c12, #e67e22); color: #fff; min-width: 100px; padding: 10px 14px; }
+  .breakdown-notstarted { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; min-width: 100px; padding: 10px 14px; }
+
+  /* ===== コネクタ線 ===== */
+  .line-color { --line: #bbb; }
+  .line-pro   { --line: #a29bfe; }
+  .line-pre   { --line: #fab1a0; }
+  .line-green { --line: #55efc4; }
+  .line-gray  { --line: #b2bec3; }
+  .line-gold  { --line: #f1c40f; }
+  .line-dim   { --line: #ccc; }
+  .line-red   { --line: #e74c3c; }
+  .line-orange{ --line: #f39c12; }
+  .line-blue  { --line: #3498db; }
+
+  /* 縦線（親→子の間） */
+  .vline {
+    width: 2px;
+    background: var(--line, #bbb);
+    margin: 0 auto;
+  }
+  .vline.short { height: 24px; }
+  .vline.mid   { height: 18px; }
+
+  /* 水平分岐コネクタ: 子ノードの上に水平線を引く */
+  .hbranch {
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  .hbranch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    background: var(--line, #bbb);
+  }
+  /* 子アイテム */
+  .hbranch > .branch-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .hbranch > .branch-child::before {
+    content: '';
+    width: 2px;
+    height: 18px;
+    background: var(--line, #bbb);
+  }
+
+  /* 分岐幅の調整 */
+  .hbranch.w-plan { gap: 80px; }
+  .hbranch.w-plan::before { width: calc(100% - 80px); }
+
+  .hbranch.w-status { gap: 20px; }
+  .hbranch.w-status::before { width: calc(100% - 140px); }
+
+  .hbranch.w-monet { gap: 16px; }
+  .hbranch.w-monet::before { width: calc(100% - 140px); }
+
+  .hbranch.w-breakdown { gap: 14px; }
+  .hbranch.w-breakdown::before { width: calc(100% - 100px); }
+
+  /* セクション（縦並び） */
+  .section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 名前リスト */
+  .member-list {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: #555;
+    max-width: 200px;
+    line-height: 1.6;
+  }
+  .member-list .name {
+    display: inline-block;
+    background: #f4f4f8;
+    border: 1px solid #e0e0e8;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin: 1px;
+  }
+  .member-list .name.highlight {
+    background: #fff8e1;
+    border-color: #f39c12;
+    color: #b8860b;
+    font-weight: 600;
+  }
+
+  /* 達成分析ボックス */
+  .analysis-box {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    max-width: 280px;
+  }
+  .analysis-box.success { background: #fffbeb; border: 1px solid #f5d060; }
+  .analysis-box.improve { background: #f8f9fa; border: 1px solid #dee2e6; }
+  .analysis-box h4 { font-size: 0.85rem; margin-bottom: 6px; color: #333; }
+
+  /* 日報提出率バー */
+  .rate-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .rate-bar .fill { height: 100%; border-radius: 3px; }
+  .rate-bar .fill.high { background: #00b894; }
+  .rate-bar .fill.mid  { background: #f39c12; }
+  .rate-bar .fill.low  { background: #e74c3c; }
+
+  @media (max-width: 900px) {
+    .hbranch.w-plan { flex-direction: column; gap: 30px; align-items: center; }
+    .hbranch.w-plan::before { display: none; }
+    .hbranch.w-plan > .branch-child::before { display: none; }
+  }
+
+  /* ===== PDF / 印刷用 ===== */
+  @page {
+    size: A3 landscape;
+    margin: 10mm;
+  }
+  @media print {
+    body {
+      background: #fff;
+      padding: 0;
+      font-size: 9px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
+    }
+    h1 { font-size: 1.3rem; margin-bottom: 2px; }
+    .subtitle { margin-bottom: 12px; font-size: 0.75rem; }
+    .tree { transform-origin: top center; }
+    .node { padding: 8px 12px; min-width: 100px; box-shadow: none; border: 1px solid #ddd; }
+    .node .count { font-size: 1.2rem; }
+    .node .label { font-size: 0.8rem; }
+    .node .sub { font-size: 0.65rem; }
+    .hbranch.w-plan { gap: 30px; }
+    .hbranch.w-status { gap: 10px; }
+    .hbranch.w-monet { gap: 8px; }
+    .hbranch.w-breakdown { gap: 6px; }
+    .vline.short { height: 14px; }
+    .vline.mid { height: 10px; }
+    .member-list { font-size: 0.6rem; max-width: 160px; }
+    .member-list .name { padding: 0 4px; margin: 0; }
+    .analysis-box { padding: 8px 10px; font-size: 0.65rem; max-width: 220px; margin-top: 6px; }
+    .analysis-box h4 { font-size: 0.72rem; }
+    .breakdown-urgent, .breakdown-caution, .breakdown-notstarted { min-width: 80px; padding: 6px 8px; }
+    .compare-card { width: 340px; break-inside: avoid; }
+    .compare-header { padding: 8px 14px; font-size: 0.85rem; }
+    .compare-body { padding: 12px; }
+    .donut-wrap { width: 56px; height: 56px; }
+    .donut-center { font-size: 0.72rem; }
+    .kpi-card { padding: 12px 16px; min-width: 120px; }
+    .kpi-value { font-size: 1.6rem; }
+    .kpi-label { font-size: 0.68rem; }
+    .rank-item { padding: 4px 0; }
+    .rank-name { font-size: 0.72rem; width: 110px; }
+    .rank-val { font-size: 0.72rem; }
+    .footer { margin-top: 16px; }
+    /* 改ページ制御 */
+    .tree > .hbranch.w-plan { page-break-inside: avoid; }
+    div[style*="max-width:960px"] { page-break-before: always; }
+  }
+
+  /* サマリーテーブル */
+  .summary-table {
+    margin: 40px auto 0;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-radius: 10px;
+  }
+  .summary-table th, .summary-table td { padding: 10px 18px; border: 1px solid #e8e8e8; text-align: center; }
+  .summary-table th { background: #f5f6fa; color: #555; font-weight: 600; }
+  .summary-table .num { font-weight: 700; font-size: 1rem; }
+  .summary-table .accent { color: #e67e22; }
+
+  .footer { text-align: center; margin-top: 40px; font-size: 0.72rem; color: #aaa; }
+
+  .phase-dist { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .phase-chip { font-size: 0.68rem; padding: 3px 8px; border-radius: 20px; background: #fff; border: 1px solid #ddd; }
+
+  /* ===== KPIカード ===== */
+  .kpi-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 28px;
+    min-width: 160px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+  }
+  .kpi-label { font-size: 0.78rem; color: #888; font-weight: 600; margin-bottom: 4px; }
+  .kpi-value { font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+  .kpi-unit  { font-size: 1rem; font-weight: 600; }
+  .kpi-sub   { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
+
+  /* ===== 比較カード ===== */
+  .compare-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+    overflow: hidden;
+    width: 420px;
+    border: 1px solid #f0f0f0;
+  }
+  .compare-header {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .compare-body { padding: 20px; }
+
+  /* ドーナツ */
+  .donut-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+  }
+  .donut { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #333;
+  }
+
+  /* 積み上げバー */
+  .bar-section { margin-bottom: 14px; }
+  .bar-label { font-size: 0.75rem; color: #888; font-weight: 600; margin-bottom: 5px; }
+  .stacked-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+  .stacked-bar .seg { transition: width .6s ease; }
+  .bar-legend {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    font-size: 0.68rem;
+    color: #666;
+    flex-wrap: wrap;
+  }
+  .bar-legend i {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  /* 水平バー */
+  .hbar-track {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .hbar-fill { height: 100%; border-radius: 4px; }
+
+  /* ランキング */
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .rank-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rank-name { font-size: 0.82rem; font-weight: 600; color: #333; width: 130px; flex-shrink: 0; }
+  .rank-bar-wrap { flex: 1; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden; }
+  .rank-bar { height: 100%; border-radius: 5px; display: block; }
+  .rank-val { font-size: 0.82rem; font-weight: 700; color: #e67e22; width: 60px; text-align: right; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<h1>会員ステータスマップ</h1>
+<p class="subtitle">Discord特別選抜（4月末終了）20名除外 ／ データ: 2026-03-29時点</p>
+
+<div class="tree">
+
+  <!-- ===== ROOT ===== -->
+  <div class="node root">
+    <div class="sub">有料会員（特別選抜除外）</div>
+    <div class="count">47名</div>
+    <div class="sub">PRO 31名 ／ PREMIUM 18名 ／ 併用 2名</div>
+    <div class="rate">日報提出率（全体平均）</div>
+    <div class="rate-bar"><div class="fill mid" style="width:40%"></div></div>
+    <div class="sub" style="margin-top:4px">※ 併用者は重複除外で実数47名</div>
+  </div>
+
+  <!-- ROOT → PRO / PREMIUM -->
+  <div class="vline short line-color" style="--line:#90a4ae"></div>
+  <div class="hbranch w-plan line-color" style="--line:#90a4ae">
+
+    <!-- ========== PRO ========== -->
+    <div class="branch-child" style="--line:#a29bfe">
+      <div class="section">
+        <div class="node pro">
+          <div class="label">PRO</div>
+          <div class="count">31名</div>
+          <div class="sub">2月期 17名 ／ 3月期 1名 ／ 4月期 13名</div>
+        </div>
+
+        <!-- PRO → アクティブ / 非アクティブ -->
+        <div class="vline mid line-pro"></div>
+        <div class="hbranch w-status line-pro">
+
+          <!-- PRO アクティブ -->
+          <div class="branch-child" style="--line:#55efc4">
+            <div class="section">
+              <div class="node active">
+                <div class="label">アクティブ</div>
+                <div class="count">11名</div>
+                <div class="sub">日報平均 31.1回</div>
+                <div class="rate-bar"><div class="fill high" style="width:62%"></div></div>
+              </div>
+              <div class="member-list">
+                <span class="name highlight">坂井俊章</span>
+                <span class="name highlight">藤木智咲</span>
+                <span class="name">村上真樹子</span>
+                <span class="name highlight">池田勝典</span>
+                <span class="name highlight">甲村順子</span>
+                <span class="name">伊藤紘二</span>
+                <span class="name">築山優希</span>
+                <span class="name">内藤友香子</span>
+                <span class="name highlight">矢三やよい</span>
+                <span class="name">吉田比奈</span>
+                <span class="name">大池まどか</span>
+              </div>
+
+              <!-- アクティブ → マネタイズ -->
+              <div class="vline mid line-green"></div>
+              <div class="hbranch w-monet line-green">
+
+                <!-- マネタイズ達成 -->
+                <div class="branch-child" style="--line:#f1c40f">
+                  <div class="section">
+                    <div class="node monetized">
+                      <div class="label">マネタイズ達成</div>
+                      <div class="count">5名</div>
+                      <div class="sub">達成率 45.5%</div>
+                    </div>
+                    <div class="member-list">
+                      <span class="name">甲村順子 ¥3,100</span>
+                      <span class="name">池田勝典 ¥303</span>
+                      <span class="name">坂井俊章 ¥209</span>
+                      <span class="name">藤木智咲 ¥2</span>
+                      <span class="name">矢三やよい ¥2</span>
+                    </div>
+                    <div class="analysis-box success">
+                      <h4>達成者の共通点</h4>
+                      ・日報平均 <b>47.0回</b>（全体の1.5倍）<br>
+                      ・FB会参加平均 <b>42.0回</b><br>
+                      ・全員がライティング or SNS発信で収益化<br>
+                      ・コミュニティ参加が活発
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 未達成 -->
+                <div class="branch-child" style="--line:#ccc">
+                  <div class="section">
+                    <div class="node not-monetized">
+                      <div class="label">未達成</div>
+                      <div class="count">6名</div>
+                    </div>
+                    <div class="member-list">
+                      <span class="name">村上真樹子</span>
+                      <span class="name">伊藤紘二</span>
+                      <span class="name">築山優希</span>
+                      <span class="name">内藤友香子</span>
+                      <span class="name">吉田比奈</span>
+                      <span class="name">大池まどか</span>
+                    </div>
+                    <div class="analysis-box improve">
+                      <h4>未達成者の傾向</h4>
+                      ・日報平均 <b>18.0回</b>（達成者の38%）<br>
+                      ・学習・制作フェーズにいる人が多い<br>
+                      ・アウトプットはあるが出品/営業に至っていない<br>
+                      ・次のステップ: 0→1チャレンジの後押し
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /hbranch monet -->
+            </div>
+          </div>
+
+          <!-- PRO 非アクティブ -->
+          <div class="branch-child" style="--line:#b2bec3">
+            <div class="section">
+              <div class="node inactive">
+                <div class="label">非アクティブ</div>
+                <div class="count">20名</div>
+                <div class="sub">日報平均 1.8回</div>
+                <div class="rate-bar"><div class="fill low" style="width:4%"></div></div>
+              </div>
+
+              <!-- 非アクティブ → 内訳 -->
+              <div class="vline mid line-gray"></div>
+              <div class="hbranch w-breakdown line-gray">
+
+                <div class="branch-child" style="--line:#e74c3c">
+                  <div class="section">
+                    <div class="node breakdown-urgent">
+                      <div class="label" style="font-size:0.8rem">要緊急フォロー</div>
+                      <div class="count" style="font-size:1.3rem">10名</div>
+                    </div>
+                    <div class="member-list" style="max-width:160px">
+                      <span class="name">道下明和</span>
+                      <span class="name">谷山真一</span>
+                      <span class="name">島田英敏</span>
+                      <span class="name">片寄孝康</span>
+                      <span class="name">河又美智</span>
+                      <span class="name">土屋貴裕</span>
+                      <span class="name">吉岡寿治</span>
+                      <span class="name">中澤健治</span>
+                      <span class="name">浜畑悦子</span>
+                      <span class="name">石原徹</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-child" style="--line:#f39c12">
+                  <div class="section">
+                    <div class="node breakdown-caution">
+                      <div class="label" style="font-size:0.8rem">要注意</div>
+                      <div class="count" style="font-size:1.3rem">3名</div>
+                    </div>
+                    <div class="member-list" style="max-width:130px">
+                      <span class="name">中澤みどり</span>
+                      <span class="name">立田素子</span>
+                      <span class="name">山田真由美</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-child" style="--line:#3498db">
+                  <div class="section">
+                    <div class="node breakdown-notstarted">
+                      <div class="label" style="font-size:0.8rem">未開始（4月期）</div>
+                      <div class="count" style="font-size:1.3rem">7名</div>
+                    </div>
+                    <div class="member-list" style="max-width:130px">
+                      <span class="name">姥貝有子</span>
+                      <span class="name">松村翠</span>
+                      <span class="name">田口旭晃</span>
+                      <span class="name">辰野早苗</span>
+                      <span class="name">中島有季子</span>
+                      <span class="name">勝又稔宏</span>
+                      <span class="name">有馬紗友理</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /hbranch breakdown -->
+
+              <div class="analysis-box improve" style="margin-top:14px">
+                <h4>非アクティブ要因分析</h4>
+                ・開始日未設定の会員が<b>6名</b>（オンボーディング未完了の可能性）<br>
+                ・4月期未開始<b>7名</b>はこれからなので要ウォッチ<br>
+                ・2月期で非アクティブ <b>7名</b>は早期離脱リスク高<br>
+                ・日報0回が<b>12名</b> → 初回アクション促進が最優先
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /hbranch status -->
+      </div>
+    </div>
+
+    <!-- ========== PREMIUM ========== -->
+    <div class="branch-child" style="--line:#fab1a0">
+      <div class="section">
+        <div class="node premium">
+          <div class="label">PREMIUM</div>
+          <div class="count">18名</div>
+          <div class="sub">うちPRO併用 2名（坂井・矢三）</div>
+        </div>
+
+        <!-- PREMIUM → アクティブ / 非アクティブ -->
+        <div class="vline mid line-pre"></div>
+        <div class="hbranch w-status line-pre">
+
+          <!-- PREMIUM アクティブ -->
+          <div class="branch-child" style="--line:#55efc4">
+            <div class="section">
+              <div class="node active">
+                <div class="label">アクティブ</div>
+                <div class="count">8名</div>
+                <div class="sub">日報平均 33.8回</div>
+                <div class="rate-bar"><div class="fill high" style="width:68%"></div></div>
+              </div>
+              <div class="member-list">
+                <span class="name highlight">坂井俊章</span>
+                <span class="name highlight">矢三やよい</span>
+                <span class="name">金子有貴</span>
+                <span class="name">森美恵子</span>
+                <span class="name">末広直也</span>
+                <span class="name">鍋島佑太</span>
+                <span class="name highlight">早崎英里香</span>
+                <span class="name highlight">萩原千晶</span>
+              </div>
+
+              <!-- アクティブ → マネタイズ -->
+              <div class="vline mid line-green"></div>
+              <div class="hbranch w-monet line-green">
+
+                <div class="branch-child" style="--line:#f1c40f">
+                  <div class="section">
+                    <div class="node monetized">
+                      <div class="label">マネタイズ達成</div>
+                      <div class="count">2名</div>
+                      <div class="sub">達成率 25.0%</div>
+                    </div>
+                    <div class="member-list">
+                      <span class="name">早崎英里香 ¥1,599</span>
+                      <span class="name">萩原千晶 ¥39</span>
+                    </div>
+                    <div class="analysis-box success">
+                      <h4>達成者の共通点</h4>
+                      ・日報平均 <b>34.0回</b><br>
+                      ・ライティング案件で初収益<br>
+                      ・外部プラットフォーム活用あり
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-child" style="--line:#ccc">
+                  <div class="section">
+                    <div class="node not-monetized">
+                      <div class="label">未達成</div>
+                      <div class="count">6名</div>
+                    </div>
+                    <div class="member-list">
+                      <span class="name">坂井俊章 ※PRO側で計上</span>
+                      <span class="name">矢三やよい ※PRO側で計上</span>
+                      <span class="name">金子有貴</span>
+                      <span class="name">森美恵子</span>
+                      <span class="name">末広直也</span>
+                      <span class="name">鍋島佑太</span>
+                    </div>
+                    <div class="analysis-box improve">
+                      <h4>未達成者の傾向</h4>
+                      ・日報は継続的に出しており学習意欲は高い<br>
+                      ・併用者2名はPRO側で収益計上済み<br>
+                      ・出品・営業フェーズへの移行が課題
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /hbranch monet -->
+            </div>
+          </div>
+
+          <!-- PREMIUM 非アクティブ -->
+          <div class="branch-child" style="--line:#b2bec3">
+            <div class="section">
+              <div class="node inactive">
+                <div class="label">非アクティブ</div>
+                <div class="count">10名</div>
+                <div class="sub">日報平均 2.1回</div>
+                <div class="rate-bar"><div class="fill low" style="width:4%"></div></div>
+              </div>
+
+              <div class="vline mid line-gray"></div>
+              <div class="hbranch w-breakdown line-gray">
+
+                <div class="branch-child" style="--line:#e74c3c">
+                  <div class="section">
+                    <div class="node breakdown-urgent">
+                      <div class="label" style="font-size:0.8rem">要緊急フォロー</div>
+                      <div class="count" style="font-size:1.3rem">6名</div>
+                    </div>
+                    <div class="member-list" style="max-width:130px">
+                      <span class="name">河野徹</span>
+                      <span class="name">岡本拓哉</span>
+                      <span class="name">天野雅喜</span>
+                      <span class="name">田村耕太郎</span>
+                      <span class="name">石渡一雄</span>
+                      <span class="name">廣瀬亘</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-child" style="--line:#f39c12">
+                  <div class="section">
+                    <div class="node breakdown-caution">
+                      <div class="label" style="font-size:0.8rem">要注意</div>
+                      <div class="count" style="font-size:1.3rem">3名</div>
+                    </div>
+                    <div class="member-list" style="max-width:130px">
+                      <span class="name">前川洋子</span>
+                      <span class="name">手塚寿</span>
+                      <span class="name">二瓶沙耶</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-child" style="--line:#3498db">
+                  <div class="section">
+                    <div class="node breakdown-notstarted">
+                      <div class="label" style="font-size:0.8rem">未開始</div>
+                      <div class="count" style="font-size:1.3rem">1名</div>
+                    </div>
+                    <div class="member-list" style="max-width:100px">
+                      <span class="name">南山絵里</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /hbranch breakdown -->
+
+              <div class="analysis-box improve" style="margin-top:14px">
+                <h4>非アクティブ要因分析</h4>
+                ・PREMIUM会費を払いながら未活用<b>6名</b>（費用対効果の訴求が必要）<br>
+                ・開始日未設定<b>2名</b>（河野・廣瀬）→ オンボーディング確認<br>
+                ・要注意3名は日報5〜7回 → あと一押しでアクティブ復帰の可能性
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /hbranch status -->
+      </div>
+    </div>
+
+  </div><!-- /hbranch plan -->
+
+  <!-- ========== ビジュアルダッシュボード ========== -->
+  <div style="margin-top:50px; max-width:960px; margin-left:auto; margin-right:auto;">
+    <h2 style="text-align:center; font-size:1.3rem; color:#333; margin-bottom:24px; border-bottom:2px solid #e0e0e0; padding-bottom:10px;">サマリーダッシュボード</h2>
+
+    <!-- KPIカード行 -->
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:30px;">
+      <div class="kpi-card">
+        <div class="kpi-label">総在籍数</div>
+        <div class="kpi-value" style="color:#1a73e8">47<span class="kpi-unit">名</span></div>
+        <div class="kpi-sub">PRO 31 + PREMIUM 18 - 併用 2</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">アクティブ</div>
+        <div class="kpi-value" style="color:#00b894">17<span class="kpi-unit">名</span></div>
+        <div class="kpi-sub">アクティブ率 36.2%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">マネタイズ達成</div>
+        <div class="kpi-value" style="color:#e67e22">7<span class="kpi-unit">名</span></div>
+        <div class="kpi-sub">対アクティブ 41.2%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">累計収益</div>
+        <div class="kpi-value" style="color:#e67e22">¥5,254</div>
+        <div class="kpi-sub">7名の合計</div>
+      </div>
+    </div>
+
+    <!-- PRO vs PREMIUM 比較 -->
+    <div style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap; margin-bottom:30px;">
+
+      <!-- PRO カード -->
+      <div class="compare-card">
+        <div class="compare-header" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)">PRO（31名）</div>
+        <div class="compare-body">
+          <!-- ドーナツ: アクティブ率 -->
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 36 36" class="donut">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#eee" stroke-width="4"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#00b894" stroke-width="4"
+                  stroke-dasharray="35.5 64.5" stroke-dashoffset="25" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">35.5%</div>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:#333">アクティブ率</div>
+              <div style="font-size:0.78rem;color:#888">11名 / 31名</div>
+            </div>
+          </div>
+          <!-- 横棒: ステータス内訳 -->
+          <div class="bar-section">
+            <div class="bar-label">ステータス内訳</div>
+            <div class="stacked-bar">
+              <div class="seg" style="width:35.5%;background:#00b894" title="アクティブ 11名"></div>
+              <div class="seg" style="width:9.7%;background:#f39c12" title="要注意 3名"></div>
+              <div class="seg" style="width:32.3%;background:#e74c3c" title="要緊急フォロー 10名"></div>
+              <div class="seg" style="width:22.6%;background:#3498db" title="未開始 7名"></div>
+            </div>
+            <div class="bar-legend">
+              <span><i style="background:#00b894"></i>アクティブ 11</span>
+              <span><i style="background:#f39c12"></i>要注意 3</span>
+              <span><i style="background:#e74c3c"></i>要緊急 10</span>
+              <span><i style="background:#3498db"></i>未開始 7</span>
+            </div>
+          </div>
+          <!-- マネタイズ -->
+          <div class="bar-section">
+            <div class="bar-label">マネタイズ（対アクティブ）</div>
+            <div class="stacked-bar">
+              <div class="seg" style="width:45.5%;background:#f39c12" title="達成 5名"></div>
+              <div class="seg" style="width:54.5%;background:#eee" title="未達成 6名"></div>
+            </div>
+            <div class="bar-legend">
+              <span><i style="background:#f39c12"></i>達成 5名（¥3,616）</span>
+              <span><i style="background:#eee;border:1px solid #ccc"></i>未達成 6名</span>
+            </div>
+          </div>
+          <!-- 日報平均 -->
+          <div class="bar-section">
+            <div class="bar-label">日報平均回数</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1">
+                <div style="font-size:0.72rem;color:#888;margin-bottom:2px">アクティブ</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width:62%;background:#00b894"></div></div>
+                <div style="font-size:0.75rem;font-weight:700;color:#00b894;margin-top:1px">31.1回</div>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:0.72rem;color:#888;margin-bottom:2px">非アクティブ</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width:3.6%;background:#e74c3c"></div></div>
+                <div style="font-size:0.75rem;font-weight:700;color:#e74c3c;margin-top:1px">1.8回</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREMIUM カード -->
+      <div class="compare-card">
+        <div class="compare-header" style="background:linear-gradient(135deg,#e17055,#fab1a0)">PREMIUM（18名）</div>
+        <div class="compare-body">
+          <!-- ドーナツ: アクティブ率 -->
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 36 36" class="donut">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#eee" stroke-width="4"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#00b894" stroke-width="4"
+                  stroke-dasharray="44.4 55.6" stroke-dashoffset="25" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">44.4%</div>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:#333">アクティブ率</div>
+              <div style="font-size:0.78rem;color:#888">8名 / 18名</div>
+            </div>
+          </div>
+          <!-- 横棒: ステータス内訳 -->
+          <div class="bar-section">
+            <div class="bar-label">ステータス内訳</div>
+            <div class="stacked-bar">
+              <div class="seg" style="width:44.4%;background:#00b894" title="アクティブ 8名"></div>
+              <div class="seg" style="width:16.7%;background:#f39c12" title="要注意 3名"></div>
+              <div class="seg" style="width:33.3%;background:#e74c3c" title="要緊急フォロー 6名"></div>
+              <div class="seg" style="width:5.6%;background:#3498db" title="未開始 1名"></div>
+            </div>
+            <div class="bar-legend">
+              <span><i style="background:#00b894"></i>アクティブ 8</span>
+              <span><i style="background:#f39c12"></i>要注意 3</span>
+              <span><i style="background:#e74c3c"></i>要緊急 6</span>
+              <span><i style="background:#3498db"></i>未開始 1</span>
+            </div>
+          </div>
+          <!-- マネタイズ -->
+          <div class="bar-section">
+            <div class="bar-label">マネタイズ（対アクティブ）</div>
+            <div class="stacked-bar">
+              <div class="seg" style="width:25%;background:#f39c12" title="達成 2名"></div>
+              <div class="seg" style="width:75%;background:#eee" title="未達成 6名"></div>
+            </div>
+            <div class="bar-legend">
+              <span><i style="background:#f39c12"></i>達成 2名（¥1,638）</span>
+              <span><i style="background:#eee;border:1px solid #ccc"></i>未達成 6名</span>
+            </div>
+          </div>
+          <!-- 日報平均 -->
+          <div class="bar-section">
+            <div class="bar-label">日報平均回数</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1">
+                <div style="font-size:0.72rem;color:#888;margin-bottom:2px">アクティブ</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width:68%;background:#00b894"></div></div>
+                <div style="font-size:0.75rem;font-weight:700;color:#00b894;margin-top:1px">33.8回</div>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:0.72rem;color:#888;margin-bottom:2px">非アクティブ</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width:4.2%;background:#e74c3c"></div></div>
+                <div style="font-size:0.75rem;font-weight:700;color:#e74c3c;margin-top:1px">2.1回</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /compare row -->
+
+    <!-- マネタイズ収益ランキング -->
+    <div style="max-width:500px; margin:0 auto 30px;">
+      <h3 style="font-size:1rem; color:#555; margin-bottom:12px; text-align:center;">マネタイズ収益ランキング（特別選抜除外後）</h3>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#f39c12">1</span>
+        <span class="rank-name">甲村順子 <small style="color:#888">PRO</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:100%;background:linear-gradient(90deg,#f39c12,#f1c40f)"></span></span>
+        <span class="rank-val">¥3,100</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#f39c12">2</span>
+        <span class="rank-name">早崎英里香 <small style="color:#888">PRE</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:51.6%;background:linear-gradient(90deg,#e17055,#fab1a0)"></span></span>
+        <span class="rank-val">¥1,599</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#aaa">3</span>
+        <span class="rank-name">池田勝典 <small style="color:#888">PRO</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:9.8%;background:linear-gradient(90deg,#6c5ce7,#a29bfe)"></span></span>
+        <span class="rank-val">¥303</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#aaa">4</span>
+        <span class="rank-name">坂井俊章 <small style="color:#888">PRO+PRE</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:6.7%;background:linear-gradient(90deg,#6c5ce7,#a29bfe)"></span></span>
+        <span class="rank-val">¥209</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#aaa">5</span>
+        <span class="rank-name">萩原千晶 <small style="color:#888">PRE</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:1.3%;background:linear-gradient(90deg,#e17055,#fab1a0)"></span></span>
+        <span class="rank-val">¥39</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#aaa">6</span>
+        <span class="rank-name">藤木智咲 <small style="color:#888">PRO</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:0.5%;background:linear-gradient(90deg,#6c5ce7,#a29bfe);min-width:3px"></span></span>
+        <span class="rank-val">¥2</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num" style="background:#aaa">7</span>
+        <span class="rank-name">矢三やよい <small style="color:#888">PRO+PRE</small></span>
+        <span class="rank-bar-wrap"><span class="rank-bar" style="width:0.5%;background:linear-gradient(90deg,#6c5ce7,#a29bfe);min-width:3px"></span></span>
+        <span class="rank-val">¥2</span>
+      </div>
+    </div>
+
+    <!-- フェーズ分布 -->
+    <div style="text-align:center; margin-top:20px;">
+      <h3 style="font-size:1rem;color:#555;margin-bottom:12px">マネタイズ達成者のフェーズ分布</h3>
+      <div class="phase-dist">
+        <span class="phase-chip" style="border-color:#00b894;color:#00b894">5. 収益発生・拡大 - 1名（甲村）</span>
+        <span class="phase-chip" style="border-color:#f39c12;color:#e67e22">4. 出品・公開・営業 - 1名（坂井）</span>
+        <span class="phase-chip" style="border-color:#3498db;color:#2980b9">2. リサーチ・企画 - 1名（池田）</span>
+        <span class="phase-chip" style="border-color:#6c5ce7;color:#6c5ce7">1. 基礎学習 - 1名（早崎）</span>
+      </div>
+    </div>
+
+    <p class="subtitle" style="margin-top:24px">
+      ※ 併用者（坂井俊章・矢三やよい）のマネタイズはPRO側で計上<br>
+      ※ 除外: Discord特別選抜 20名（P00034〜P00053、3月期・4月末終了）
+    </p>
+  </div>
+
+</div><!-- /tree -->
+
+<p class="footer">生成日: 2026-03-31 ／ ソース: 会員カルテ（Google Sheets）自動同期データ</p>
+
+</body>
+</html>

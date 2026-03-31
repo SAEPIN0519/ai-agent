@@ -1,10 +1,30 @@
 @echo off
 chcp 65001 >nul
-echo タスクスケジューラに登録中...
-schtasks /create /tn "SNK_Dashboard_Update" /tr "node \"C:\Users\matsuoka\Desktop\ai-agent\03_clients\SNK\更新型進捗管理\update_dashboard.js\"" /sc daily /st 08:00 /f
+echo.
+echo === SNK 更新型ダッシュボード タスク登録 ===
+echo.
+echo 既存タスクを削除中...
+schtasks /delete /tn "SNK_Dashboard_Update" /f >nul 2>&1
+
+echo 新規タスクを登録中...
+schtasks /create ^
+  /tn "SNK_Dashboard_Update" ^
+  /tr "\"%~dp0update_dashboard.bat\" auto" ^
+  /sc daily ^
+  /st 09:30 ^
+  /rl highest ^
+  /f
+
 if %ERRORLEVEL% EQU 0 (
-    echo 登録完了！毎朝8:00に自動更新されます。
+    echo.
+    echo 登録完了！
+    echo   タスク名: SNK_Dashboard_Update
+    echo   実行時刻: 毎日 09:30
+    echo   実行内容: update_dashboard.bat（Excel読込→HTML更新→共有フォルダコピー）
+    echo   ログ出力: logs\update_YYYYMMDD.log
+    echo.
 ) else (
-    echo エラー: 管理者権限で実行してください。
+    echo.
+    echo エラー: 登録に失敗しました。右クリック→「管理者として実行」で再試行してね。
 )
 pause
