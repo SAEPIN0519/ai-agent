@@ -1385,7 +1385,45 @@ def main():
     parser.add_argument("--weeks-ago", type=int, default=1, help="何週間前を分析するか")
     parser.add_argument("--backfill", action="store_true", help="2/8〜直近全週のHTMLを一括生成")
     parser.add_argument("--combined", action="store_true", help="PRO+PREMIUM合算ページも生成")
+    parser.add_argument("--generate-only", action="store_true", help="レポート生成+git push+LINE通知のみ（Slack投稿なし）")
+    parser.add_argument("--slack-only", action="store_true", help="Slack投稿のみ（レポートは生成済み前提）")
     args = parser.parse_args()
+
+    # 対象週の計算
+    today = datetime.now()
+    this_monday = today - timedelta(days=today.weekday())
+
+    # slack-onlyモード: Google Sheets接続不要、既存ファイルからSlack投稿のみ
+    if args.slack_only:
+        target_monday = this_monday - timedelta(weeks=args.weeks_ago)
+        target_sunday = target_monday + timedelta(days=6)
+        start_date = target_monday.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = target_sunday.replace(hour=23, minute=59, second=59, microsecond=0)
+
+        html_files = {}
+        for plan_type in ['PRO', 'PREMIUM']:
+            filename = get_filename(plan_type, start_date, end_date)
+            filepath = REPORT_DIR / filename
+            if filepath.exists():
+                html_files[plan_type] = filepath
+        if args.combined:
+            all_filename = get_filename('ALL', start_date, end_date)
+            all_filepath = REPORT_DIR / all_filename
+            if all_filepath.exists():
+                html_files['合算'] = all_filepath
+        cl_filepath = REPORT_DIR / "チャンネルログ分析.html"
+        if cl_filepath.exists():
+            html_files['チャットログ分析（全期間）'] = cl_filepath
+
+        print(f"=== Slack投稿のみ（{len(html_files)}ファイル）===")
+        try:
+            client = get_slack_client()
+            post_weekly_slack(client, html_files, start_date, end_date)
+            print(f"\nSlack投稿完了")
+        except Exception as e:
+            print(f"\nSlack投稿エラー: {e}")
+        print("\n完了")
+        return
 
     print("Google Sheets接続中...")
     token = get_access_token()
@@ -1397,10 +1435,6 @@ def main():
     pro_names = [name for _, name, _ in pro_list]
     premium_names = [name for _, name, _ in premium_list]
     print(f"PRO: {len(pro_names)}名, PREMIUM: {len(premium_names)}名")
-
-    # 対象週の計算
-    today = datetime.now()
-    this_monday = today - timedelta(days=today.weekday())
 
     if args.backfill:
         # 全週バックフィル
@@ -1491,8 +1525,35 @@ def main():
             print(f"\nチャンネルログ分析エラー: {e}")
             print("週次レポートのみ投稿します。")
 
-        # Slack投稿（HTMLファイルアップロード + リンク付きメッセージ）
-        if args.dry_run:
+        # generate-only: git push + LINE通知のみ
+        if args.generate_only:
+            print("\n=== レポート生成完了 → git push + LINE通知 ===")
+            try:
+                import subprocess
+                # git add & commit & push
+                subprocess.run(['git', 'add', str(REPORT_DIR)], cwd=str(BASE_DIR), check=True)
+                subprocess.run(['git', 'commit', '-m', '週次レポート自動生成（日曜定時）'], cwd=str(BASE_DIR), check=False)
+                subprocess.run(['git', 'push', 'origin', 'main'], cwd=str(BASE_DIR), check=True)
+                print("  git push完了")
+            except Exception as e:
+                print(f"  git pushエラー: {e}")
+
+            # LINE通知
+            try:
+                sys.path.insert(0, str(BASE_DIR / '09_system'))
+                from line_notify import send_to_line
+                date_range = f"{start_date.month}/{start_date.day}〜{end_date.month}/{end_date.day}"
+                urls = []
+                for label, filepath in html_files.items():
+                    urls.append(f"・{label}: {get_github_pages_url(filepath)}")
+                msg = f"\n【週次レポート生成完了】{date_range}\n\n" + "\n".join(urls) + "\n\n確認してSlackに流す場合は指示してね"
+                send_to_line(msg)
+                print("  LINE通知完了")
+            except Exception as e:
+                print(f"  LINE通知エラー: {e}")
+
+        # 通常実行 or dry-run
+        elif args.dry_run:
             print("\n=== DRY RUN（Slack投稿スキップ）===")
             for label, path in html_files.items():
                 print(f"  {label}: {path}")
