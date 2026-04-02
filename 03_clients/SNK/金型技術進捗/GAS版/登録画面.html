@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>製品・アイテム登録</title>
+  <style>
+    /* ---- リセット・ベース ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+      font-size: 13px;
+      background: #F8FAFC;
+      color: #1E293B;
+      padding: 12px;
+    }
+
+    /* ---- タブ ---- */
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #E2E8F0;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748B;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: #1E3A5F;
+      border-bottom-color: #1E3A5F;
+    }
+    .tab-btn:hover:not(.active) {
+      color: #334155;
+      background: #F1F5F9;
+    }
+
+    /* ---- パネル ---- */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ---- フォーム ---- */
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    label .required {
+      color: #DC2626;
+      margin-left: 2px;
+    }
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #1E293B;
+      background: #FFFFFF;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #1E3A5F;
+      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* ---- セクション見出し ---- */
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: #1E3A5F;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ---- ボタン ---- */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+    .btn {
+      padding: 9px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: #1E3A5F;
+      color: #FFFFFF;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      background: #E2E8F0;
+      color: #475569;
+    }
+    .btn-secondary:hover { background: #CBD5E1; }
+
+    /* ---- メッセージ ---- */
+    .message {
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+    .message.success {
+      background: #D1FAE5;
+      color: #065F46;
+      border-left: 4px solid #059669;
+    }
+    .message.error {
+      background: #FEE2E2;
+      color: #991B1B;
+      border-left: 4px solid #DC2626;
+    }
+
+    /* ---- ローディング ---- */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 8px;
+      color: #64748B;
+      font-size: 12px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #CBD5E1;
+      border-top-color: #1E3A5F;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- 自動取得情報ボックス ---- */
+    .info-box {
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .info-box.visible { display: block; }
+    .info-box-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0369A1;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+    }
+    .info-item {
+      font-size: 12px;
+      color: #1E40AF;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+
+<!-- タブナビゲーション -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('product')">製品登録</button>
+  <button class="tab-btn" onclick="switchTab('item')">アイテム追加</button>
+</div>
+
+<!-- ========== 製品登録パネル ========== -->
+<div id="panel-product" class="panel active">
+  <div class="section-title">新規製品を登録</div>
+
+  <div class="form-group">
+    <label>品番 <span class="required">*</span></label>
+    <input type="text" id="p-productCode" placeholder="例: PA-2401" />
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>設計担当者 <span class="required">*</span></label>
+      <input type="text" id="p-designPerson" placeholder="氏名" />
+    </div>
+    <div class="form-group">
+      <label>製作担当者 <span class="required">*</span></label>
+      <input type="text" id="p-makePerson" placeholder="氏名" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>依頼担当者名</label>
+      <input type="text" id="p-requesterName" placeholder="氏名" />
+    </div>
+    <div class="form-group">
+      <label>依頼部署</label>
+      <input type="text" id="p-department" placeholder="例: 生産技術部" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>納期</label>
+    <input type="date" id="p-dueDate" />
+  </div>
+
+  <div class="form-group">
+    <label>メモ</label>
+    <textarea id="p-memo" placeholder="備考・特記事項など"></textarea>
+  </div>
+
+  <div class="loading" id="p-loading">
+    <span class="spinner"></span>登録中...
+  </div>
+  <div class="message" id="p-message"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="clearProductForm()">クリア</button>
+    <button class="btn btn-primary" onclick="submitProduct()">登録</button>
+  </div>
+</div>
+
+<!-- ========== アイテム追加パネル ========== -->
+<div id="panel-item" class="panel">
+  <div class="section-title">製品にアイテムを追加</div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>製品品番 <span class="required">*</span></label>
+      <select id="i-productCode" onchange="onProductSelect()">
+        <option value="">-- 選択してください --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>受注番号</label>
+      <input type="text" id="i-orderNo" placeholder="例: ORD-2401" />
+    </div>
+  </div>
+
+  <!-- 製品マスターから自動取得した情報 -->
+  <div class="info-box" id="i-infoBox">
+    <div class="info-box-title">製品マスターから自動取得</div>
+    <div class="info-grid">
+      <div class="info-item"><span class="info-label">設計担当:</span> <span id="ib-design">-</span></div>
+      <div class="info-item"><span class="info-label">製作担当:</span> <span id="ib-make">-</span></div>
+      <div class="info-item"><span class="info-label">依頼部署:</span> <span id="ib-dept">-</span></div>
+      <div class="info-item"><span class="info-label">納期:</span> <span id="ib-due">-</span></div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>製作アイテム名 <span class="required">*</span></label>
+    <input type="text" id="i-itemName" placeholder="例: 上型ダイ" />
+  </div>
+
+  <div class="form-group">
+    <label>種類 <span class="required">*</span></label>
+    <select id="i-itemType">
+      <option value="">-- 選択してください --</option>
+      <option value="Die">Die（ダイ）</option>
+      <option value="TP">TP（トリムパンチ）</option>
+      <option value="Tem">Tem（テンプレート）</option>
+      <option value="Mill">Mill（ミーリング）</option>
+      <option value="GC">GC（ゲージ）</option>
+      <option value="Ins">Ins（インサート）</option>
+      <option value="S">S（標準）</option>
+      <option value="Other">Other（その他）</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>メモ</label>
+    <textarea id="i-memo" placeholder="備考・特記事項など"></textarea>
+  </div>
+
+  <div class="loading" id="i-loading">
+    <span class="spinner"></span>追加中...
+  </div>
+  <div class="message" id="i-message"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="clearItemForm()">クリア</button>
+    <button class="btn btn-primary" onclick="submitItem()">追加</button>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // タブ切り替え
+  // ============================================================
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('panel-' + tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // アイテム追加タブを開いたとき品番リストを取得
+    if (tab === 'item') {
+      loadProductList();
+    }
+  }
+
+  // ============================================================
+  // 製品品番リストを読み込む
+  // ============================================================
+  function loadProductList() {
+    var select = document.getElementById('i-productCode');
+    select.innerHTML = '<option value="">読み込み中...</option>';
+    google.script.run
+      .withSuccessHandler(function(list) {
+        select.innerHTML = '<option value="">-- 選択してください --</option>';
+        list.forEach(function(code) {
+          var opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = code;
+          select.appendChild(opt);
+        });
+      })
+      .withFailureHandler(function(err) {
+        select.innerHTML = '<option value="">取得失敗</option>';
+        showMessage('i-message', 'error', '品番リストの取得に失敗しました: ' + err.message);
+      })
+      .getProductList();
+  }
+
+  // ============================================================
+  // 製品選択時に製品マスター情報を表示
+  // ============================================================
+  function onProductSelect() {
+    var code = document.getElementById('i-productCode').value;
+    var infoBox = document.getElementById('i-infoBox');
+
+    if (!code) {
+      infoBox.classList.remove('visible');
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler(function(info) {
+        if (!info) {
+          infoBox.classList.remove('visible');
+          return;
+        }
+        document.getElementById('ib-design').textContent = info.designPerson || '-';
+        document.getElementById('ib-make').textContent   = info.makePerson   || '-';
+        document.getElementById('ib-dept').textContent   = info.department   || '-';
+        document.getElementById('ib-due').textContent    = info.dueDate      || '-';
+        infoBox.classList.add('visible');
+      })
+      .withFailureHandler(function(err) {
+        infoBox.classList.remove('visible');
+      })
+      .getProductInfo(code);
+  }
+
+  // ============================================================
+  // 製品登録フォーム送信
+  // ============================================================
+  function submitProduct() {
+    var productCode  = trim(val('p-productCode'));
+    var designPerson = trim(val('p-designPerson'));
+    var makePerson   = trim(val('p-makePerson'));
+
+    // 必須チェック
+    if (!productCode)  { showMessage('p-message', 'error', '品番を入力してください。'); return; }
+    if (!designPerson) { showMessage('p-message', 'error', '設計担当者を入力してください。'); return; }
+    if (!makePerson)   { showMessage('p-message', 'error', '製作担当者を入力してください。'); return; }
+
+    var formData = {
+      productCode:   productCode,
+      designPerson:  designPerson,
+      makePerson:    makePerson,
+      requesterName: trim(val('p-requesterName')),
+      department:    trim(val('p-department')),
+      dueDate:       val('p-dueDate'),
+      memo:          trim(val('p-memo'))
+    };
+
+    showLoading('p-loading', true);
+    hideMessage('p-message');
+
+    google.script.run
+      .withSuccessHandler(function(result) {
+        showLoading('p-loading', false);
+        if (result.success) {
+          showMessage('p-message', 'success', result.message);
+          clearProductForm();
+        } else {
+          showMessage('p-message', 'error', result.message);
+        }
+      })
+      .withFailureHandler(function(err) {
+        showLoading('p-loading', false);
+        showMessage('p-message', 'error', 'エラーが発生しました: ' + err.message);
+      })
+      .registerProduct(formData);
+  }
+
+  // ============================================================
+  // アイテム追加フォーム送信
+  // ============================================================
+  function submitItem() {
+    var productCode = val('i-productCode');
+    var itemName    = trim(val('i-itemName'));
+    var itemType    = val('i-itemType');
+
+    // 必須チェック
+    if (!productCode) { showMessage('i-message', 'error', '製品品番を選択してください。'); return; }
+    if (!itemName)    { showMessage('i-message', 'error', '製作アイテム名を入力してください。'); return; }
+    if (!itemType)    { showMessage('i-message', 'error', '種類を選択してください。'); return; }
+
+    var formData = {
+      productCode: productCode,
+      orderNo:     trim(val('i-orderNo')),
+      itemName:    itemName,
+      itemType:    itemType,
+      memo:        trim(val('i-memo'))
+    };
+
+    showLoading('i-loading', true);
+    hideMessage('i-message');
+
+    google.script.run
+      .withSuccessHandler(function(result) {
+        showLoading('i-loading', false);
+        if (result.success) {
+          showMessage('i-message', 'success', result.message);
+          clearItemForm();
+        } else {
+          showMessage('i-message', 'error', result.message);
+        }
+      })
+      .withFailureHandler(function(err) {
+        showLoading('i-loading', false);
+        showMessage('i-message', 'error', 'エラーが発生しました: ' + err.message);
+      })
+      .addProgressItem(formData);
+  }
+
+  // ============================================================
+  // フォームクリア
+  // ============================================================
+  function clearProductForm() {
+    ['p-productCode','p-designPerson','p-makePerson','p-requesterName',
+     'p-department','p-dueDate','p-memo'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    hideMessage('p-message');
+  }
+
+  function clearItemForm() {
+    document.getElementById('i-productCode').value = '';
+    document.getElementById('i-orderNo').value     = '';
+    document.getElementById('i-itemName').value    = '';
+    document.getElementById('i-itemType').value    = '';
+    document.getElementById('i-memo').value        = '';
+    document.getElementById('i-infoBox').classList.remove('visible');
+    hideMessage('i-message');
+  }
+
+  // ============================================================
+  // ユーティリティ
+  // ============================================================
+  function val(id) { return document.getElementById(id).value; }
+  function trim(s) { return s ? s.trim() : ''; }
+
+  function showMessage(id, type, text) {
+    var el = document.getElementById(id);
+    el.className = 'message ' + type;
+    el.textContent = text;
+    el.style.display = 'block';
+  }
+  function hideMessage(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+  function showLoading(id, show) {
+    document.getElementById(id).style.display = show ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>金型在庫管理システム</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="mold-master-embed">/* マスターデータは末尾に埋め込み */</script>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --warning: #ea580c; --danger: #dc2626; }
+        body { font-family: 'Segoe UI', 'Meiryo', sans-serif; background: #f1f5f9; }
+        .btn-large { min-height: 56px; font-size: 1.1rem; font-weight: 600; border-radius: 12px; transition: all 0.15s; }
+        .btn-large:active { transform: scale(0.97); }
+        .tab-btn.active { border-bottom: 3px solid var(--primary); color: var(--primary); font-weight: 700; }
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            padding: 12px 24px; border-radius: 12px; color: white; font-weight: 600;
+            z-index: 9999; animation: fadeInOut 3s forwards;
+        }
+        @keyframes fadeInOut {
+            0% { opacity:0; transform: translateX(-50%) translateY(-10px); }
+            10% { opacity:1; transform: translateX(-50%) translateY(0); }
+            80% { opacity:1; } 100% { opacity:0; }
+        }
+        .scan-area { border: 3px dashed #94a3b8; border-radius: 16px; overflow: hidden; }
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content { background: white; border-radius: 16px; padding: 24px; margin: 16px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        input[type="text"], select {
+            font-size: 1.1rem; padding: 14px; border-radius: 10px; border: 2px solid #cbd5e1; width: 100%;
+        }
+        input[type="text"]:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+
+        /* ラック配置図スタイル */
+        .rack-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .rack-card {
+            padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer;
+            border: 3px solid transparent; transition: all 0.15s; font-weight: 700;
+        }
+        .rack-card:hover { transform: scale(1.03); }
+        .rack-card.selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.3); }
+
+        .door-section { margin-bottom: 16px; }
+        .door-header { font-weight: 700; font-size: 0.95rem; padding: 8px 12px; border-radius: 8px 8px 0 0; }
+        .slot-grid { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 2px; }
+        .slot-cell {
+            padding: 10px 6px; text-align: center; font-size: 0.75rem; border: 1px solid #e2e8f0;
+            cursor: pointer; transition: all 0.15s; min-height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            word-break: break-all; line-height: 1.2;
+        }
+        .slot-cell.empty { background: #dcfce7; color: #166534; }
+        .slot-cell.empty:hover { background: #bbf7d0; transform: scale(1.02); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .slot-cell.occupied { background: #fee2e2; color: #991b1b; cursor: default; }
+        .slot-cell.selected { background: #2563eb !important; color: white !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.4); }
+        .slot-cell.level-label {
+            background: #1e3a5f; color: white; font-weight: 700; font-size: 0.7rem;
+            cursor: default; writing-mode: horizontal-tb;
+        }
+        .slot-cell.pos-header { background: #2563eb; color: white; font-weight: 700; font-size: 0.8rem; cursor: default; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ヘッダー -->
+<header class="bg-white shadow-sm px-4 py-3">
+    <div class="max-w-2xl mx-auto flex items-center justify-between">
+        <h1 class="text-xl font-bold text-gray-800">金型在庫管理</h1>
+    </div>
+</header>
+
+<!-- タブ -->
+<nav class="bg-white border-b sticky top-0 z-50">
+    <div class="max-w-2xl mx-auto flex">
+        <button class="tab-btn active flex-1 py-3 text-center text-sm" onclick="switchTab('receive')">入庫</button>
+        <button class="tab-btn flex-1 py-3 text-center text-sm" onclick="switchTab('ship')">出庫・検索</button>
+        <button class="tab-btn flex-1 py-3 text-center text-sm" onclick="switchTab('dashboard')">ダッシュボード</button>
+        <button class="tab-btn flex-1 py-3 text-center text-sm" onclick="switchTab('inventory')">棚卸</button>
+    </div>
+</nav>
+
+<main class="max-w-2xl mx-auto p-4">
+
+    <!-- ===== 入庫タブ ===== -->
+    <section id="tab-receive">
+        <div class="bg-white rounded-2xl shadow p-5 mb-4">
+            <h2 class="text-lg font-bold mb-3">入庫登録</h2>
+
+            <!-- Step 1: 受付No入力 → 自動表示 -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-600 mb-1">① 更新型受付No.</label>
+                <div class="flex gap-2">
+                    <input type="text" id="receiveUketsuke" placeholder="例: 123" inputmode="numeric"
+                           oninput="lookupMold(this.value)"
+                           class="flex-1" style="font-size:1.3rem; font-weight:700;">
+                    <button onclick="startQRScan('receive')" class="bg-blue-600 text-white px-4 rounded-xl font-semibold text-sm whitespace-nowrap">
+                        QR読取
+                    </button>
+                </div>
+                <div id="qr-reader-receive" class="scan-area mt-2 hidden"></div>
+
+                <!-- 自動表示エリア -->
+                <div id="moldInfoCard" class="hidden mt-3 bg-gray-50 rounded-xl p-4 border-2 border-blue-200">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-gray-400">品番</span><p class="font-bold text-lg" id="moldInfoHinban">—</p></div>
+                        <div><span class="text-gray-400">品名</span><p class="font-bold text-lg" id="moldInfoHinmei">—</p></div>
+                        <div><span class="text-gray-400">更新型No</span><p class="font-bold text-lg text-blue-700" id="moldInfoKoushin">—</p></div>
+                        <div><span class="text-gray-400">客先</span><p class="font-bold" id="moldInfoCustomer">—</p></div>
+                    </div>
+                </div>
+                <div id="moldInfoNotFound" class="hidden mt-2 text-sm text-red-500 font-semibold">
+                    該当する受付Noが見つかりません
+                </div>
+            </div>
+
+            <!-- Step 2: ラック選択 -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-600 mb-2">② ラックを選択</label>
+                <div class="rack-selector" id="rackSelector">
+                    <!-- 動的生成 -->
+                </div>
+            </div>
+
+            <!-- Step 3: 配置図から置場をタップ -->
+            <div id="rackMapArea" class="hidden">
+                <label class="block text-sm font-semibold text-gray-600 mb-2">③ 置場をタップ <span class="text-green-600">（緑＝空き）</span></label>
+                <div id="rackMapContent" class="border-2 border-gray-200 rounded-xl p-3 overflow-x-auto">
+                    <!-- 動的生成 -->
+                </div>
+            </div>
+
+            <!-- 選択中の表示 -->
+            <div id="receiveSelection" class="hidden mt-4 bg-blue-50 rounded-xl p-4 text-center">
+                <p class="text-sm text-gray-500">選択中</p>
+                <p class="text-2xl font-black text-blue-700" id="receiveSelectionText"></p>
+            </div>
+
+            <button onclick="handleReceive()" class="btn-large w-full bg-green-600 text-white mt-4">
+                入庫登録する
+            </button>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-5">
+            <h3 class="font-bold text-gray-700 mb-3">直近の入庫</h3>
+            <div id="receiveHistory" class="space-y-2 text-sm text-gray-600">
+                <p class="text-gray-400">まだ履歴がありません</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 出庫・検索タブ ===== -->
+    <section id="tab-ship" class="hidden">
+        <div class="bg-white rounded-2xl shadow p-5 mb-4">
+            <h2 class="text-lg font-bold mb-4">出庫・検索</h2>
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="searchMoldNo" placeholder="金型Noを入力" class="flex-1 uppercase">
+                <button onclick="startQRScan('ship')" class="bg-blue-600 text-white px-4 rounded-xl font-semibold text-sm">QR</button>
+                <button onclick="handleSearch()" class="btn-large bg-blue-600 text-white px-6">検索</button>
+            </div>
+            <div id="qr-reader-ship" class="scan-area mb-3 hidden"></div>
+        </div>
+
+        <div id="searchResult" class="hidden">
+            <div class="bg-white rounded-2xl shadow p-5 mb-4">
+                <h3 class="font-bold text-gray-700 mb-3">検索結果</h3>
+                <div id="searchResultContent"></div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="handleShipOut()" class="btn-large flex-1 bg-red-600 text-white">出庫する</button>
+                    <button onclick="showMoveModal()" class="btn-large flex-1 bg-orange-500 text-white">移動する</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-5">
+            <h3 class="font-bold text-gray-700 mb-3">直近の出庫</h3>
+            <div id="shipHistory" class="space-y-2 text-sm text-gray-600">
+                <p class="text-gray-400">まだ履歴がありません</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ダッシュボードタブ ===== -->
+    <section id="tab-dashboard" class="hidden">
+        <div class="bg-white rounded-2xl shadow p-5 mb-4">
+            <h2 class="text-lg font-bold mb-4">ラック使用状況</h2>
+            <div id="rackTiles" class="grid grid-cols-2 gap-3 mb-5"></div>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-5">
+            <h3 class="font-bold text-gray-700 mb-3">使用率グラフ</h3>
+            <canvas id="capacityChart" height="200"></canvas>
+        </div>
+    </section>
+
+    <!-- ===== 棚卸タブ ===== -->
+    <section id="tab-inventory" class="hidden">
+        <div class="bg-white rounded-2xl shadow p-5 mb-4">
+            <h2 class="text-lg font-bold mb-4">棚卸モード</h2>
+            <p class="text-sm text-gray-500 mb-3">ラックを選んで、配置図で1つずつ確認していくよ</p>
+            <div class="rack-selector mb-4" id="inventoryRackSelector"></div>
+            <div class="flex gap-2">
+                <button onclick="startQRScan('inventory')" class="btn-large flex-1 bg-purple-600 text-white">QRでチェック</button>
+            </div>
+            <div id="qr-reader-inventory" class="scan-area mt-2 hidden"></div>
+        </div>
+        <div id="inventoryMapArea" class="hidden bg-white rounded-2xl shadow p-5 mb-4">
+            <div id="inventoryMapContent"></div>
+        </div>
+        <div id="inventoryList" class="space-y-2"></div>
+        <div id="inventoryResult" class="hidden bg-white rounded-2xl shadow p-5 mt-4">
+            <h3 class="font-bold text-gray-700 mb-3">棚卸結果</h3>
+            <div id="inventoryResultContent"></div>
+        </div>
+    </section>
+</main>
+
+<!-- 移動モーダル -->
+<div id="moveModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">移動先を選択</h3>
+        <div class="rack-selector mb-4" id="moveRackSelector"></div>
+        <div id="moveMapArea" class="hidden border-2 border-gray-200 rounded-xl p-3 overflow-x-auto mb-4">
+            <div id="moveMapContent"></div>
+        </div>
+        <div id="moveSelection" class="hidden bg-blue-50 rounded-xl p-3 text-center mb-4">
+            <p class="text-lg font-bold text-blue-700" id="moveSelectionText"></p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeMoveModal()" class="btn-large flex-1 bg-gray-200 text-gray-700">キャンセル</button>
+            <button onclick="handleMove()" class="btn-large flex-1 bg-orange-500 text-white">移動する</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 更新型マスターデータ（受付No → 品番・品名・更新型No）
+// ============================================================
+let MOLD_MASTER = [];
+let currentMoldInfo = null;
+
+// マスターデータ読み込み（scriptタグで mold_master.js を読み込み済み）
+function loadMoldMaster() {
+    if (typeof MOLD_MASTER_DATA !== 'undefined') {
+        MOLD_MASTER = MOLD_MASTER_DATA;
+        console.log('マスターデータ読み込み完了:', MOLD_MASTER.length, '件');
+    } else {
+        console.log('マスターデータが見つかりません（デモモードで動作）');
+        MOLD_MASTER = [
+            { no: '1', customer: '名光', hinban: '44', hinmei: 'スリーブ', koushinNo: '5 17～20', maker: 'テックアダチ' },
+            { no: '2', customer: '住友理工', hinban: 'TG-719-02', hinmei: 'PALTE', koushinNo: '3', maker: 'テックアダチ' },
+            { no: '3', customer: '住友理工', hinban: 'TZ-721-01', hinmei: 'BRACKET ENG MTG', koushinNo: '2', maker: 'テックアダチ' },
+        ];
+    }
+}
+
+// 受付Noで検索 → 情報カード表示
+function lookupMold(input) {
+    const val = input.trim();
+    const cardEl = document.getElementById('moldInfoCard');
+    const notFoundEl = document.getElementById('moldInfoNotFound');
+
+    if (!val) {
+        cardEl.classList.add('hidden');
+        notFoundEl.classList.add('hidden');
+        currentMoldInfo = null;
+        return;
+    }
+
+    const found = MOLD_MASTER.find(m => m.no === val);
+    if (found) {
+        document.getElementById('moldInfoHinban').textContent = found.hinban || '—';
+        document.getElementById('moldInfoHinmei').textContent = found.hinmei || '—';
+        document.getElementById('moldInfoKoushin').textContent = found.koushinNo || '—';
+        document.getElementById('moldInfoCustomer').textContent = found.customer || '—';
+        cardEl.classList.remove('hidden');
+        notFoundEl.classList.add('hidden');
+        currentMoldInfo = found;
+    } else {
+        cardEl.classList.add('hidden');
+        notFoundEl.classList.remove('hidden');
+        currentMoldInfo = null;
+    }
+}
+
+// ============================================================
+// 実際のラック構造定義
+// ============================================================
+const RACK_DEFS = {
+    '旧Dラック': {
+        color: '#2563eb', colorLight: '#dbeafe',
+        doors: [
+            { name: '⑤番扉', positions: ['左','中央','右'] },
+            { name: '④番扉', positions: ['左','中央','右'] },
+            { name: '③番扉', positions: ['左','中央','右'] },
+            { name: '②番扉', positions: ['左','中央','右'] },
+            { name: '①番扉', positions: ['左','中央','右'] },
+        ],
+        levels: ['3段目','2段目','1段目奥','1段目手前'],
+    },
+    '新Dラック': {
+        color: '#3b82f6', colorLight: '#dbeafe',
+        doors: [
+            { name: '③番扉', positions: ['左','中央','右'] },
+            { name: '②番扉', positions: ['左','中央','右'] },
+            { name: '①番扉', positions: ['左','中央','右'] },
+        ],
+        levels: ['3段目','2段目','1段目奥','1段目手前'],
+    },
+    'F北側ラック': {
+        color: '#16a34a', colorLight: '#dcfce7',
+        doors: [
+            { name: '⑦番扉', positions: ['左','中央','右'] },
+            { name: '⑥番扉', positions: ['左','中央','右'] },
+            { name: '⑤番扉', positions: ['左','中央','右'] },
+        ],
+        levels: ['3段目','2段目','1段目奥','1段目手前'],
+    },
+    'F南側ラック': {
+        color: '#22c55e', colorLight: '#dcfce7',
+        doors: [
+            { name: '③番扉', positions: ['左','中央','右'] },
+            { name: '②番扉', positions: ['左','中央','右'] },
+            { name: '①番扉', positions: ['左','中央','右'] },
+        ],
+        levels: ['3段目','2段目','1段目奥','1段目手前'],
+    },
+    'G北側ラック': {
+        color: '#ea580c', colorLight: '#ffedd5',
+        doors: [
+            { name: '④番扉', positions: ['左','中央','右'] },
+            { name: '③番扉', positions: ['左','中央','右'] },
+            { name: '②番扉', positions: ['左','中央','右'] },
+        ],
+        levels: ['2段目','1段目奥','1段目手前'],
+    },
+};
+
+// ============================================================
+// データ管理（LocalStorage）
+// ============================================================
+function getInventory() {
+    return JSON.parse(localStorage.getItem('moldInventory') || '{}');
+}
+function saveInventory(inv) {
+    localStorage.setItem('moldInventory', JSON.stringify(inv));
+}
+
+// スロットキー: "旧Dラック/⑤番扉/左/3段目"
+function slotKey(rack, door, pos, level) {
+    return `${rack}/${door}/${pos}/${level}`;
+}
+
+function getSlot(rack, door, pos, level) {
+    const inv = getInventory();
+    return inv[slotKey(rack, door, pos, level)] || null;
+}
+
+function setSlot(rack, door, pos, level, moldNo, moldInfo = null) {
+    const inv = getInventory();
+    const key = slotKey(rack, door, pos, level);
+    if (moldNo) {
+        inv[key] = {
+            moldNo,
+            hinban: moldInfo?.hinban || '',
+            hinmei: moldInfo?.hinmei || '',
+            koushinNo: moldInfo?.koushinNo || '',
+            customer: moldInfo?.customer || '',
+            updatedAt: new Date().toISOString()
+        };
+    } else {
+        delete inv[key];
+    }
+    saveInventory(inv);
+}
+
+// 金型Noで検索（どのスロットにあるか）
+function findMold(moldNo) {
+    const inv = getInventory();
+    const upper = moldNo.toUpperCase();
+    for (const [key, val] of Object.entries(inv)) {
+        if (val.moldNo?.toUpperCase() === upper) {
+            const [rack, door, pos, level] = key.split('/');
+            return { rack, door, pos, level, ...val };
+        }
+    }
+    return null;
+}
+
+// ============================================================
+// ラック選択カード生成
+// ============================================================
+function renderRackSelector(containerId, onSelect) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = Object.entries(RACK_DEFS).map(([name, def]) => `
+        <div class="rack-card" style="background: ${def.colorLight}; color: ${def.color}"
+             data-rack="${name}" onclick="(${onSelect.toString()})('${name}', this)">
+            <div class="text-lg">${name}</div>
+            <div class="text-xs opacity-70">${def.doors.length}扉</div>
+        </div>
+    `).join('');
+}
+
+function selectRackCard(el, containerId) {
+    document.querySelectorAll(`#${containerId} .rack-card`).forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+// ============================================================
+// 配置図（ラックマップ）レンダリング
+// ============================================================
+function renderRackMap(containerId, rackName, options = {}) {
+    const def = RACK_DEFS[rackName];
+    if (!def) return;
+    const container = document.getElementById(containerId);
+    const { onSlotClick, mode } = options; // mode: 'receive', 'move', 'inventory'
+
+    let html = '';
+    for (const door of def.doors) {
+        html += `<div class="door-section">`;
+        html += `<div class="door-header" style="background: ${def.color}; color: white">${door.name}</div>`;
+        html += `<div class="slot-grid">`;
+
+        // ヘッダー行: 空 + 位置名
+        html += `<div class="slot-cell pos-header" style="background: ${def.color}">段</div>`;
+        for (const pos of door.positions) {
+            html += `<div class="slot-cell pos-header" style="background: ${def.color}">${pos}</div>`;
+        }
+
+        // 各段
+        for (const level of def.levels) {
+            html += `<div class="slot-cell level-label">${level}</div>`;
+            for (const pos of door.positions) {
+                const slot = getSlot(rackName, door.name, pos, level);
+                const isEmpty = !slot;
+                const classes = isEmpty ? 'empty' : 'occupied';
+                const content = isEmpty ? '空き' : (slot.hinban ? `${slot.hinban}<br><span style="font-size:0.65rem">${slot.koushinNo || ''}</span>` : slot.moldNo);
+                const dataAttrs = `data-rack="${rackName}" data-door="${door.name}" data-pos="${pos}" data-level="${level}"`;
+                const clickable = (mode === 'receive' || mode === 'move') && isEmpty;
+                const inventoryClickable = mode === 'inventory';
+                const onclick = (clickable || inventoryClickable) ? `onclick="handleSlotClick(this, '${mode}')"` : '';
+
+                html += `<div class="slot-cell ${classes}" ${dataAttrs} ${onclick}>${content}</div>`;
+            }
+        }
+        html += `</div></div>`;
+    }
+    container.innerHTML = html;
+}
+
+// ============================================================
+// 入庫 — スロットタップ処理
+// ============================================================
+let selectedReceiveSlot = null;
+let selectedMoveSlot = null;
+
+function handleSlotClick(el, mode) {
+    if (mode === 'receive') {
+        // 前の選択を解除
+        document.querySelectorAll('#rackMapContent .slot-cell.selected').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedReceiveSlot = {
+            rack: el.dataset.rack,
+            door: el.dataset.door,
+            pos: el.dataset.pos,
+            level: el.dataset.level,
+        };
+        const label = `${selectedReceiveSlot.rack} ＞ ${selectedReceiveSlot.door} ＞ ${selectedReceiveSlot.pos} ＞ ${selectedReceiveSlot.level}`;
+        document.getElementById('receiveSelectionText').textContent = label;
+        document.getElementById('receiveSelection').classList.remove('hidden');
+    } else if (mode === 'move') {
+        document.querySelectorAll('#moveMapContent .slot-cell.selected').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedMoveSlot = {
+            rack: el.dataset.rack,
+            door: el.dataset.door,
+            pos: el.dataset.pos,
+            level: el.dataset.level,
+        };
+        const label = `${selectedMoveSlot.rack} ＞ ${selectedMoveSlot.door} ＞ ${selectedMoveSlot.pos} ＞ ${selectedMoveSlot.level}`;
+        document.getElementById('moveSelectionText').textContent = label;
+        document.getElementById('moveSelection').classList.remove('hidden');
+    } else if (mode === 'inventory') {
+        handleInventorySlotClick(el);
+    }
+}
+
+// 入庫ラック選択
+function onReceiveRackSelect(rackName, el) {
+    selectRackCard(el, 'rackSelector');
+    selectedReceiveSlot = null;
+    document.getElementById('receiveSelection').classList.add('hidden');
+    document.getElementById('rackMapArea').classList.remove('hidden');
+    renderRackMap('rackMapContent', rackName, { mode: 'receive' });
+}
+
+// 入庫実行
+function handleReceive() {
+    const uketsuke = document.getElementById('receiveUketsuke').value.trim();
+    if (!uketsuke) return showToast('受付Noを入力してね', 'error');
+    if (!currentMoldInfo) return showToast('有効な受付Noを入力してね', 'error');
+    if (!selectedReceiveSlot) return showToast('配置図から空きスロットをタップしてね', 'error');
+
+    const { rack, door, pos, level } = selectedReceiveSlot;
+    const moldLabel = `${currentMoldInfo.hinban} ${currentMoldInfo.koushinNo}`;
+
+    // 既に同じ受付Noが別の場所にないか
+    const existing = findMold(uketsuke);
+    if (existing) {
+        return showToast(`受付No.${uketsuke} は既に ${existing.rack} ${existing.door} ${existing.pos} ${existing.level} にあるよ`, 'error');
+    }
+
+    setSlot(rack, door, pos, level, uketsuke, currentMoldInfo);
+    addHistory('receive', `No.${uketsuke} ${moldLabel} → ${rack} ${door} ${pos} ${level}`);
+    showToast(`入庫完了: ${moldLabel}`, 'success');
+
+    // リセット
+    document.getElementById('receiveUketsuke').value = '';
+    document.getElementById('moldInfoCard').classList.add('hidden');
+    currentMoldInfo = null;
+    selectedReceiveSlot = null;
+    document.getElementById('receiveSelection').classList.add('hidden');
+    renderRackMap('rackMapContent', rack, { mode: 'receive' });
+}
+
+// ============================================================
+// 出庫・検索
+// ============================================================
+let currentSearchResult = null;
+
+function handleSearch() {
+    const moldNo = document.getElementById('searchMoldNo').value.trim().toUpperCase();
+    if (!moldNo) return showToast('金型Noを入力してね', 'error');
+
+    const found = findMold(moldNo);
+    const resultDiv = document.getElementById('searchResult');
+    const contentDiv = document.getElementById('searchResultContent');
+
+    if (found) {
+        currentSearchResult = found;
+        const location = `${found.rack} ＞ ${found.door} ＞ ${found.pos} ＞ ${found.level}`;
+        contentDiv.innerHTML = `
+            <div class="bg-blue-50 rounded-xl p-4">
+                <p class="text-2xl font-bold text-blue-800 mb-2">受付No. ${found.moldNo}</p>
+                ${found.hinban ? `<p class="text-lg"><span class="text-gray-500">品番:</span> <strong>${found.hinban}</strong></p>` : ''}
+                ${found.hinmei ? `<p class="text-sm text-gray-600">${found.hinmei} ${found.koushinNo ? '/ ' + found.koushinNo : ''}</p>` : ''}
+                <p class="text-lg mt-2">保管場所:</p>
+                <p class="font-bold text-green-700 text-lg">${location}</p>
+                ${found.updatedAt ? `<p class="text-xs text-gray-400 mt-2">最終更新: ${new Date(found.updatedAt).toLocaleString('ja-JP')}</p>` : ''}
+            </div>
+        `;
+        resultDiv.classList.remove('hidden');
+    } else {
+        currentSearchResult = null;
+        contentDiv.innerHTML = `
+            <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-lg text-gray-500">「${moldNo}」は見つかりませんでした</p>
+            </div>
+        `;
+        resultDiv.classList.remove('hidden');
+    }
+}
+
+function handleShipOut() {
+    if (!currentSearchResult) return;
+    const { rack, door, pos, level, moldNo } = currentSearchResult;
+    setSlot(rack, door, pos, level, null);
+    addHistory('ship', `${moldNo} ← ${rack} ${door} ${pos} ${level}`);
+    showToast(`出庫完了: ${moldNo}`, 'success');
+    document.getElementById('searchResult').classList.add('hidden');
+    document.getElementById('searchMoldNo').value = '';
+    currentSearchResult = null;
+}
+
+// ============================================================
+// 移動
+// ============================================================
+function showMoveModal() {
+    if (!currentSearchResult) return;
+    selectedMoveSlot = null;
+    document.getElementById('moveSelection').classList.add('hidden');
+    document.getElementById('moveMapArea').classList.add('hidden');
+    renderRackSelector('moveRackSelector', onMoveRackSelect);
+    document.getElementById('moveModal').classList.remove('hidden');
+}
+
+function onMoveRackSelect(rackName, el) {
+    selectRackCard(el, 'moveRackSelector');
+    selectedMoveSlot = null;
+    document.getElementById('moveSelection').classList.add('hidden');
+    document.getElementById('moveMapArea').classList.remove('hidden');
+    renderRackMap('moveMapContent', rackName, { mode: 'move' });
+}
+
+function closeMoveModal() {
+    document.getElementById('moveModal').classList.add('hidden');
+}
+
+function handleMove() {
+    if (!currentSearchResult || !selectedMoveSlot) return showToast('移動先をタップしてね', 'error');
+    const { rack: oldR, door: oldD, pos: oldP, level: oldL, moldNo } = currentSearchResult;
+    const { rack: newR, door: newD, pos: newP, level: newL } = selectedMoveSlot;
+
+    setSlot(oldR, oldD, oldP, oldL, null);
+    setSlot(newR, newD, newP, newL, moldNo);
+    addHistory('ship', `${moldNo}: ${oldR}${oldD}${oldP}${oldL} → ${newR}${newD}${newP}${newL}`);
+    showToast(`移動完了: ${moldNo}`, 'success');
+
+    closeMoveModal();
+    document.getElementById('searchResult').classList.add('hidden');
+    currentSearchResult = null;
+}
+
+// ============================================================
+// ダッシュボード
+// ============================================================
+let capacityChart = null;
+
+function refreshDashboard() {
+    const inv = getInventory();
+    const stats = {};
+
+    for (const [rackName, def] of Object.entries(RACK_DEFS)) {
+        let total = 0;
+        let occupied = 0;
+        for (const door of def.doors) {
+            for (const pos of door.positions) {
+                for (const level of def.levels) {
+                    total++;
+                    if (inv[slotKey(rackName, door.name, pos, level)]) occupied++;
+                }
+            }
+        }
+        stats[rackName] = { total, occupied, rate: Math.round((occupied / total) * 100), color: def.color };
+    }
+
+    // タイル
+    const tilesEl = document.getElementById('rackTiles');
+    tilesEl.innerHTML = Object.entries(stats).map(([name, data]) => {
+        let bg = '#dcfce7'; let fg = '#166534';
+        if (data.rate >= 80) { bg = '#fee2e2'; fg = '#991b1b'; }
+        else if (data.rate >= 50) { bg = '#fef3c7'; fg = '#92400e'; }
+        return `
+            <div class="rounded-xl p-4 text-center" style="background: ${bg}; color: ${fg}">
+                <p class="text-lg font-bold">${name}</p>
+                <p class="text-3xl font-black">${data.rate}%</p>
+                <p class="text-xs mt-1">${data.occupied} / ${data.total}</p>
+            </div>
+        `;
+    }).join('');
+
+    // グラフ
+    const ctx = document.getElementById('capacityChart');
+    const labels = Object.keys(stats);
+    if (capacityChart) capacityChart.destroy();
+    capacityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: '使用中', data: labels.map(r => stats[r].occupied), backgroundColor: '#ef4444', borderRadius: 6 },
+                { label: '空き', data: labels.map(r => stats[r].total - stats[r].occupied), backgroundColor: '#22c55e', borderRadius: 6 },
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+        }
+    });
+}
+
+// ============================================================
+// 棚卸モード
+// ============================================================
+let inventoryRack = null;
+let inventoryCheckState = {};
+
+function onInventoryRackSelect(rackName, el) {
+    selectRackCard(el, 'inventoryRackSelector');
+    inventoryRack = rackName;
+    inventoryCheckState = {};
+    document.getElementById('inventoryMapArea').classList.remove('hidden');
+
+    const def = RACK_DEFS[rackName];
+    // チェック状態を初期化
+    for (const door of def.doors) {
+        for (const pos of door.positions) {
+            for (const level of def.levels) {
+                const key = slotKey(rackName, door.name, pos, level);
+                const slot = getSlot(rackName, door.name, pos, level);
+                inventoryCheckState[key] = { expected: slot?.moldNo || '', checked: false, result: '' };
+            }
+        }
+    }
+
+    renderInventoryMap();
+    renderInventoryList();
+}
+
+function renderInventoryMap() {
+    renderRackMap('inventoryMapContent', inventoryRack, { mode: 'inventory' });
+}
+
+function renderInventoryList() {
+    const container = document.getElementById('inventoryList');
+    let html = '';
+    for (const [key, state] of Object.entries(inventoryCheckState)) {
+        const [, door, pos, level] = key.split('/');
+        const statusClass = !state.checked ? 'bg-gray-50' : state.result === 'ok' ? 'bg-green-50 border-l-4 border-green-500' : 'bg-red-50 border-l-4 border-red-500';
+        const statusText = !state.checked ? '未確認' : state.result === 'ok' ? 'OK' : 'NG';
+        const statusColor = !state.checked ? 'text-gray-400' : state.result === 'ok' ? 'text-green-600' : 'text-red-600';
+
+        html += `
+            <div class="rounded-xl shadow p-3 flex items-center justify-between ${statusClass}">
+                <div>
+                    <p class="font-bold text-sm">${door} ${pos} ${level}</p>
+                    <p class="text-xs text-gray-500">${state.expected || '（空き）'}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold ${statusColor}">${statusText}</span>
+                    <button onclick="markInventory('${key}','ok')" class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-bold">OK</button>
+                    <button onclick="markInventory('${key}','ng')" class="bg-red-100 text-red-700 px-2 py-1 rounded-lg text-xs font-bold">NG</button>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function handleInventorySlotClick(el) {
+    const key = slotKey(el.dataset.rack, el.dataset.door, el.dataset.pos, el.dataset.level);
+    if (inventoryCheckState[key]) {
+        markInventory(key, 'ok');
+    }
+}
+
+function markInventory(key, result) {
+    if (!inventoryCheckState[key]) return;
+    inventoryCheckState[key].checked = true;
+    inventoryCheckState[key].result = result;
+    renderInventoryList();
+
+    // 全件チェック済みか
+    if (Object.values(inventoryCheckState).every(s => s.checked)) {
+        showInventoryResult();
+    }
+}
+
+function handleInventoryCheck(moldNo) {
+    if (!inventoryRack) return showToast('棚卸対象のラックを選択してね', 'error');
+    for (const [key, state] of Object.entries(inventoryCheckState)) {
+        if (state.expected?.toUpperCase() === moldNo?.toUpperCase()) {
+            markInventory(key, 'ok');
+            showToast(`${moldNo} 確認OK`, 'success');
+            return;
+        }
+    }
+    showToast(`${moldNo} はこのラックに登録されていないよ`, 'warning');
+}
+
+function showInventoryResult() {
+    const okCount = Object.values(inventoryCheckState).filter(s => s.result === 'ok').length;
+    const ngCount = Object.values(inventoryCheckState).filter(s => s.result === 'ng').length;
+    const total = Object.keys(inventoryCheckState).length;
+    let ngList = '';
+    for (const [key, state] of Object.entries(inventoryCheckState)) {
+        if (state.result === 'ng') {
+            const [, door, pos, level] = key.split('/');
+            ngList += `<li class="text-red-600">${door} ${pos} ${level}: ${state.expected || '（空き）'}</li>`;
+        }
+    }
+    document.getElementById('inventoryResultContent').innerHTML = `
+        <div class="text-center mb-3">
+            <p class="text-3xl font-black ${ngCount === 0 ? 'text-green-600' : 'text-red-600'}">
+                ${ngCount === 0 ? '全件一致' : `${ngCount}件 不一致`}
+            </p>
+            <p class="text-sm text-gray-500">OK: ${okCount} / NG: ${ngCount} / 合計: ${total}</p>
+        </div>
+        ${ngList ? `<ul class="list-disc ml-5 space-y-1">${ngList}</ul>` : ''}
+    `;
+    document.getElementById('inventoryResult').classList.remove('hidden');
+}
+
+// ============================================================
+// QRコードスキャン
+// ============================================================
+let activeScanner = null;
+
+function startQRScan(context) {
+    const readerId = `qr-reader-${context}`;
+    const readerEl = document.getElementById(readerId);
+    readerEl.classList.remove('hidden');
+    if (activeScanner) { activeScanner.stop().catch(() => {}); activeScanner = null; }
+    activeScanner = new Html5Qrcode(readerId);
+    activeScanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (text) => {
+            activeScanner.stop().then(() => { readerEl.classList.add('hidden'); activeScanner = null; handleQRResult(context, text); });
+        },
+        () => {}
+    ).catch(() => { readerEl.classList.add('hidden'); showToast('カメラを起動できませんでした', 'error'); });
+}
+
+function handleQRResult(context, text) {
+    let moldNo = text.startsWith('MOLD:') ? text.replace('MOLD:', '').trim() : text.trim();
+    if (context === 'receive') {
+        document.getElementById('receiveUketsuke').value = moldNo;
+        lookupMold(moldNo);
+        showToast('QR読み取り完了', 'success');
+    } else if (context === 'ship') {
+        document.getElementById('searchMoldNo').value = moldNo;
+        handleSearch();
+    } else if (context === 'inventory') {
+        handleInventoryCheck(moldNo);
+    }
+}
+
+// ============================================================
+// タブ切替
+// ============================================================
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.remove('active');
+        if (['receive','ship','dashboard','inventory'][i] === name) btn.classList.add('active');
+    });
+    document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`tab-${name}`).classList.remove('hidden');
+    if (name === 'dashboard') refreshDashboard();
+    if (activeScanner) { activeScanner.stop().catch(() => {}); activeScanner = null; document.querySelectorAll('.scan-area').forEach(el => el.classList.add('hidden')); }
+}
+
+// ============================================================
+// 履歴・トースト
+// ============================================================
+function addHistory(type, text) {
+    const key = `history_${type}`;
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    history.unshift({ text, time: new Date().toLocaleString('ja-JP') });
+    if (history.length > 10) history.pop();
+    localStorage.setItem(key, JSON.stringify(history));
+    renderHistory(type);
+}
+function renderHistory(type) {
+    const key = `history_${type}`;
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    const el = document.getElementById(type === 'receive' ? 'receiveHistory' : 'shipHistory');
+    if (!history.length) { el.innerHTML = '<p class="text-gray-400">まだ履歴がありません</p>'; return; }
+    el.innerHTML = history.map(h => `
+        <div class="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2">
+            <span class="text-xs">${h.text}</span><span class="text-xs text-gray-400 whitespace-nowrap ml-2">${h.time}</span>
+        </div>
+    `).join('');
+}
+function showToast(msg, type = 'info') {
+    const colors = { success: '#16a34a', error: '#dc2626', warning: '#ea580c', info: '#2563eb' };
+    const t = document.createElement('div');
+    t.className = 'toast'; t.style.background = colors[type] || colors.info; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+}
+
+// ============================================================
+// 初期化
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadMoldMaster();
+    renderRackSelector('rackSelector', onReceiveRackSelect);
+    renderRackSelector('inventoryRackSelector', onInventoryRackSelect);
+    renderHistory('receive');
+    renderHistory('ship');
+});
+</script>
+</body>
+</html>
