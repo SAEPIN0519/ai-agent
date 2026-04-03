@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script id="mold-master-embed">/* マスターデータは末尾に埋め込み */</script>
+    <script id="initial-inventory-embed">/* 初期在庫データは末尾に埋め込み */</script>
     <style>
         :root { --primary: #2563eb; --success: #16a34a; --warning: #ea580c; --danger: #dc2626; }
         body { font-family: 'Segoe UI', 'Meiryo', sans-serif; background: #f1f5f9; }
@@ -48,8 +49,8 @@
         .door-header { font-weight: 700; font-size: 0.95rem; padding: 8px 12px; border-radius: 8px 8px 0 0; }
         .slot-grid { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 2px; }
         .slot-cell {
-            padding: 10px 6px; text-align: center; font-size: 0.75rem; border: 1px solid #e2e8f0;
-            cursor: pointer; transition: all 0.15s; min-height: 48px;
+            padding: 8px 4px; text-align: center; font-size: 0.72rem; border: 1px solid #e2e8f0;
+            cursor: pointer; transition: all 0.15s; min-height: 56px;
             display: flex; align-items: center; justify-content: center;
             word-break: break-all; line-height: 1.2;
         }
@@ -90,30 +91,64 @@
         <div class="bg-white rounded-2xl shadow p-5 mb-4">
             <h2 class="text-lg font-bold mb-3">入庫登録</h2>
 
-            <!-- Step 1: 受付No入力 → 自動表示 -->
+            <!-- Step 1: 入力モード切替 -->
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-600 mb-1">① 更新型受付No.</label>
-                <div class="flex gap-2">
-                    <input type="text" id="receiveUketsuke" placeholder="例: 123" inputmode="numeric"
-                           oninput="lookupMold(this.value)"
-                           class="flex-1" style="font-size:1.3rem; font-weight:700;">
-                    <button onclick="startQRScan('receive')" class="bg-blue-600 text-white px-4 rounded-xl font-semibold text-sm whitespace-nowrap">
-                        QR読取
+                <label class="block text-sm font-semibold text-gray-600 mb-2">① 何を置く？</label>
+                <div class="flex gap-2 mb-3">
+                    <button id="modeUketsuke" onclick="switchInputMode('uketsuke')"
+                            class="flex-1 py-3 rounded-xl font-bold text-sm border-2 border-blue-600 bg-blue-600 text-white">
+                        更新型（受付No）
+                    </button>
+                    <button id="modeManual" onclick="switchInputMode('manual')"
+                            class="flex-1 py-3 rounded-xl font-bold text-sm border-2 border-gray-300 bg-white text-gray-600">
+                        その他（手動入力）
                     </button>
                 </div>
-                <div id="qr-reader-receive" class="scan-area mt-2 hidden"></div>
 
-                <!-- 自動表示エリア -->
-                <div id="moldInfoCard" class="hidden mt-3 bg-gray-50 rounded-xl p-4 border-2 border-blue-200">
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div><span class="text-gray-400">品番</span><p class="font-bold text-lg" id="moldInfoHinban">—</p></div>
-                        <div><span class="text-gray-400">品名</span><p class="font-bold text-lg" id="moldInfoHinmei">—</p></div>
-                        <div><span class="text-gray-400">更新型No</span><p class="font-bold text-lg text-blue-700" id="moldInfoKoushin">—</p></div>
-                        <div><span class="text-gray-400">客先</span><p class="font-bold" id="moldInfoCustomer">—</p></div>
+                <!-- 受付No入力モード -->
+                <div id="inputUketsuke">
+                    <div class="flex gap-2">
+                        <input type="text" id="receiveUketsuke" placeholder="受付Noを入力" inputmode="numeric"
+                               oninput="lookupMold(this.value)"
+                               class="flex-1" style="font-size:1.3rem; font-weight:700;">
+                        <button onclick="startQRScan('receive')" class="bg-blue-600 text-white px-4 rounded-xl font-semibold text-sm whitespace-nowrap">
+                            QR読取
+                        </button>
+                    </div>
+                    <div id="qr-reader-receive" class="scan-area mt-2 hidden"></div>
+
+                    <!-- 自動表示エリア -->
+                    <div id="moldInfoCard" class="hidden mt-3 bg-gray-50 rounded-xl p-4 border-2 border-blue-200">
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div><span class="text-gray-400">品番</span><p class="font-bold text-lg" id="moldInfoHinban">—</p></div>
+                            <div><span class="text-gray-400">品名</span><p class="font-bold text-lg" id="moldInfoHinmei">—</p></div>
+                            <div><span class="text-gray-400">更新型No</span><p class="font-bold text-lg text-blue-700" id="moldInfoKoushin">—</p></div>
+                            <div><span class="text-gray-400">客先</span><p class="font-bold" id="moldInfoCustomer">—</p></div>
+                        </div>
+                    </div>
+                    <div id="moldInfoNotFound" class="hidden mt-2 text-sm text-red-500 font-semibold">
+                        該当する受付Noが見つかりません
                     </div>
                 </div>
-                <div id="moldInfoNotFound" class="hidden mt-2 text-sm text-red-500 font-semibold">
-                    該当する受付Noが見つかりません
+
+                <!-- 手動入力モード -->
+                <div id="inputManual" class="hidden">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">品名（必須）</label>
+                            <input type="text" id="manualHinmei" placeholder="例: NA11 インゴット、パレット" class="w-full" style="font-size:1.1rem;">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">品番</label>
+                                <input type="text" id="manualHinban" placeholder="任意">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">備考</label>
+                                <input type="text" id="manualBikou" placeholder="任意">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -217,6 +252,31 @@
     </section>
 </main>
 
+<!-- スロット操作モーダル（使用中セルタップ時） -->
+<div id="slotMenuModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px;">
+        <h3 class="text-lg font-bold mb-2 text-center">この場所をどうする？</h3>
+        <p class="text-sm text-gray-500 text-center mb-1" id="slotMenuName"></p>
+        <p class="text-center font-bold text-blue-700 mb-4" id="slotMenuMold"></p>
+        <div class="space-y-2" id="slotMenuButtons">
+            <!-- 動的に生成 -->
+        </div>
+    </div>
+</div>
+
+<!-- 個数選択モーダル -->
+<div id="countModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px;">
+        <h3 class="text-lg font-bold mb-2 text-center">この場所にいくつ置く？</h3>
+        <p class="text-sm text-gray-500 text-center mb-4" id="countModalSlotName"></p>
+        <div class="flex gap-3">
+            <button onclick="confirmSlotCount(1)" class="btn-large flex-1 bg-blue-600 text-white text-xl">1個</button>
+            <button onclick="confirmSlotCount(2)" class="btn-large flex-1 bg-orange-500 text-white text-xl">2個</button>
+        </div>
+        <button onclick="closeCountModal()" class="btn-large w-full bg-gray-200 text-gray-600 mt-3">キャンセル</button>
+    </div>
+</div>
+
 <!-- 移動モーダル -->
 <div id="moveModal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -241,6 +301,30 @@
 // ============================================================
 let MOLD_MASTER = [];
 let currentMoldInfo = null;
+let currentInputMode = 'uketsuke'; // 'uketsuke' or 'manual'
+
+// 入力モード切替
+function switchInputMode(mode) {
+    currentInputMode = mode;
+    const uketsukeBtn = document.getElementById('modeUketsuke');
+    const manualBtn = document.getElementById('modeManual');
+    const uketsukeInput = document.getElementById('inputUketsuke');
+    const manualInput = document.getElementById('inputManual');
+
+    if (mode === 'uketsuke') {
+        uketsukeBtn.className = 'flex-1 py-3 rounded-xl font-bold text-sm border-2 border-blue-600 bg-blue-600 text-white';
+        manualBtn.className = 'flex-1 py-3 rounded-xl font-bold text-sm border-2 border-gray-300 bg-white text-gray-600';
+        uketsukeInput.classList.remove('hidden');
+        manualInput.classList.add('hidden');
+        currentMoldInfo = null;
+    } else {
+        manualBtn.className = 'flex-1 py-3 rounded-xl font-bold text-sm border-2 border-orange-500 bg-orange-500 text-white';
+        uketsukeBtn.className = 'flex-1 py-3 rounded-xl font-bold text-sm border-2 border-gray-300 bg-white text-gray-600';
+        manualInput.classList.remove('hidden');
+        uketsukeInput.classList.add('hidden');
+        currentMoldInfo = null;
+    }
+}
 
 // マスターデータ読み込み（scriptタグで mold_master.js を読み込み済み）
 function loadMoldMaster() {
@@ -343,7 +427,14 @@ const RACK_DEFS = {
 // データ管理（LocalStorage）
 // ============================================================
 function getInventory() {
-    return JSON.parse(localStorage.getItem('moldInventory') || '{}');
+    const stored = localStorage.getItem('moldInventory');
+    if (!stored && typeof INITIAL_INVENTORY !== 'undefined') {
+        // 初回起動時: 初期データをセット
+        localStorage.setItem('moldInventory', JSON.stringify(INITIAL_INVENTORY));
+        console.log('初期在庫データをセットしました:', Object.keys(INITIAL_INVENTORY).length, '件');
+        return INITIAL_INVENTORY;
+    }
+    return JSON.parse(stored || '{}');
 }
 function saveInventory(inv) {
     localStorage.setItem('moldInventory', JSON.stringify(inv));
@@ -377,6 +468,53 @@ function setSlot(rack, door, pos, level, moldNo, moldInfo = null) {
     saveInventory(inv);
 }
 
+// 2個目を追加
+function setSlotItem2(rack, door, pos, level, moldNo, moldInfo = null) {
+    const inv = getInventory();
+    const key = slotKey(rack, door, pos, level);
+    if (!inv[key]) return;
+    inv[key].split = true;
+    inv[key].item2 = {
+        moldNo,
+        hinban: moldInfo?.hinban || '',
+        hinmei: moldInfo?.hinmei || '',
+        koushinNo: moldInfo?.koushinNo || '',
+        customer: moldInfo?.customer || '',
+    };
+    inv[key].updatedAt = new Date().toISOString();
+    saveInventory(inv);
+}
+
+// 分割モードに切替（2個目はまだ空き）
+function splitSlot(rack, door, pos, level) {
+    const inv = getInventory();
+    const key = slotKey(rack, door, pos, level);
+    if (!inv[key]) return;
+    inv[key].split = true;
+    if (!inv[key].item2) inv[key].item2 = null;
+    saveInventory(inv);
+}
+
+// 分割解除（1個に戻す）
+function unsplitSlot(rack, door, pos, level) {
+    const inv = getInventory();
+    const key = slotKey(rack, door, pos, level);
+    if (!inv[key]) return;
+    delete inv[key].split;
+    delete inv[key].item2;
+    saveInventory(inv);
+}
+
+// 2個目を出庫
+function clearSlotItem2(rack, door, pos, level) {
+    const inv = getInventory();
+    const key = slotKey(rack, door, pos, level);
+    if (!inv[key]) return;
+    inv[key].item2 = null;
+    inv[key].updatedAt = new Date().toISOString();
+    saveInventory(inv);
+}
+
 // 金型Noで検索（どのスロットにあるか）
 function findMold(moldNo) {
     const inv = getInventory();
@@ -384,7 +522,12 @@ function findMold(moldNo) {
     for (const [key, val] of Object.entries(inv)) {
         if (val.moldNo?.toUpperCase() === upper) {
             const [rack, door, pos, level] = key.split('/');
-            return { rack, door, pos, level, ...val };
+            return { rack, door, pos, level, slot: 1, ...val };
+        }
+        // 2個目も検索
+        if (val.item2?.moldNo?.toUpperCase() === upper) {
+            const [rack, door, pos, level] = key.split('/');
+            return { rack, door, pos, level, slot: 2, ...val.item2 };
         }
     }
     return null;
@@ -412,6 +555,17 @@ function selectRackCard(el, containerId) {
 // ============================================================
 // 配置図（ラックマップ）レンダリング
 // ============================================================
+function formatSlotContent(slot) {
+    const parts = [];
+    // 受付番号（手動登録のM-xxx以外）
+    const no = slot.moldNo && !slot.moldNo.startsWith('M-') ? `(${slot.moldNo})` : '';
+    if (slot.hinban) parts.push(`<b>${no}${slot.hinban}</b>`);
+    else if (no) parts.push(`<b>${no}</b>`);
+    if (slot.hinmei) parts.push(`<span style="font-size:0.65rem">${slot.hinmei}</span>`);
+    if (slot.koushinNo) parts.push(`<span style="font-size:0.6rem;color:#2563eb">${slot.koushinNo}</span>`);
+    return parts.length > 0 ? parts.join('<br>') : (slot.moldNo || '');
+}
+
 function renderRackMap(containerId, rackName, options = {}) {
     const def = RACK_DEFS[rackName];
     if (!def) return;
@@ -436,19 +590,52 @@ function renderRackMap(containerId, rackName, options = {}) {
             for (const pos of door.positions) {
                 const slot = getSlot(rackName, door.name, pos, level);
                 const isEmpty = !slot;
-                const classes = isEmpty ? 'empty' : 'occupied';
-                const content = isEmpty ? '空き' : (slot.hinban ? `${slot.hinban}<br><span style="font-size:0.65rem">${slot.koushinNo || ''}</span>` : slot.moldNo);
                 const dataAttrs = `data-rack="${rackName}" data-door="${door.name}" data-pos="${pos}" data-level="${level}"`;
-                const clickable = (mode === 'receive' || mode === 'move') && isEmpty;
-                const inventoryClickable = mode === 'inventory';
-                const onclick = (clickable || inventoryClickable) ? `onclick="handleSlotClick(this, '${mode}')"` : '';
 
-                html += `<div class="slot-cell ${classes}" ${dataAttrs} ${onclick}>${content}</div>`;
+                if (isEmpty) {
+                    // 空きスロット
+                    const canClick = mode === 'receive' || mode === 'move' || mode === 'inventory';
+                    const onclick = canClick ? `onclick="handleSlotClick(this, '${mode}')"` : '';
+                    html += `<div class="slot-cell empty" ${dataAttrs} ${onclick}>空き</div>`;
+                } else if (slot.split) {
+                    // 分割スロット（1セル内に上下2段）
+                    const item1Html = formatSlotContent(slot);
+                    const hasItem2 = slot.item2 && slot.item2.moldNo;
+                    const item2Html = hasItem2 ? formatSlotContent(slot.item2) : '▼ 空き（タップ）';
+                    const item2Bg = hasItem2 ? '#fee2e2' : '#dcfce7';
+                    const item2Color = hasItem2 ? '#991b1b' : '#16a34a';
+                    const clickAttr = (!hasItem2 && (mode === 'receive' || mode === 'move'))
+                        ? 'split-click="true"' : '';
+                    html += `<div class="slot-cell" style="padding:0;border:1px solid #e2e8f0;cursor:pointer;display:flex;flex-direction:column;" ${dataAttrs} data-split="true" onclick="showSlotMenu(this)">
+                        <div style="flex:1;padding:4px 2px;border-bottom:2px dashed #f97316;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#991b1b;text-align:center;">${item1Html}</div>
+                        <div style="flex:1;padding:4px 2px;display:flex;align-items:center;justify-content:center;background:${item2Bg};color:${item2Color};cursor:${hasItem2 ? 'default' : 'pointer'};text-align:center;font-weight:${hasItem2 ? 'normal' : 'bold'};"
+                             ${clickAttr} data-rack2="${rackName}" data-door2="${door.name}" data-pos2="${pos}" data-level2="${level}">${item2Html}</div>
+                    </div>`;
+                } else {
+                    // 通常の使用中スロット（タップで操作メニュー表示）
+                    const content = formatSlotContent(slot);
+                    const menuClick = (mode === 'receive') ? `onclick="showSlotMenu(this)"` : '';
+                    html += `<div class="slot-cell occupied" ${dataAttrs} style="cursor:${mode === 'receive' ? 'pointer' : 'default'}" ${menuClick}>${content}</div>`;
+                }
             }
         }
         html += `</div></div>`;
     }
     container.innerHTML = html;
+
+    // 分割セルの2個目クリックをイベントデリゲーションで処理
+    container.addEventListener('click', function(e) {
+        const target = e.target.closest('[split-click="true"]');
+        if (target) {
+            const rack = target.getAttribute('data-rack2');
+            const door = target.getAttribute('data-door2');
+            const pos = target.getAttribute('data-pos2');
+            const level = target.getAttribute('data-level2');
+            if (rack && door && pos && level) {
+                handleSlotClick(target, mode, 2);
+            }
+        }
+    });
 }
 
 // ============================================================
@@ -456,21 +643,37 @@ function renderRackMap(containerId, rackName, options = {}) {
 // ============================================================
 let selectedReceiveSlot = null;
 let selectedMoveSlot = null;
+let pendingSlotClick = null; // 個数選択待ちの情報
 
-function handleSlotClick(el, mode) {
+function handleSlotClick(el, mode, slotNum) {
+    // 2個目スロット（分割済みの空き側）への入庫
+    if (Number(slotNum) === 2) {
+        const rack = el.getAttribute('data-rack2') || el.dataset.rack;
+        const door = el.getAttribute('data-door2') || el.dataset.door;
+        const pos = el.getAttribute('data-pos2') || el.dataset.pos;
+        const level = el.getAttribute('data-level2') || el.dataset.level;
+        if (mode === 'receive') {
+            selectedReceiveSlot = { rack, door, pos, level, slotNum: 2 };
+            const label = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}（2個目）`;
+            document.getElementById('receiveSelectionText').textContent = label;
+            document.getElementById('receiveSelection').classList.remove('hidden');
+            showToast('2個目の置場を選択したよ。入庫情報を入力して登録してね', 'success');
+        }
+        return;
+    }
+
     if (mode === 'receive') {
-        // 前の選択を解除
-        document.querySelectorAll('#rackMapContent .slot-cell.selected').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedReceiveSlot = {
+        // 空きスロットタップ → 個数選択モーダル表示
+        pendingSlotClick = {
+            el,
             rack: el.dataset.rack,
             door: el.dataset.door,
             pos: el.dataset.pos,
             level: el.dataset.level,
         };
-        const label = `${selectedReceiveSlot.rack} ＞ ${selectedReceiveSlot.door} ＞ ${selectedReceiveSlot.pos} ＞ ${selectedReceiveSlot.level}`;
-        document.getElementById('receiveSelectionText').textContent = label;
-        document.getElementById('receiveSelection').classList.remove('hidden');
+        const slotName = `${pendingSlotClick.rack} ＞ ${pendingSlotClick.door} ＞ ${pendingSlotClick.pos} ＞ ${pendingSlotClick.level}`;
+        document.getElementById('countModalSlotName').textContent = slotName;
+        document.getElementById('countModal').classList.remove('hidden');
     } else if (mode === 'move') {
         document.querySelectorAll('#moveMapContent .slot-cell.selected').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
@@ -489,6 +692,218 @@ function handleSlotClick(el, mode) {
 }
 
 // 入庫ラック選択
+// 個数選択モーダル
+// ============================================================
+// 使用中セルのメニュー（2分割 / 出庫）
+// ============================================================
+let slotMenuTarget = null;
+
+function showSlotMenu(el) {
+    const rack = el.dataset.rack || el.getAttribute('data-rack');
+    const door = el.dataset.door || el.getAttribute('data-door');
+    const pos = el.dataset.pos || el.getAttribute('data-pos');
+    const level = el.dataset.level || el.getAttribute('data-level');
+    const slot = getSlot(rack, door, pos, level);
+    if (!slot) return;
+
+    slotMenuTarget = { rack, door, pos, level, slot };
+    document.getElementById('slotMenuName').textContent = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}`;
+
+    // 分割セルかどうかでメニュー内容を変える
+    const btnArea = document.getElementById('slotMenuButtons');
+    if (slot.split) {
+        const item1Text = slot.hinban ? `${slot.hinban} ${slot.hinmei || ''}` : slot.moldNo;
+        const item2 = slot.item2;
+        const hasItem2 = item2 && item2.moldNo;
+        const item2Text = hasItem2 ? (item2.hinban ? `${item2.hinban} ${item2.hinmei || ''}` : item2.moldNo) : '（空き）';
+        document.getElementById('slotMenuMold').innerHTML =
+            `<span style="font-size:0.85rem">1個目: ${item1Text}<br>2個目: ${item2Text}</span>`;
+        let btns = '';
+        if (!hasItem2) {
+            // 2個目が空き → 入庫ボタンを表示
+            btns += `<button onclick="slotMenuAction('add2')" class="btn-large w-full bg-green-600 text-white">2個目を入庫する</button>`;
+        }
+        btns += `<button onclick="slotMenuAction('remove1')" class="btn-large w-full bg-red-500 text-white">1個目を出庫（${item1Text}）</button>`;
+        if (hasItem2) {
+            btns += `<button onclick="slotMenuAction('remove2')" class="btn-large w-full bg-red-400 text-white">2個目を出庫（${item2Text}）</button>`;
+            btns += `<button onclick="slotMenuAction('removeAll')" class="btn-large w-full bg-red-700 text-white">両方出庫</button>`;
+        }
+        btns += `<button onclick="closeSlotMenu()" class="btn-large w-full bg-gray-200 text-gray-600">キャンセル</button>`;
+        btnArea.innerHTML = btns;
+    } else {
+        const moldText = slot.hinban ? `${slot.hinban} ${slot.hinmei || ''}` : slot.moldNo;
+        document.getElementById('slotMenuMold').textContent = moldText;
+        btnArea.innerHTML = `
+            <button onclick="slotMenuAction('split')" class="btn-large w-full bg-orange-500 text-white">2分割にする（もう1個追加）</button>
+            <button onclick="slotMenuAction('remove')" class="btn-large w-full bg-red-500 text-white">出庫する（取り出す）</button>
+            <button onclick="closeSlotMenu()" class="btn-large w-full bg-gray-200 text-gray-600">キャンセル</button>
+        `;
+    }
+    document.getElementById('slotMenuModal').classList.remove('hidden');
+}
+
+function closeSlotMenu() {
+    document.getElementById('slotMenuModal').classList.add('hidden');
+    slotMenuTarget = null;
+}
+
+function slotMenuAction(action) {
+    if (!slotMenuTarget) return;
+    const { rack, door, pos, level, slot } = slotMenuTarget;
+    closeSlotMenu();
+
+    if (action === 'add2') {
+        // 分割セルの2個目に入庫 → 2個目待ちへ
+        selectedReceiveSlot = { rack, door, pos, level, slotNum: 2 };
+        const label = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}（2個目）`;
+        document.getElementById('receiveSelectionText').innerHTML =
+            `<span style="animation:pulse 1s infinite">📦 2個目を入力してね</span><br>${label}`;
+        const selEl = document.getElementById('receiveSelection');
+        selEl.classList.remove('hidden');
+        selEl.style.background = '#fef3c7';
+        selEl.style.borderColor = '#f59e0b';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            if (currentInputMode === 'uketsuke') {
+                document.getElementById('receiveUketsuke').focus();
+            } else {
+                document.getElementById('manualHinmei').focus();
+            }
+        }, 300);
+
+        showToast('2個目を入力してね', 'success');
+        return;
+    } else if (action === 'split') {
+        // 2分割にする → 即座に分割して2個目待ちへ
+        splitSlot(rack, door, pos, level);
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+
+        // 2個目待ち状態にする
+        selectedReceiveSlot = { rack, door, pos, level, slotNum: 2 };
+        const label = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}（2個目）`;
+        document.getElementById('receiveSelectionText').innerHTML =
+            `<span style="animation:pulse 1s infinite">📦 2個目を入力してね</span><br>${label}`;
+        const selEl = document.getElementById('receiveSelection');
+        selEl.classList.remove('hidden');
+        selEl.style.background = '#fef3c7';
+        selEl.style.borderColor = '#f59e0b';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            if (currentInputMode === 'uketsuke') {
+                document.getElementById('receiveUketsuke').focus();
+            } else {
+                document.getElementById('manualHinmei').focus();
+            }
+        }, 300);
+
+        showToast('2分割にしたよ。2個目を入力してね', 'success');
+    } else if (action === 'remove') {
+        // 通常スロットの出庫
+        const moldLabel = slot.hinban ? `${slot.hinban} ${slot.hinmei || ''}` : slot.moldNo;
+        setSlot(rack, door, pos, level, null);
+        addHistory('ship', `${moldLabel} ← ${rack} ${door} ${pos} ${level}`);
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+        showToast(`出庫完了: ${moldLabel}`, 'success');
+    } else if (action === 'remove1') {
+        // 分割スロットの1個目だけ出庫
+        const moldLabel = slot.hinban ? `${slot.hinban} ${slot.hinmei || ''}` : slot.moldNo;
+        const inv = getInventory();
+        const key = slotKey(rack, door, pos, level);
+        if (slot.item2 && slot.item2.moldNo) {
+            // 2個目を1個目に繰り上げて、分割解除
+            const item2 = slot.item2;
+            inv[key] = {
+                moldNo: item2.moldNo,
+                hinban: item2.hinban || '',
+                hinmei: item2.hinmei || '',
+                koushinNo: item2.koushinNo || '',
+                customer: item2.customer || '',
+                updatedAt: new Date().toISOString()
+            };
+        } else {
+            // 2個目が空なら、スロット自体を削除
+            delete inv[key];
+        }
+        saveInventory(inv);
+        addHistory('ship', `${moldLabel} ← ${rack} ${door} ${pos} ${level}（1個目出庫）`);
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+        showToast(`出庫完了: ${moldLabel}`, 'success');
+    } else if (action === 'remove2') {
+        // 分割スロットの2個目だけ出庫 → 分割解除して1個に戻す
+        const item2 = slot.item2;
+        const moldLabel = item2.hinban ? `${item2.hinban} ${item2.hinmei || ''}` : item2.moldNo;
+        const inv = getInventory();
+        const key = slotKey(rack, door, pos, level);
+        // 1個目はそのまま残して、split と item2 だけ消す
+        delete inv[key].split;
+        delete inv[key].item2;
+        inv[key].updatedAt = new Date().toISOString();
+        saveInventory(inv);
+        addHistory('ship', `${moldLabel} ← ${rack} ${door} ${pos} ${level}（2個目出庫）`);
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+        showToast(`出庫完了: ${moldLabel}`, 'success');
+    } else if (action === 'removeAll') {
+        // 両方出庫
+        const moldLabel = slot.hinban ? `${slot.hinban}` : slot.moldNo;
+        const item2Label = slot.item2 ? (slot.item2.hinban || slot.item2.moldNo) : '';
+        setSlot(rack, door, pos, level, null);
+        addHistory('ship', `${moldLabel} + ${item2Label} ← ${rack} ${door} ${pos} ${level}（両方出庫）`);
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+        showToast(`両方出庫完了`, 'success');
+    }
+}
+
+function confirmSlotCount(count) {
+    if (!pendingSlotClick) return;
+    document.getElementById('countModal').classList.add('hidden');
+
+    const { el, rack, door, pos, level } = pendingSlotClick;
+
+    // 前の選択を解除
+    document.querySelectorAll('#rackMapContent .slot-cell.selected').forEach(c => c.classList.remove('selected'));
+    // 選択中のセルを目立たせる
+    el.classList.add('selected');
+    el.style.background = '#2563eb';
+    el.style.color = 'white';
+    el.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.5)';
+    el.style.transform = 'scale(1.05)';
+
+    selectedReceiveSlot = { rack, door, pos, level, splitMode: count === 2, slotNum: 1 };
+
+    const selEl = document.getElementById('receiveSelection');
+    let label = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}`;
+    if (count === 2) {
+        label += '（2個置き: 1個目）';
+        selEl.style.background = '#eff6ff';
+        selEl.style.borderColor = '#2563eb';
+    } else {
+        selEl.style.background = '#eff6ff';
+        selEl.style.borderColor = '#2563eb';
+    }
+    document.getElementById('receiveSelectionText').textContent = label;
+    selEl.classList.remove('hidden');
+
+    // 画面上部にスクロールして入力欄にフォーカス
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+        if (currentInputMode === 'uketsuke') {
+            document.getElementById('receiveUketsuke').focus();
+        } else {
+            document.getElementById('manualHinmei').focus();
+        }
+    }, 300);
+
+    showToast(`${rack} ${door} ${pos} ${level} を選択したよ`, 'info');
+    pendingSlotClick = null;
+}
+
+function closeCountModal() {
+    document.getElementById('countModal').classList.add('hidden');
+    pendingSlotClick = null;
+}
+
 function onReceiveRackSelect(rackName, el) {
     selectRackCard(el, 'rackSelector');
     selectedReceiveSlot = null;
@@ -499,30 +914,114 @@ function onReceiveRackSelect(rackName, el) {
 
 // 入庫実行
 function handleReceive() {
-    const uketsuke = document.getElementById('receiveUketsuke').value.trim();
-    if (!uketsuke) return showToast('受付Noを入力してね', 'error');
-    if (!currentMoldInfo) return showToast('有効な受付Noを入力してね', 'error');
     if (!selectedReceiveSlot) return showToast('配置図から空きスロットをタップしてね', 'error');
 
     const { rack, door, pos, level } = selectedReceiveSlot;
-    const moldLabel = `${currentMoldInfo.hinban} ${currentMoldInfo.koushinNo}`;
+    let moldId, moldInfo, moldLabel;
 
-    // 既に同じ受付Noが別の場所にないか
-    const existing = findMold(uketsuke);
-    if (existing) {
-        return showToast(`受付No.${uketsuke} は既に ${existing.rack} ${existing.door} ${existing.pos} ${existing.level} にあるよ`, 'error');
+    if (currentInputMode === 'uketsuke') {
+        // 受付Noモード
+        const uketsuke = document.getElementById('receiveUketsuke').value.trim();
+        if (!uketsuke) return showToast('受付Noを入力してね', 'error');
+        if (!currentMoldInfo) return showToast('有効な受付Noを入力してね', 'error');
+
+        moldId = uketsuke;
+        moldInfo = currentMoldInfo;
+        moldLabel = `No.${uketsuke} ${moldInfo.hinban} ${moldInfo.koushinNo}`;
+
+        // 既に同じ受付Noが別の場所にないか
+        const existing = findMold(uketsuke);
+        if (existing) {
+            return showToast(`受付No.${uketsuke} は既に ${existing.rack} ${existing.door} ${existing.pos} ${existing.level} にあるよ`, 'error');
+        }
+    } else {
+        // 手動入力モード
+        const hinmei = document.getElementById('manualHinmei').value.trim();
+        if (!hinmei) return showToast('品名を入力してね', 'error');
+
+        const hinban = document.getElementById('manualHinban').value.trim();
+        const bikou = document.getElementById('manualBikou').value.trim();
+
+        // 手動入力用のIDを生成（タイムスタンプベース）
+        moldId = 'M-' + Date.now();
+        moldInfo = {
+            hinban: hinban,
+            hinmei: hinmei,
+            koushinNo: bikou,
+            customer: '手動登録',
+        };
+        moldLabel = hinmei + (hinban ? ` (${hinban})` : '');
     }
 
-    setSlot(rack, door, pos, level, uketsuke, currentMoldInfo);
-    addHistory('receive', `No.${uketsuke} ${moldLabel} → ${rack} ${door} ${pos} ${level}`);
-    showToast(`入庫完了: ${moldLabel}`, 'success');
+    const isItem2 = selectedReceiveSlot.slotNum === 2;
+    const isSplitMode = selectedReceiveSlot.splitMode;
+
+    if (isItem2) {
+        // 分割スロットの2個目を入庫
+        setSlotItem2(rack, door, pos, level, moldId, moldInfo);
+        addHistory('receive', `${moldLabel} → ${rack} ${door} ${pos} ${level}（2個目）`);
+        showToast(`入庫完了（2個目）: ${moldLabel}`, 'success');
+    } else if (isSplitMode) {
+        // 2個置きの1個目 → 分割して入庫、そのまま2個目待ちへ
+        setSlot(rack, door, pos, level, moldId, moldInfo);
+        splitSlot(rack, door, pos, level);
+        addHistory('receive', `${moldLabel} → ${rack} ${door} ${pos} ${level}（2個置き: 1個目）`);
+        // 入力欄をリセットして2個目待ち状態にする
+        if (currentInputMode === 'uketsuke') {
+            document.getElementById('receiveUketsuke').value = '';
+            document.getElementById('moldInfoCard').classList.add('hidden');
+        } else {
+            document.getElementById('manualHinmei').value = '';
+            document.getElementById('manualHinban').value = '';
+            document.getElementById('manualBikou').value = '';
+        }
+        currentMoldInfo = null;
+
+        // 2個目として自動選択（再タップ不要）
+        selectedReceiveSlot = { rack, door, pos, level, slotNum: 2 };
+        const label2 = `${rack} ＞ ${door} ＞ ${pos} ＞ ${level}（2個目）`;
+        document.getElementById('receiveSelectionText').innerHTML =
+            `<span style="animation:pulse 1s infinite">📦 2個目を入力してね</span><br>${label2}`;
+        document.getElementById('receiveSelection').classList.remove('hidden');
+        document.getElementById('receiveSelection').style.background = '#fef3c7';
+        document.getElementById('receiveSelection').style.borderColor = '#f59e0b';
+
+        renderRackMap('rackMapContent', rack, { mode: 'receive' });
+
+        // 入力欄にスクロール＆フォーカス
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            if (currentInputMode === 'uketsuke') {
+                document.getElementById('receiveUketsuke').focus();
+            } else {
+                document.getElementById('manualHinmei').focus();
+            }
+        }, 300);
+
+        showToast(`1個目入庫完了！ 上の入力欄に2個目を入力してね`, 'success');
+        return; // ここでリターン（リセットしない）
+    } else {
+        // 通常の1個入庫
+        setSlot(rack, door, pos, level, moldId, moldInfo);
+        addHistory('receive', `${moldLabel} → ${rack} ${door} ${pos} ${level}`);
+        showToast(`入庫完了: ${moldLabel}`, 'success');
+    }
 
     // リセット
-    document.getElementById('receiveUketsuke').value = '';
-    document.getElementById('moldInfoCard').classList.add('hidden');
+    if (currentInputMode === 'uketsuke') {
+        document.getElementById('receiveUketsuke').value = '';
+        document.getElementById('moldInfoCard').classList.add('hidden');
+    } else {
+        document.getElementById('manualHinmei').value = '';
+        document.getElementById('manualHinban').value = '';
+        document.getElementById('manualBikou').value = '';
+    }
     currentMoldInfo = null;
     selectedReceiveSlot = null;
-    document.getElementById('receiveSelection').classList.add('hidden');
+    const selEl = document.getElementById('receiveSelection');
+    selEl.classList.add('hidden');
+    selEl.style.background = '';
+    selEl.style.borderColor = '';
     renderRackMap('rackMapContent', rack, { mode: 'receive' });
 }
 
@@ -566,8 +1065,41 @@ function handleSearch() {
 
 function handleShipOut() {
     if (!currentSearchResult) return;
-    const { rack, door, pos, level, moldNo } = currentSearchResult;
-    setSlot(rack, door, pos, level, null);
+    const { rack, door, pos, level, moldNo, slot: slotNum } = currentSearchResult;
+    const existingSlot = getSlot(rack, door, pos, level);
+
+    if (existingSlot && existingSlot.split) {
+        // 分割セルの場合: 該当する方だけ出庫
+        const inv = getInventory();
+        const key = slotKey(rack, door, pos, level);
+        if (slotNum === 2) {
+            // 2個目を出庫 → 分割解除
+            delete inv[key].split;
+            delete inv[key].item2;
+            inv[key].updatedAt = new Date().toISOString();
+        } else {
+            // 1個目を出庫
+            if (existingSlot.item2 && existingSlot.item2.moldNo) {
+                // 2個目を繰り上げ
+                const item2 = existingSlot.item2;
+                inv[key] = {
+                    moldNo: item2.moldNo,
+                    hinban: item2.hinban || '',
+                    hinmei: item2.hinmei || '',
+                    koushinNo: item2.koushinNo || '',
+                    customer: item2.customer || '',
+                    updatedAt: new Date().toISOString()
+                };
+            } else {
+                delete inv[key];
+            }
+        }
+        saveInventory(inv);
+    } else {
+        // 通常スロット: 全消し
+        setSlot(rack, door, pos, level, null);
+    }
+
     addHistory('ship', `${moldNo} ← ${rack} ${door} ${pos} ${level}`);
     showToast(`出庫完了: ${moldNo}`, 'success');
     document.getElementById('searchResult').classList.add('hidden');

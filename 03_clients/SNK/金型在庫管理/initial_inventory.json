@@ -1,0 +1,1210 @@
+{
+  "旧Dラック/⑤番扉/左/3段目": {
+    "moldNo": "M-1775186652899-0",
+    "hinban": "9A04111000",
+    "hinmei": "ロータフレーム 1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.899Z"
+  },
+  "旧Dラック/⑤番扉/左/1段目奥": {
+    "moldNo": "378",
+    "hinban": "K2068B2B",
+    "hinmei": "BRKT（650ｔ）",
+    "koushinNo": "5",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.900Z"
+  },
+  "旧Dラック/⑤番扉/左/1段目手前": {
+    "moldNo": "7",
+    "hinban": "123",
+    "hinmei": "スリーブ",
+    "koushinNo": "N型（13）",
+    "customer": "名光",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/中央/3段目": {
+    "moldNo": "M-1775186652901-1",
+    "hinban": "A2032B10",
+    "hinmei": "デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/中央/2段目": {
+    "moldNo": "703",
+    "hinban": "K1092B0A",
+    "hinmei": "BRACKET",
+    "koushinNo": "更新2次型(＃3-＃4)",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/中央/1段目奥": {
+    "moldNo": "378",
+    "hinban": "K2068B2B",
+    "hinmei": "BRKT（650ｔ）",
+    "koushinNo": "5",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652901-2",
+    "hinban": "NZ-060",
+    "hinmei": "1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/右/3段目": {
+    "moldNo": "7",
+    "hinban": "123",
+    "hinmei": "スリーブ",
+    "koushinNo": "N型（13）",
+    "customer": "名光",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/右/2段目": {
+    "moldNo": "M-1775186652901-3",
+    "hinban": "48331-48090-RING",
+    "hinmei": "1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/右/1段目奥": {
+    "moldNo": "378",
+    "hinban": "K2068B2B",
+    "hinmei": "BRKT（650ｔ）",
+    "koushinNo": "5",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/⑤番扉/右/1段目手前": {
+    "moldNo": "41",
+    "hinban": "1T4897-11",
+    "hinmei": "BRACKET NO2(350t)",
+    "koushinNo": "2",
+    "customer": "BS_BEST",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/④番扉/左/3段目": {
+    "moldNo": "M-1775186652901-4",
+    "hinban": "デバイス",
+    "hinmei": "デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/④番扉/左/2段目": {
+    "moldNo": "M-1775186652901-5",
+    "hinban": "35-165A-1",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/④番扉/左/1段目奥": {
+    "moldNo": "378",
+    "hinban": "K2068B2B",
+    "hinmei": "BRKT（650ｔ）",
+    "koushinNo": "5",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/④番扉/左/1段目手前": {
+    "moldNo": "M-1775186652901-6",
+    "hinban": "アッパーブラケット",
+    "hinmei": "アッパーブラケット",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.901Z"
+  },
+  "旧Dラック/④番扉/中央/3段目": {
+    "moldNo": "641",
+    "hinban": "TK-056-02",
+    "hinmei": "INNER",
+    "koushinNo": "更新2次型（＃3-4）",
+    "customer": "住友理工㈱",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/中央/2段目": {
+    "moldNo": "392",
+    "hinban": "TK-329-04",
+    "hinmei": "BRKT No.2",
+    "koushinNo": "4",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/中央/1段目奥": {
+    "moldNo": "343",
+    "hinban": "TQ-471-01",
+    "hinmei": "BRKT",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652902-7",
+    "hinban": "ロワーブラケット",
+    "hinmei": "ロワーブラケット",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/右/3段目": {
+    "moldNo": "526",
+    "hinban": "079618-1340",
+    "hinmei": "スリーブバルブ",
+    "koushinNo": "22",
+    "customer": "光",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/右/2段目": {
+    "moldNo": "M-1775186652902-8",
+    "hinban": "金型",
+    "hinmei": "金型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/右/1段目奥": {
+    "moldNo": "343",
+    "hinban": "TQ-471-01",
+    "hinmei": "BRKT",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/④番扉/右/1段目手前": {
+    "moldNo": "M-1775186652902-9",
+    "hinban": "BR-G8000 L",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/左/3段目": {
+    "moldNo": "142",
+    "hinban": "RTMT900",
+    "hinmei": "ディスクアダプターL",
+    "koushinNo": "2",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/左/2段目": {
+    "moldNo": "23",
+    "hinban": "CSM8100",
+    "hinmei": "スパイダーB",
+    "koushinNo": "1",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/左/1段目奥": {
+    "moldNo": "278",
+    "hinban": "CS-R8100",
+    "hinmei": "SPIDER LOW A",
+    "koushinNo": "2",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/左/1段目手前": {
+    "moldNo": "649",
+    "hinban": "RTCL900",
+    "hinmei": "ディスクアダプターL",
+    "koushinNo": "2",
+    "customer": "㈱シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/中央/3段目": {
+    "moldNo": "278",
+    "hinban": "CS-R8100",
+    "hinmei": "SPIDER LOW A",
+    "koushinNo": "2",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/中央/2段目": {
+    "moldNo": "68",
+    "hinban": "BR-M8100",
+    "hinmei": "CALIPER　R",
+    "koushinNo": "3",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.902Z"
+  },
+  "旧Dラック/③番扉/中央/1段目奥": {
+    "moldNo": "24",
+    "hinban": "STR7020",
+    "hinmei": "アダプターL（台座）",
+    "koushinNo": "2",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/③番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652903-10",
+    "hinban": "CS-LG700",
+    "hinmei": "2次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/③番扉/右/3段目": {
+    "moldNo": "649",
+    "hinban": "RTCL900",
+    "hinmei": "ディスクアダプターL",
+    "koushinNo": "2",
+    "customer": "㈱シマノ",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/③番扉/右/2段目": {
+    "moldNo": "68",
+    "hinban": "BR-M8100",
+    "hinmei": "CALIPER　R",
+    "koushinNo": "3",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/③番扉/右/1段目奥": {
+    "moldNo": "24",
+    "hinban": "STR7020",
+    "hinmei": "アダプターL（台座）",
+    "koushinNo": "2",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/③番扉/右/1段目手前": {
+    "moldNo": "M-1775186652903-11",
+    "hinban": "RD-G8000",
+    "hinmei": "OUTER LINK 1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/②番扉/左/3段目": {
+    "moldNo": "M-1775186652903-12",
+    "hinban": "3G-EF768-1",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/②番扉/左/2段目": {
+    "moldNo": "303",
+    "hinban": "TK-093-02",
+    "hinmei": "BRKT",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/②番扉/左/1段目奥": {
+    "moldNo": "M-1775186652903-13",
+    "hinban": "VB317A-1",
+    "hinmei": "2次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.903Z"
+  },
+  "旧Dラック/②番扉/左/1段目手前": {
+    "moldNo": "M-1775186652904-14",
+    "hinban": "043887-0340",
+    "hinmei": "6次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.904Z"
+  },
+  "旧Dラック/②番扉/中央/3段目": {
+    "moldNo": "227",
+    "hinban": "ND-005",
+    "hinmei": "OUTER",
+    "koushinNo": "2",
+    "customer": "住友理工㈱",
+    "updatedAt": "2026-04-03T03:24:12.904Z"
+  },
+  "旧Dラック/②番扉/中央/2段目": {
+    "moldNo": "M-1775186652905-15",
+    "hinban": "BR-M8220 L",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/中央/1段目奥": {
+    "moldNo": "M-1775186652905-16",
+    "hinban": "VB-315A-1",
+    "hinmei": "2次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652905-17",
+    "hinban": "K1084B0D",
+    "hinmei": "5次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/右/3段目": {
+    "moldNo": "M-1775186652905-18",
+    "hinban": "RD-M8150",
+    "hinmei": "1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/右/2段目": {
+    "moldNo": "23",
+    "hinban": "CSM8100",
+    "hinmei": "スパイダーB",
+    "koushinNo": "1",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/右/1段目奥": {
+    "moldNo": "M-1775186652905-19",
+    "hinban": "A2032B00",
+    "hinmei": "１次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/②番扉/右/1段目手前": {
+    "moldNo": "M-1775186652905-20",
+    "hinban": "A2032B10",
+    "hinmei": "１次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.905Z"
+  },
+  "旧Dラック/①番扉/左/3段目": {
+    "moldNo": "M-1775186652906-21",
+    "hinban": "VB-487A-2",
+    "hinmei": "1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/左/2段目": {
+    "moldNo": "392",
+    "hinban": "TK-329-04",
+    "hinmei": "BRKT No.2",
+    "koushinNo": "4",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/左/1段目奥": {
+    "moldNo": "62",
+    "hinban": "K4007B0A",
+    "hinmei": "BRACKET （Lの字）",
+    "koushinNo": "4",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/左/1段目手前": {
+    "moldNo": "62",
+    "hinban": "K4007B0A",
+    "hinmei": "BRACKET （Lの字）",
+    "koushinNo": "4",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/中央/3段目": {
+    "moldNo": "M-1775186652906-22",
+    "hinban": "DDR06-70660",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/中央/2段目": {
+    "moldNo": "M-1775186652906-23",
+    "hinban": "BX2-X2",
+    "hinmei": "CAP BOTTOM 1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/中央/1段目奥": {
+    "moldNo": "M-1775186652906-24",
+    "hinban": "TK-340A-2",
+    "hinmei": "4次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652906-25",
+    "hinban": "TK-338A-2",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/右/3段目": {
+    "moldNo": "M-1775186652906-26",
+    "hinban": "17A0C8PA00",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/右/2段目": {
+    "moldNo": "344",
+    "hinban": "1T0937-11",
+    "hinmei": "BRKT",
+    "koushinNo": "2",
+    "customer": "プロスパイラM",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/右/1段目奥": {
+    "moldNo": "M-1775186652906-27",
+    "hinban": "TK-339A-2",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.906Z"
+  },
+  "旧Dラック/①番扉/右/1段目手前": {
+    "moldNo": "M-1775186652907-28",
+    "hinban": "TK-334A-2",
+    "hinmei": "4次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.907Z"
+  },
+  "新Dラック/③番扉/左/2段目": {
+    "moldNo": "M-1775186652907-29",
+    "hinban": "11253-1030A",
+    "hinmei": "NC-768 3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.907Z"
+  },
+  "新Dラック/③番扉/左/1段目奥": {
+    "moldNo": "M-1775186652908-30",
+    "hinban": "043887-0330",
+    "hinmei": "6次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/左/1段目手前": {
+    "moldNo": "343",
+    "hinban": "TQ-471-01",
+    "hinmei": "BRKT",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/中央/2段目": {
+    "moldNo": "210",
+    "hinban": "TQ-283",
+    "hinmei": "ブラケット",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/中央/1段目奥": {
+    "moldNo": "204",
+    "hinban": "TG-719",
+    "hinmei": "ストラット",
+    "koushinNo": "24",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/中央/1段目手前": {
+    "moldNo": "204",
+    "hinban": "TG-719",
+    "hinmei": "ストラット",
+    "koushinNo": "24",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/右/2段目": {
+    "moldNo": "570",
+    "hinban": "TK-199-04",
+    "hinmei": "BRACKET　No.２",
+    "koushinNo": "3",
+    "customer": "住友理工㈱",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/右/1段目奥": {
+    "moldNo": "546",
+    "hinban": "TK-311C-1",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/③番扉/右/1段目手前": {
+    "moldNo": "546",
+    "hinban": "TK-311C-1",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/左/3段目": {
+    "moldNo": "M-1775186652908-31",
+    "hinban": "RTEM800 S",
+    "hinmei": "5次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/左/2段目": {
+    "moldNo": "82",
+    "hinban": "K4012B00",
+    "hinmei": "BRACKET, ENG MTG, RR  (TNGA-WCVT)",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/左/1段目奥": {
+    "moldNo": "407",
+    "hinban": "A2030B10",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/左/1段目手前": {
+    "moldNo": "407",
+    "hinban": "A2030B10",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/中央/3段目": {
+    "moldNo": "552",
+    "hinban": "NAK576A401",
+    "hinmei": "ハウジング",
+    "koushinNo": "5",
+    "customer": "㈱名光精機",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/中央/2段目": {
+    "moldNo": "M-1775186652908-32",
+    "hinban": "K1054K00",
+    "hinmei": "10次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/中央/1段目奥": {
+    "moldNo": "480",
+    "hinban": "K2030B0D",
+    "hinmei": "BRKT　丸一",
+    "koushinNo": "8",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/中央/1段目手前": {
+    "moldNo": "480",
+    "hinban": "K2030B0D",
+    "hinmei": "BRKT　丸一",
+    "koushinNo": "8",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/右/3段目": {
+    "moldNo": "68",
+    "hinban": "BR-M8100",
+    "hinmei": "CALIPER　R",
+    "koushinNo": "3",
+    "customer": "シマノ",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/右/2段目": {
+    "moldNo": "M-1775186652908-33",
+    "hinban": "K1054K00",
+    "hinmei": "9次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/右/1段目奥": {
+    "moldNo": "86",
+    "hinban": "K4006B0A",
+    "hinmei": "BRACKET, ENG MTG, RR (TNGA-DAT)",
+    "koushinNo": "3",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/②番扉/右/1段目手前": {
+    "moldNo": "56",
+    "hinban": "K1065B0A",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/①番扉/左/3段目": {
+    "moldNo": "528",
+    "hinban": "229718-0460",
+    "hinmei": "スリーブ",
+    "koushinNo": "15",
+    "customer": "光",
+    "updatedAt": "2026-04-03T03:24:12.908Z"
+  },
+  "新Dラック/①番扉/左/2段目": {
+    "moldNo": "M-1775186652909-34",
+    "hinban": "ベアリングケース(ホイル2)",
+    "hinmei": "7次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/左/1段目奥": {
+    "moldNo": "523",
+    "hinban": "RF3264-14",
+    "hinmei": "HOLDER-RH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/左/1段目手前": {
+    "moldNo": "524",
+    "hinban": "RF3265-14",
+    "hinmei": "HOLDER-LH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/中央/3段目": {
+    "moldNo": "11",
+    "hinban": "229718-0290",
+    "hinmei": "スリーブ",
+    "koushinNo": "12 45～48",
+    "customer": "光",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/中央/2段目": {
+    "moldNo": "M-1775186652909-35",
+    "hinban": "GF700673・674",
+    "hinmei": "END PLATE N/P 6次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/中央/1段目奥": {
+    "moldNo": "523",
+    "hinban": "RF3264-14",
+    "hinmei": "HOLDER-RH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/中央/1段目手前": {
+    "moldNo": "524",
+    "hinban": "RF3265-14",
+    "hinmei": "HOLDER-LH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/右/3段目": {
+    "moldNo": "414",
+    "hinban": "AXM00-16740 DJ",
+    "hinmei": "INNER",
+    "koushinNo": "4",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/右/2段目": {
+    "moldNo": "M-1775186652909-36",
+    "hinban": "48331-900B1-RING",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/右/1段目奥": {
+    "moldNo": "523",
+    "hinban": "RF3264-14",
+    "hinmei": "HOLDER-RH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "新Dラック/①番扉/右/1段目手前": {
+    "moldNo": "524",
+    "hinban": "RF3265-14",
+    "hinmei": "HOLDER-LH",
+    "koushinNo": "11",
+    "customer": "㈱プロスパイラマニュファクチャリング",
+    "updatedAt": "2026-04-03T03:24:12.909Z"
+  },
+  "F北側ラック/⑦番扉/左/3段目": {
+    "moldNo": "M-1775186652910-37",
+    "hinban": "その他",
+    "hinmei": "部品",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/左/2段目": {
+    "moldNo": "607",
+    "hinban": "K2070B2A",
+    "hinmei": "NO.2 BRAKET",
+    "koushinNo": "6",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/左/1段目奥": {
+    "moldNo": "M-1775186652910-38",
+    "hinban": "NA11",
+    "hinmei": "インゴット",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/左/1段目手前": {
+    "moldNo": "M-1775186652910-39",
+    "hinban": "NA11",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/中央/3段目": {
+    "moldNo": "607",
+    "hinban": "K2070B2A",
+    "hinmei": "NO.2 BRAKET",
+    "koushinNo": "6",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/中央/2段目": {
+    "moldNo": "M-1775186652910-40",
+    "hinban": "3G-EH277-1",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/中央/1段目奥": {
+    "moldNo": "M-1775186652910-41",
+    "hinban": "NH41",
+    "hinmei": "インゴット",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.910Z"
+  },
+  "F北側ラック/⑦番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652911-42",
+    "hinban": "SNG3",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑦番扉/右/3段目": {
+    "moldNo": "607",
+    "hinban": "K2070B2A",
+    "hinmei": "NO.2 BRAKET",
+    "koushinNo": "6",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑦番扉/右/2段目": {
+    "moldNo": "M-1775186652911-43",
+    "hinban": "3G-EN084-1A",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑦番扉/右/1段目奥": {
+    "moldNo": "M-1775186652911-44",
+    "hinban": "シラフォント材",
+    "hinmei": "インゴット",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑦番扉/右/1段目手前": {
+    "moldNo": "M-1775186652911-45",
+    "hinban": "SNG3",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/左/3段目": {
+    "moldNo": "M-1775186652911-46",
+    "hinban": "88431-B2050",
+    "hinmei": "プレス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/左/2段目": {
+    "moldNo": "M-1775186652911-47",
+    "hinban": "MU117",
+    "hinmei": "-0H014-D 1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/左/1段目奥": {
+    "moldNo": "M-1775186652911-48",
+    "hinban": "SNB-143",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/左/1段目手前": {
+    "moldNo": "M-1775186652911-49",
+    "hinban": "シラフォント材",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/中央/3段目": {
+    "moldNo": "M-1775186652911-50",
+    "hinban": "その他",
+    "hinmei": "プレス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/中央/2段目": {
+    "moldNo": "M-1775186652911-51",
+    "hinban": "MU117",
+    "hinmei": "-0H011-F 1次型 デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/中央/1段目奥": {
+    "moldNo": "199",
+    "hinban": "K2070",
+    "hinmei": "ブラケット",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.911Z"
+  },
+  "F北側ラック/⑥番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652912-52",
+    "hinban": "AC4CH",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.912Z"
+  },
+  "F北側ラック/⑥番扉/右/3段目": {
+    "moldNo": "M-1775186652915-53",
+    "hinban": "INS-RUB",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑥番扉/右/2段目": {
+    "moldNo": "M-1775186652915-54",
+    "hinban": "SB-061",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑥番扉/右/1段目奥": {
+    "moldNo": "7",
+    "hinban": "123",
+    "hinmei": "スリーブ",
+    "koushinNo": "N型（13）",
+    "customer": "名光",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑥番扉/右/1段目手前": {
+    "moldNo": "M-1775186652915-55",
+    "hinban": "ADC1",
+    "hinmei": "リターン材",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/左/3段目": {
+    "moldNo": "M-1775186652915-56",
+    "hinban": "その他",
+    "hinmei": "金型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/左/2段目": {
+    "moldNo": "M-1775186652915-57",
+    "hinban": "3G-EJ689-1",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/左/1段目奥": {
+    "moldNo": "M-1775186652915-58",
+    "hinban": "14-270",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/左/1段目手前": {
+    "moldNo": "M-1775186652915-59",
+    "hinban": "14-264",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/中央/3段目": {
+    "moldNo": "M-1775186652915-60",
+    "hinban": "AX071288",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/中央/2段目": {
+    "moldNo": "M-1775186652915-61",
+    "hinban": "その他",
+    "hinmei": "部品",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/中央/1段目奥": {
+    "moldNo": "M-1775186652915-62",
+    "hinban": "14-267",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.915Z"
+  },
+  "F北側ラック/⑤番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652916-63",
+    "hinban": "14-260",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.916Z"
+  },
+  "F北側ラック/⑤番扉/右/3段目": {
+    "moldNo": "M-1775186652916-64",
+    "hinban": "1A3472",
+    "hinmei": "試作型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.916Z"
+  },
+  "F北側ラック/⑤番扉/右/2段目": {
+    "moldNo": "M-1775186652916-65",
+    "hinban": "ASTM010-5051-6",
+    "hinmei": "デバイス",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.916Z"
+  },
+  "F北側ラック/⑤番扉/右/1段目奥": {
+    "moldNo": "M-1775186652916-66",
+    "hinban": "AST035-5021-0",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.916Z"
+  },
+  "F北側ラック/⑤番扉/右/1段目手前": {
+    "moldNo": "M-1775186652916-67",
+    "hinban": "ASTM035-5051-0",
+    "hinmei": "1次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.916Z"
+  },
+  "F南側ラック/③番扉/左/2段目": {
+    "moldNo": "256",
+    "hinban": "K2068B1C",
+    "hinmei": "BRKT（丸一）",
+    "koushinNo": "4",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/③番扉/左/1段目奥": {
+    "moldNo": "M-1775186652917-68",
+    "hinban": "TK-338A-2",
+    "hinmei": "2次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/③番扉/左/1段目手前": {
+    "moldNo": "56",
+    "hinban": "K1065B0A",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/③番扉/中央/2段目": {
+    "moldNo": "432",
+    "hinban": "35732-B2130",
+    "hinmei": "35732-D88C6（3PIN",
+    "koushinNo": "6",
+    "customer": "福寿",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/③番扉/中央/1段目奥": {
+    "moldNo": "546",
+    "hinban": "TK-311C-1",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/③番扉/右/2段目": {
+    "moldNo": "115",
+    "hinban": "GF600826-3",
+    "hinmei": "END　PLATE",
+    "koushinNo": "2",
+    "customer": "VEJ",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/左/2段目": {
+    "moldNo": "M-1775186652917-69",
+    "hinban": "HZ-277-2",
+    "hinmei": "2次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/左/1段目奥": {
+    "moldNo": "248",
+    "hinban": "TK-022",
+    "hinmei": "オリフィス",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/左/1段目手前": {
+    "moldNo": "548",
+    "hinban": "TK-317A-1",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/中央/2段目": {
+    "moldNo": "204",
+    "hinban": "TG-719",
+    "hinmei": "ストラット",
+    "koushinNo": "24",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/中央/1段目奥": {
+    "moldNo": "628",
+    "hinban": "TK-362A-1",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "住友理工㈱",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/中央/1段目手前": {
+    "moldNo": "M-1775186652917-70",
+    "hinban": "TK-334A-2",
+    "hinmei": "3次型",
+    "koushinNo": "",
+    "customer": "手動登録（初期データ）",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/右/2段目": {
+    "moldNo": "204",
+    "hinban": "TG-719",
+    "hinmei": "ストラット",
+    "koushinNo": "24",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.917Z"
+  },
+  "F南側ラック/②番扉/右/1段目奥": {
+    "moldNo": "439",
+    "hinban": "UN-376D-00",
+    "hinmei": "INNER",
+    "koushinNo": "2",
+    "customer": "住友理工",
+    "updatedAt": "2026-04-03T03:24:12.918Z"
+  },
+  "F南側ラック/②番扉/右/1段目手前": {
+    "moldNo": "256",
+    "hinban": "K2068B1C",
+    "hinmei": "BRKT（丸一）",
+    "koushinNo": "4",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.918Z"
+  },
+  "F南側ラック/①番扉/左/2段目": {
+    "moldNo": "46",
+    "hinban": "35732-B2110",
+    "hinmei": "CARRIER,PLANETARY（4PIN)",
+    "koushinNo": "2",
+    "customer": "福寿",
+    "updatedAt": "2026-04-03T03:24:12.918Z"
+  },
+  "F南側ラック/①番扉/左/1段目奥": {
+    "moldNo": "43",
+    "hinban": "K1054K0B",
+    "hinmei": "ROD",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/左/1段目手前": {
+    "moldNo": "256",
+    "hinban": "K2068B1C",
+    "hinmei": "BRKT（丸一）",
+    "koushinNo": "4",
+    "customer": "TOYOTIRE",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/中央/1段目奥": {
+    "moldNo": "7",
+    "hinban": "123",
+    "hinmei": "スリーブ",
+    "koushinNo": "N型（13）",
+    "customer": "名光",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/中央/1段目手前": {
+    "moldNo": "581",
+    "hinban": "JF1G300248301",
+    "hinmei": "END　BLOCK",
+    "koushinNo": "3",
+    "customer": "ビーグルエナジージャパン㈱",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/右/2段目": {
+    "moldNo": "213",
+    "hinban": "K2085B30",
+    "hinmei": "丸一",
+    "koushinNo": "8",
+    "customer": "TOYO TIRE",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/右/1段目奥": {
+    "moldNo": "577",
+    "hinban": "K4019B0A",
+    "hinmei": "BRACKET",
+    "koushinNo": "2",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  },
+  "F南側ラック/①番扉/右/1段目手前": {
+    "moldNo": "513",
+    "hinban": "K2045B1C",
+    "hinmei": "BRACKET（コの字）",
+    "koushinNo": "14",
+    "customer": "TOYO TIRE㈱",
+    "updatedAt": "2026-04-03T03:24:12.919Z"
+  }
+}
