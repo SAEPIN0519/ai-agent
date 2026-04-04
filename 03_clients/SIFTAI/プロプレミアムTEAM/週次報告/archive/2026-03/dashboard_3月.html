@@ -121,28 +121,36 @@ td.low { color:var(--warning); font-weight:600; }
 </div>
 <div class="week-nav" id="weekNav" style="display:none;">
   <div class="week-tab" onclick="switchWeek(0)">W1: 3/2–3/8</div>
-<div class="week-tab active" onclick="switchWeek(1)">W2: 3/9–3/15</div>
+<div class="week-tab" onclick="switchWeek(1)">W2: 3/9–3/15</div>
+<div class="week-tab" onclick="switchWeek(2)">W3: 3/16–3/22</div>
+<div class="week-tab active" onclick="switchWeek(3)">W4: 3/23–3/29</div>
 
 </div>
 <div class="main">
   <div id="view-summary">
     <div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">レポート週数</div><div class="kpi-value">2週</div></div>
-  <div class="kpi-card"><div class="kpi-label">月間総稼働</div><div class="kpi-value">961.8h</div></div>
-  <div class="kpi-card"><div class="kpi-label">平均ポジティブ率</div><div class="kpi-value">64%</div></div>
-  <div class="kpi-card"><div class="kpi-label">最新非アクティブ</div><div class="kpi-value">18名</div></div>
+  <div class="kpi-card"><div class="kpi-label">レポート週数</div><div class="kpi-value">4週</div></div>
+  <div class="kpi-card"><div class="kpi-label">月間総稼働</div><div class="kpi-value">2552.1h</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均ポジティブ率</div><div class="kpi-value">35%</div></div>
+  <div class="kpi-card"><div class="kpi-label">最新非アクティブ</div><div class="kpi-value">28名</div></div>
 </div>
 <div class="section"><div class="section-header"><span class="section-title">総稼働時間トレンド</span></div>
-<div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">3/2</span><div class="bar-track"><div class="bar-fill blue" style="width:46%;">306.2h</div></div></div>
-<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill blue" style="width:100%;">655.6h</div></div></div>
+<div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">3/2</span><div class="bar-track"><div class="bar-fill blue" style="width:37%;">306.2h</div></div></div>
+<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill blue" style="width:89%;">729.0h</div></div></div>
+<div class="bar-row"><span class="bar-label">3/16</span><div class="bar-track"><div class="bar-fill blue" style="width:100%;">812.9h</div></div></div>
+<div class="bar-row"><span class="bar-label">3/23</span><div class="bar-track"><div class="bar-fill blue" style="width:86%;">704.0h</div></div></div>
 </div></div></div>
 <div class="section"><div class="section-header"><span class="section-title">ポジティブ率トレンド</span></div>
 <div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">3/2</span><div class="bar-track"><div class="bar-fill green" style="width:59%;">59%</div></div></div>
-<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill green" style="width:70%;">70%</div></div></div>
+<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill green" style="width:0%;">0%</div></div></div>
+<div class="bar-row"><span class="bar-label">3/16</span><div class="bar-track"><div class="bar-fill green" style="width:0%;">0%</div></div></div>
+<div class="bar-row"><span class="bar-label">3/23</span><div class="bar-track"><div class="bar-fill green" style="width:80%;">80%</div></div></div>
 </div></div></div>
 <div class="section"><div class="section-header"><span class="section-title">非アクティブ数トレンド</span></div>
-<div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">3/2</span><div class="bar-track"><div class="bar-fill red" style="width:100%;">18名</div></div></div>
-<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill red" style="width:100%;">18名</div></div></div>
+<div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">3/2</span><div class="bar-track"><div class="bar-fill red" style="width:64%;">18名</div></div></div>
+<div class="bar-row"><span class="bar-label">3/9</span><div class="bar-track"><div class="bar-fill red" style="width:46%;">13名</div></div></div>
+<div class="bar-row"><span class="bar-label">3/16</span><div class="bar-track"><div class="bar-fill red" style="width:82%;">23名</div></div></div>
+<div class="bar-row"><span class="bar-label">3/23</span><div class="bar-track"><div class="bar-fill red" style="width:100%;">28名</div></div></div>
 </div></div></div>
   </div>
   <div id="view-weekly" style="display:none;">
@@ -485,49 +493,49 @@ td.low { color:var(--warning); font-weight:600; }
 <div class="alert warning"><span class="alert-icon">📉</span><div>急降下中: 中澤みどり、伊藤紘二、立田素子</div></div>
 </div></div>
 </div>
-<div class="week-content" id="week-1" style="display:block;">
+<div class="week-content" id="week-1" style="display:none;">
 <div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
   <strong style="font-size:18px;color:var(--gray-800);">2026年03月09日（月）〜 03月15日（日）</strong>
 </div>
 <div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">655.6h</div><div class="kpi-change up">+114% (前週 306.2h)</div></div>
-  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">19.9h</div><div class="kpi-change up">+55% (前週 12.8h)</div></div>
-  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">33名</div><div class="kpi-sub">提出164件</div></div>
-  <div class="kpi-card"><div class="kpi-label">ポジティブ率</div><div class="kpi-value">70%</div><div class="kpi-change up">+11pt (前週 59%)</div></div>
-  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">3.3万円</div><div class="kpi-sub">収益報告 5名 / 週報 20名</div></div>
-  <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">18名</div><div class="kpi-change up">改善 (前週 18名)</div><div class="kpi-sub">PRO全体 38名</div></div>
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">729.0h</div><div class="kpi-change up">+138% (前週 306.2h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">20.8h</div><div class="kpi-change up">+62% (前週 12.8h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">35名</div><div class="kpi-sub">提出190件</div></div>
+  <div class="kpi-card"><div class="kpi-label">ポジティブ率</div><div class="kpi-value">0%</div><div class="kpi-change up">+-59pt (前週 59%)</div></div>
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">3.6万円</div><div class="kpi-sub">収益報告 7名 / 週報 22名</div></div>
+  <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">13名</div><div class="kpi-change up">改善 (前週 18名)</div><div class="kpi-sub">PRO全体 38名</div></div>
 </div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">▼</span>
 </div><div class="section-body">
   <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">手塚寿</div><div class="top3-detail">62.0h（平均 15.5h/日）</div></div></div>
-<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">42.5h（平均 7.1h/日）</div></div></div>
-<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">須貝亮</div><div class="top3-detail">40.0h（平均 6.7h/日）</div></div></div></div>
-  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">7回</div></div></div>
-<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">島田嵩</div><div class="top3-detail">6回</div></div></div>
-<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">清水秀明</div><div class="top3-detail">6回</div></div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">48.0h（平均 6.9h/日）</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">安部友博</div><div class="top3-detail">41.0h（平均 4.6h/日）</div></div></div></div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">安部友博</div><div class="top3-detail">9回</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">8回</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">7回</div></div></div></div>
 </div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">▼</span>
 </div><div class="section-body">
-  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:4px;">曜日別参加者数</h4><div class="day-chart"><div class="day-col"><div class="day-bar" style="height:0px;background:#cbd5e1;"></div><div class="day-label">月</div></div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:4px;">曜日別参加者数</h4><div class="day-chart"><div class="day-col"><div class="day-bar" style="height:87px;">14</div><div class="day-label">月</div></div>
 <div class="day-col"><div class="day-bar" style="height:68px;">11</div><div class="day-label">火</div></div>
 <div class="day-col"><div class="day-bar" style="height:100px;">16</div><div class="day-label">水</div></div>
 <div class="day-col"><div class="day-bar" style="height:68px;">11</div><div class="day-label">木</div></div>
 <div class="day-col"><div class="day-bar" style="height:62px;">10</div><div class="day-label">金</div></div>
-<div class="day-col"><div class="day-bar" style="height:43px;">7</div><div class="day-label">土</div></div>
-<div class="day-col"><div class="day-bar" style="height:81px;">13</div><div class="day-label">日</div></div>
-</div><div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 68件</div>
-  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">7回</div></div></div>
-<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">押久保欽一</div><div class="top3-detail">6回</div></div></div>
-<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">坂井俊章</div><div class="top3-detail">6回</div></div></div></div>
+<div class="day-col"><div class="day-bar" style="height:62px;">10</div><div class="day-label">土</div></div>
+<div class="day-col"><div class="day-bar" style="height:93px;">15</div><div class="day-label">日</div></div>
+</div><div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 87件</div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">8回</div></div></div>
+<div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">池田勝典</div><div class="top3-detail">8回</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">押久保欽一</div><div class="top3-detail">7回</div></div></div></div>
 </div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">▼</span>
 </div><div class="section-body">
   <div class="sentiment-gauge">
-    <div class="sentiment-pos" style="width:70%;">70%</div>
-    <div class="sentiment-neg" style="width:30%;">30%</div>
+    <div class="sentiment-pos" style="width:0%;">0%</div>
+    <div class="sentiment-neg" style="width:0%;">0%</div>
   </div>
   <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
     <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
@@ -545,50 +553,46 @@ td.low { color:var(--warning); font-weight:600; }
           <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
             <div style="font-size:11px;color:#94a3b8;font-weight:600;">今週</div>
             <div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">
-              <span style="color:#16a34a;font-weight:700;font-size:18px;">70%</span>
+              <span style="color:#16a34a;font-weight:700;font-size:18px;">0%</span>
               <span style="color:#94a3b8;font-size:14px;">/</span>
-              <span style="color:#dc2626;font-weight:700;font-size:18px;">30%</span>
+              <span style="color:#dc2626;font-weight:700;font-size:18px;">0%</span>
             </div>
           </div>
           <div style="flex:1;text-align:center;padding:12px;background:#f8fafc;border-radius:8px;">
             <div style="font-size:11px;color:#94a3b8;font-weight:600;">変化</div>
-            <div style="color:#16a34a;font-weight:700;font-size:18px;margin-top:4px;">+11pt</div>
+            <div style="color:#dc2626;font-weight:700;font-size:18px;margin-top:4px;">-59pt</div>
           </div>
         </div>
-  <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">全体的にポジティブな反応が多く、コミュニティの健康状態は良好。前週比でポジティブ率が改善。</p>
+  <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">マイナス傾向が目立つ。個別フォローと成功体験の共有を優先。</p>
 </div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">4</span><span class="section-title">カテゴリー分析（意味分類）</span><span class="section-toggle">▼</span>
-</div><div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">行動面の課題</span><div class="bar-track"><div class="bar-fill blue" style="width:55%;">18人</div></div><span class="bar-value">55%</span></div></div></div></div>
+</div><div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">行動面の課題</span><div class="bar-track"><div class="bar-fill blue" style="width:56%;">19人</div></div><span class="bar-value">56%</span></div></div></div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">5</span><span class="section-title">マネタイズフェーズ × 課題分析</span><span class="section-toggle">▼</span>
 </div><div class="section-body"><div class="phase-grid"><div class="phase-card p1"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 1</div><div style="font-size:14px;font-weight:700;margin:2px 0;">操作不安・全体像</div><div style="font-size:24px;font-weight:800;color:var(--primary);">15人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">近藤英介、島田嵩、手塚寿、川西秀樹、坂井俊章</div></div>
-<div class="phase-card p2"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div><div style="font-size:14px;font-weight:700;margin:2px 0;">応募・継続の壁</div><div style="font-size:24px;font-weight:800;color:var(--primary);">24人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">野尻幸樹実、萩原千晶、押久保欽一、杉田守、甲村順子</div></div>
-<div class="phase-card p3"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div><div style="font-size:14px;font-weight:700;margin:2px 0;">質の追求・伸び悩み</div><div style="font-size:24px;font-weight:800;color:var(--primary);">3人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">坂井俊章、野尻幸樹実、藤木智咲</div></div></div></div></div>
+<div class="phase-card p2"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 2</div><div style="font-size:14px;font-weight:700;margin:2px 0;">優先順位の迷い</div><div style="font-size:24px;font-weight:800;color:var(--primary);">1人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">安部友博</div></div>
+<div class="phase-card p3"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div><div style="font-size:14px;font-weight:700;margin:2px 0;">応募・継続の壁</div><div style="font-size:24px;font-weight:800;color:var(--primary);">25人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">野尻幸樹実、萩原千晶、押久保欽一、杉田守、甲村順子</div></div>
+<div class="phase-card p4"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div><div style="font-size:14px;font-weight:700;margin:2px 0;">質の追求・伸び悩み</div><div style="font-size:24px;font-weight:800;color:var(--primary);">3人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">坂井俊章、野尻幸樹実、藤木智咲</div></div></div></div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">▼</span>
 </div><div class="section-body"><div style="display:flex;gap:16px;margin-bottom:16px;">
       <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
         <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
-        <div style="font-size:22px;font-weight:800;color:var(--primary);">3.3万円</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">3.6万円</div>
       </div>
       <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
         <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
-        <div style="font-size:22px;font-weight:800;color:var(--primary);">6,649円</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">5,078円</div>
       </div>
     </div><div class="monetize-podium">
           <div class="podium-item silver"><div class="podium-medal">🥈</div><div class="podium-name">押久保欽一</div><div class="podium-amount">1.5万円</div></div>
           <div class="podium-item gold"><div class="podium-medal">🥇</div><div class="podium-name">清水秀明</div><div class="podium-amount">1.6万円</div></div>
           <div class="podium-item bronze"><div class="podium-medal">🥉</div><div class="podium-name">甲村順子</div><div class="podium-amount">2,000円</div></div>
-        </div><table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody><tr><td>4位</td><td>坂井俊章</td><td>209円</td></tr><tr><td>5位</td><td>杉田守</td><td>40円</td></tr></tbody></table></div></div>
+        </div><table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody><tr><td>4位</td><td>島田嵩</td><td>2,000円</td></tr><tr><td>5位</td><td>池田勝典</td><td>300円</td></tr><tr><td>6位</td><td>坂井俊章</td><td>209円</td></tr><tr><td>7位</td><td>杉田守</td><td>40円</td></tr></tbody></table></div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">▼</span>
 </div><div class="section-body"><div class="voice-grid"><div><div class="voice-section-label pos">前進を支える声</div>
-<div class="voice-card pos"><div class="voice-name">西尾佳奈</div>SHIFT AIプロプラン初回面談で概要把握。実践フィードバック会は毎日開催で質問が場を作ると知った。</div>
-<div class="voice-card pos"><div class="voice-name">甲村順子</div>本案件（ライター案件）を1件受注することができた。また、SNS運用代行のウェビナー視聴や実践フィードバック会への参加を通じ、実務に直結する知識をインプットできた...</div>
-<div class="voice-card pos"><div class="voice-name">矢三やよい</div>昨日のアーカイブを見てclaude入れることができた！けど設定してない課金か・・・と思い少し考える。</div>
-<div class="voice-card pos"><div class="voice-name">関口大樹</div>実践フィードバック会に初めて参加しました。ClaudeCodeの可能性を知ることができたので、まずは実践フィードバック会で実践頂いたところまでを自分で再現します...</div>
-<div class="voice-card pos"><div class="voice-name">須貝亮</div>午前中に獲得した案件を納品まで完了し、案件応募を2件行うとともに、好みの構図パターンを整理して画像生成の時短につながる制作フローを構築できた。</div>
 </div><div><div class="voice-section-label neg">停滞を招く声</div>
 <div class="voice-card neg"><div class="voice-name">島田嵩</div>Tiktokでのリサーチ。AI駆動開発の考え方のシフト。←まだうまく言葉にはできないですが、一成さんのイベントに参加し、登壇者の方々のお話を聞いてきた効果です。</div>
 <div class="voice-card neg"><div class="voice-name">川西秀樹</div>SNS運用代行のフォローアップ面談でWEB対談。動画コンテンツの作成。Antigravity環境設定ホームページ作成してみたが途中で止まってしまい、使い方を模索...</div>
@@ -600,13 +604,13 @@ td.low { color:var(--warning); font-weight:600; }
   <span class="section-num">8</span><span class="section-title">運営への提言</span><span class="section-toggle">▼</span>
 </div><div class="section-body"><h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">個別フォロー推奨</h4>
 <div class="proposal-list"><div class="proposal-item"><div class="proposal-icon follow">👤</div><div>手塚寿様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
-<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>吉田比奈様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
-<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>押久保欽一様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>森美恵子様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
 <div class="proposal-item"><div class="proposal-icon follow">👤</div><div>杉田守様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
-<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>甲村順子様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>池田勝典様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>岡松威宏様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div></div>
 <h4 style="font-size:14px;color:var(--gray-600);margin:20px 0 8px;">FB会・サービス改善案</h4>
 <div class="proposal-list"><div class="proposal-item"><div class="proposal-icon improve">💡</div><div>フェーズ1（操作不安）の会員が15名。初心者向けオンボーディング資料の充実を推奨します。</div></div>
-<div class="proposal-item"><div class="proposal-icon improve">💡</div><div>行動面の課題を抱える会員が18名。応募文作成会やポートフォリオ作成会など、短時間で形にする集中ワークショップの開催が有効です。</div></div></div></div></div>
+<div class="proposal-item"><div class="proposal-icon improve">💡</div><div>行動面の課題を抱える会員が19名。応募文作成会やポートフォリオ作成会など、短時間で形にする集中ワークショップの開催が有効です。</div></div></div></div></div>
 <div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="section-num">9</span><span class="section-title">非アクティブPRO会員（過去4週傾向）</span><span class="section-toggle">▼</span>
 </div><div class="section-body">
@@ -614,12 +618,12 @@ td.low { color:var(--warning); font-weight:600; }
     <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
       <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（3月9日–3月15日）</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">18名</div></div>
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">53%</div></div>
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">32名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">84%</div></div>
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">20名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
-        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">53%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">13名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">66%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">33名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">87%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">22名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 38名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">58%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
       </div>
     </div>
     <div style="background:var(--gray-50);border-radius:10px;padding:20px;">
@@ -679,26 +683,15 @@ td.low { color:var(--warning); font-weight:600; }
 <td class="zero">0/0</td>
 </tr>
 <tr>
-<td>吉田比奈</td>
-<td>2/7</td>
-<td class="low">29%</td>
-<td class="zero">0/7</td>
-<td class="zero">0%</td>
-<td>7/0</td>
-<td>1/0</td>
-<td>4/0</td>
-<td>2/0</td>
-</tr>
-<tr>
 <td>大池まどか</td>
-<td>2/7</td>
-<td class="low">29%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
 <td class="zero">0/7</td>
 <td class="zero">0%</td>
 <td class="zero">0/0</td>
 <td class="zero">0/0</td>
 <td class="zero">0/0</td>
-<td>2/0</td>
+<td class="zero">0/0</td>
 </tr>
 <tr>
 <td>小川有紀</td>
@@ -734,17 +727,6 @@ td.low { color:var(--warning); font-weight:600; }
 <td class="zero">0/0</td>
 </tr>
 <tr>
-<td>村上真樹子</td>
-<td>1/7</td>
-<td class="low">14%</td>
-<td>3/7</td>
-<td>43%</td>
-<td>5/5</td>
-<td>3/4</td>
-<td>3/3</td>
-<td>1/3</td>
-</tr>
-<tr>
 <td>溝口和範</td>
 <td class="zero">0/7</td>
 <td class="zero">0%</td>
@@ -778,15 +760,529 @@ td.low { color:var(--warning); font-weight:600; }
 <td class="zero">0/0</td>
 </tr>
 <tr>
-<td>築山優希</td>
+<td>船引純</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>西口勇生</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>道下明和</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+</tbody></table></div>
+  <div class="alert danger"><span class="alert-icon">⚠️</span><div>完全未稼働（4週連続ゼロ）: 小川有紀、山田真由美、溝口和範、船引純、西口勇生、道下明和</div></div>
+<div class="alert warning"><span class="alert-icon">📉</span><div>急降下中: 中澤みどり、伊藤紘二、立田素子</div></div>
+</div></div>
+</div>
+<div class="week-content" id="week-2" style="display:none;">
+<div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
+  <strong style="font-size:18px;color:var(--gray-800);">2026年03月16日（月）〜 03月22日（日）</strong>
+</div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">812.9h</div><div class="kpi-change up">+12% (前週 729.0h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">23.2h</div><div class="kpi-change up">+12% (前週 20.8h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">35名</div><div class="kpi-sub">提出205件</div></div>
+  <div class="kpi-card"><div class="kpi-label">ポジティブ率</div><div class="kpi-value">0%</div><div class="kpi-change up"></div></div>
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">約2.8万円</div><div class="kpi-sub">収益報告 9名 / 週報 23名</div></div>
+  <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">23名</div><div class="kpi-change up">改善 (前週 13名)</div><div class="kpi-sub">PRO全体 48名</div></div>
+</div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">90.4h（平均 11.3h/日）</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">小川有紀</div><div class="top3-detail">48.0h（平均 12.0h/日）</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">島田嵩</div><div class="top3-detail">43.0h（平均 7.2h/日）</div></div></div></div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">押久保欽一</div><div class="top3-detail">9回</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">白方勇生</div><div class="top3-detail">9回</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">8回</div></div></div>
+<div class="top3-item"><span class="rank"></span><div><div class="top3-name">萩原千晶</div><div class="top3-detail">8回</div></div></div></div>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:4px;">曜日別参加者数</h4>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div class="sentiment-gauge">
+    <div class="sentiment-pos" style="width:0%;">0%</div>
+    <div class="sentiment-neg" style="width:0%;">0%</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
+    <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
+  </div>
+  
+  <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">マイナス傾向が目立つ。個別フォローと成功体験の共有を優先。</p>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">4</span><span class="section-title">カテゴリー分析（意味分類）</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><p>（データなし）</p></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">5</span><span class="section-title">マネタイズフェーズ × 課題分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><p>（データなし）</p></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">約2.8万円</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">3,146円</div>
+      </div>
+    </div><div class="monetize-podium">
+          <div class="podium-item silver"><div class="podium-medal">🥈</div><div class="podium-name">野尻幸樹実</div><div class="podium-amount">3,000円</div></div>
+          <div class="podium-item gold"><div class="podium-medal">🥇</div><div class="podium-name">押久保欽一</div><div class="podium-amount">20,000円</div></div>
+          <div class="podium-item bronze"><div class="podium-medal">🥉</div><div class="podium-name">早崎英里香</div><div class="podium-amount">1,599円</div></div>
+        </div><table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody><tr><td>4位</td><td>川西秀樹</td><td>1,000円</td></tr><tr><td>5位</td><td>甲村順子</td><td>1,000円</td></tr><tr><td>6位</td><td>小倉愛美</td><td>1,000円</td></tr><tr><td>7位</td><td>池田勝典</td><td>600円</td></tr><tr><td>8位</td><td>杉田守</td><td>81円</td></tr><tr><td>9位</td><td>萩原千晶</td><td>39円</td></tr></tbody></table></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div class="voice-grid"><div><div class="voice-section-label pos">前進を支える声</div>
+</div><div><div class="voice-section-label neg">停滞を招く声</div>
+</div></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">8</span><span class="section-title">運営への提言</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">個別フォロー推奨</h4>
+<div class="proposal-list"></div>
+<h4 style="font-size:14px;color:var(--gray-600);margin:20px 0 8px;">FB会・サービス改善案</h4>
+<div class="proposal-list"></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">9</span><span class="section-title">非アクティブPRO会員（過去4週傾向）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（3月16日–3月22日）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">23名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">52%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">32名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 48名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">66%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">—名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 48名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">—%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+      </div>
+    </div>
+    <div style="background:var(--gray-50);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-400);margin-bottom:12px;">前週</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">13名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">73%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">33名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">87%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">22名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">58%</div></div>
+      </div>
+    </div>
+  </div>
+  
+  
+</div></div>
+</div>
+<div class="week-content" id="week-3" style="display:block;">
+<div style="font-size:13px;color:var(--gray-600);margin-bottom:20px;">
+  <strong style="font-size:18px;color:var(--gray-800);">2026年03月23日（月）〜 03月29日（日）</strong>
+</div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">総稼働時間</div><div class="kpi-value">704.0h</div><div class="kpi-change up">+-13% (前週 812.9h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">平均稼働時間</div><div class="kpi-value">18.1h</div><div class="kpi-change up">+-22% (前週 23.2h)</div></div>
+  <div class="kpi-card"><div class="kpi-label">日報提出者</div><div class="kpi-value">39名</div><div class="kpi-sub">提出171件</div></div>
+  <div class="kpi-card"><div class="kpi-label">ポジティブ率</div><div class="kpi-value">80%</div><div class="kpi-change up"></div></div>
+  <div class="kpi-card"><div class="kpi-label">マネタイズ合計</div><div class="kpi-value">1.2万円</div><div class="kpi-sub">収益報告 5名 / 週報 16名</div></div>
+  <div class="kpi-card"><div class="kpi-label">非アクティブPRO</div><div class="kpi-value">28名</div><div class="kpi-change up">改善 (前週 23名)</div><div class="kpi-sub">PRO全体 51名</div></div>
+</div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">1</span><span class="section-title">基本統計データ（稼働状況）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">稼働時間 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">小川有紀</div><div class="top3-detail">91.0h（平均 13.0h/日）</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">55.2h（平均 9.2h/日）</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">森美恵子</div><div class="top3-detail">38.7h（平均 5.5h/日）</div></div></div></div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">日報提出数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">森美恵子</div><div class="top3-detail">7回</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">小川有紀</div><div class="top3-detail">7回</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">白方勇生</div><div class="top3-detail">7回</div></div></div></div>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">2</span><span class="section-title">実践フィードバック会（FB会）分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <h4 style="font-size:14px;color:var(--gray-600);margin-bottom:4px;">曜日別参加者数</h4><div class="day-chart"><div class="day-col"><div class="day-bar" style="height:0px;background:#cbd5e1;"></div><div class="day-label">月</div></div>
+<div class="day-col"><div class="day-bar" style="height:88px;">16</div><div class="day-label">火</div></div>
+<div class="day-col"><div class="day-bar" style="height:94px;">17</div><div class="day-label">水</div></div>
+<div class="day-col"><div class="day-bar" style="height:72px;">13</div><div class="day-label">木</div></div>
+<div class="day-col"><div class="day-bar" style="height:100px;">18</div><div class="day-label">金</div></div>
+<div class="day-col"><div class="day-bar" style="height:77px;">14</div><div class="day-label">土</div></div>
+<div class="day-col"><div class="day-bar" style="height:72px;">13</div><div class="day-label">日</div></div>
+</div><div style="font-size:12px;color:var(--gray-400);text-align:center;">合計 91件</div>
+  <h4 style="font-size:14px;color:var(--gray-600);margin:16px 0 8px;">参加回数 TOP3</h4><div class="top3"><div class="top3-item"><span class="rank">🥇</span><div><div class="top3-name">川西秀樹</div><div class="top3-detail">7回</div></div></div>
+<div class="top3-item"><span class="rank">🥈</span><div><div class="top3-name">池田勝典</div><div class="top3-detail">6回</div></div></div>
+<div class="top3-item"><span class="rank">🥉</span><div><div class="top3-name">萩原千晶</div><div class="top3-detail">6回</div></div></div></div>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">3</span><span class="section-title">感情・傾向占有率</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div class="sentiment-gauge">
+    <div class="sentiment-pos" style="width:80%;">80%</div>
+    <div class="sentiment-neg" style="width:20%;">20%</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);">
+    <span>前進・自信・成功体験・学び</span><span>不安・停滞・環境課題・操作の迷い</span>
+  </div>
+  
+  <p style="font-size:13px;color:var(--gray-600);margin-top:12px;">全体的にポジティブな反応が多く、コミュニティの健康状態は良好。</p>
+</div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">4</span><span class="section-title">カテゴリー分析（意味分類）</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div class="bar-chart"><div class="bar-row"><span class="bar-label">行動面の課題</span><div class="bar-track"><div class="bar-fill blue" style="width:41%;">16人</div></div><span class="bar-value">41%</span></div></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">5</span><span class="section-title">マネタイズフェーズ × 課題分析</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div class="phase-grid"><div class="phase-card p1"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 1</div><div style="font-size:14px;font-weight:700;margin:2px 0;">操作不安・全体像</div><div style="font-size:24px;font-weight:800;color:var(--primary);">15人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">岡松威宏、小倉愛美、村上真樹子、lily_のじりゆきみ、小川有紀</div></div>
+<div class="phase-card p2"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 2</div><div style="font-size:14px;font-weight:700;margin:2px 0;">優先順位の迷い</div><div style="font-size:24px;font-weight:800;color:var(--primary);">7人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">小倉愛美、坂井俊章、池田勝典、西田紀子、金子有貴</div></div>
+<div class="phase-card p3"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 3</div><div style="font-size:14px;font-weight:700;margin:2px 0;">応募・継続の壁</div><div style="font-size:24px;font-weight:800;color:var(--primary);">24人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">小倉愛美、小川有紀、坂井俊章、杉田守、野村すみれ</div></div>
+<div class="phase-card p4"><div style="font-size:11px;font-weight:700;color:var(--gray-400);">PHASE 4</div><div style="font-size:14px;font-weight:700;margin:2px 0;">質の追求・伸び悩み</div><div style="font-size:24px;font-weight:800;color:var(--primary);">6人</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">岡松威宏、島田嵩、小倉愛美、坂井俊章、金子有貴</div></div></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">6</span><span class="section-title">マネタイズ成果ランキング</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">合計額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">1.2万円</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;background:var(--gray-50);border-radius:8px;">
+        <div style="font-size:11px;color:var(--gray-400);font-weight:600;">平均額</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);">2,375円</div>
+      </div>
+    </div><div class="monetize-podium">
+          <div class="podium-item silver"><div class="podium-medal">🥈</div><div class="podium-name">有馬紗友理</div><div class="podium-amount">3,000円</div></div>
+          <div class="podium-item gold"><div class="podium-medal">🥇</div><div class="podium-name">押久保欽一</div><div class="podium-amount">6,000円</div></div>
+          <div class="podium-item bronze"><div class="podium-medal">🥉</div><div class="podium-name">早崎英里香</div><div class="podium-amount">2,684円</div></div>
+        </div><table><thead><tr><th>順位</th><th>会員名</th><th>金額</th></tr></thead><tbody><tr><td>4位</td><td>甲村順子</td><td>100円</td></tr><tr><td>5位</td><td>杉田守</td><td>95円</td></tr></tbody></table></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">7</span><span class="section-title">会員様の生の声</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><div class="voice-grid"><div><div class="voice-section-label pos">前進を支える声</div>
+<div class="voice-card pos"><div class="voice-name">西尾佳奈</div>Claudeとの壁打ち（X投稿精査・お店調査）：30分</div>
+<div class="voice-card pos"><div class="voice-name">有馬紗友理</div>本日よりproプランの概要や実践フィードバック会のご案内をしてきただき内容確認し自分の目指す方向性を具体化できた。</div>
+<div class="voice-card pos"><div class="voice-name">近藤英介</div>・以前にAntigravityで作成したアプリ（画面キャプチャ&amp;OCRアプリ）のバージョンアップ</div>
+<div class="voice-card pos"><div class="voice-name">藤木智咲</div>Instagramマーケティング用のAI社員とやり取りを行う中で、AIがInstagramへ直接アクセスして投稿等を行うことには制約があることを確認しました。一...</div>
+<div class="voice-card pos"><div class="voice-name">金子有貴</div>本日は、HakushiさんのAIアートラボウェビナーを視聴し、実際に画像生成を行いました。</div>
+</div><div><div class="voice-section-label neg">停滞を招く声</div>
+<div class="voice-card neg"><div class="voice-name">前川洋子</div>capcutのテンプレート見つけましたがどう活用したらいいかわからない</div>
+<div class="voice-card neg"><div class="voice-name">田口旭晃</div>・GPTsの活用術（アーカイブ視聴）・習慣化→小さか事からコツコツと。ゆっくり負荷を上げていく。・日報を習慣化する→振り返りとフィードバックができないから・</div>
+<div class="voice-card neg"><div class="voice-name">池田勝典</div>claudecode質問会</div>
+<div class="voice-card neg"><div class="voice-name">川西秀樹</div>ウェビナー「もらう仕事はもう終わりAIで仕事がもらえる側に」リアル視聴　参加してまさに自分がやりたかったことなので、デモ実践できるようなテンプレート作ってみたい...</div>
+<div class="voice-card neg"><div class="voice-name">小倉愛美</div># 振り返り：2026年03月24日</div>
+</div></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">8</span><span class="section-title">運営への提言</span><span class="section-toggle">▼</span>
+</div><div class="section-body"><h4 style="font-size:14px;color:var(--gray-600);margin-bottom:8px;">個別フォロー推奨</h4>
+<div class="proposal-list"><div class="proposal-item"><div class="proposal-icon follow">👤</div><div>小倉愛美様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>小川有紀様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>坂井俊章様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>関口大樹ｑ様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div>
+<div class="proposal-item"><div class="proposal-icon follow">👤</div><div>杉田守様：スキル面でのつまずき。個別声かけや1on1でのフォローが有効です。</div></div></div>
+<h4 style="font-size:14px;color:var(--gray-600);margin:20px 0 8px;">FB会・サービス改善案</h4>
+<div class="proposal-list"><div class="proposal-item"><div class="proposal-icon improve">💡</div><div>フェーズ1（操作不安）の会員が15名。初心者向けオンボーディング資料の充実を推奨します。</div></div>
+<div class="proposal-item"><div class="proposal-icon improve">💡</div><div>行動面の課題を抱える会員が16名。応募文作成会やポートフォリオ作成会など、短時間で形にする集中ワークショップの開催が有効です。</div></div></div></div></div>
+<div class="section"><div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="section-num">9</span><span class="section-title">非アクティブPRO会員（過去4週傾向）</span><span class="section-toggle">▼</span>
+</div><div class="section-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:var(--accent-light);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">今週（3月23日–3月29日）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--danger);">28名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--success);">45%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--primary);">33名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 51名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--primary);">87%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--accent);">16名</div><div style="font-size:11px;color:var(--gray-400);">/ PRO 51名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--accent);">42%</div><div style="font-size:11px;color:var(--gray-400);">目標 80%</div></div>
+      </div>
+    </div>
+    <div style="background:var(--gray-50);border-radius:10px;padding:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-400);margin-bottom:12px;">前週</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">非アクティブ</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">23名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">アクティブ率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">55%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出者（2回以上）</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">32名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">日報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">66%</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出者</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">—名</div></div>
+        <div><div style="font-size:11px;color:var(--gray-400);font-weight:600;">週報提出率</div><div style="font-size:28px;font-weight:800;color:var(--gray-400);">—%</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="overflow-x:auto;"><table><thead><tr>
+<th>会員名</th>
+<th>今週日報</th>
+<th>提出率</th>
+<th>今週FB</th>
+<th>参加率</th>
+<th>3/2週</th>
+<th>3/9週</th>
+<th>3/16週</th>
+<th>3/23週</th>
+</tr></thead><tbody>
+<tr>
+<td>中島有季子</td>
 <td>2/7</td>
 <td class="low">29%</td>
 <td class="zero">0/7</td>
 <td class="zero">0%</td>
-<td>2/2</td>
-<td>4/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td>2/0</td>
+</tr>
+<tr>
+<td>中澤みどり</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>中澤健治</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>伊藤紘二</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td>4/3</td>
+<td>1/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>内藤友香子</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td>2/7</td>
+<td class="low">29%</td>
+<td>3/3</td>
+<td class="zero">0/0</td>
+<td>3/0</td>
+<td>0/2</td>
+</tr>
+<tr>
+<td>勝又稔宏</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td>1/1</td>
+</tr>
+<tr>
+<td>吉岡寿治</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>吉田比奈</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
 <td>4/0</td>
 <td>2/0</td>
+<td>1/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>土屋貴裕</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>姥貝有子</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td>1/0</td>
+</tr>
+<tr>
+<td>山田真由美</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>島田英敏</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>松村翠</td>
+<td>2/7</td>
+<td class="low">29%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td>2/0</td>
+</tr>
+<tr>
+<td>池田佳史</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td class="zero">0/0</td>
+<td>7/3</td>
+<td>4/2</td>
+<td>1/1</td>
+</tr>
+<tr>
+<td>河又美智</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>浜畑悦子</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>清水秀明</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td>6/0</td>
+<td>5/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>溝口和範</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>片寄孝康</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td>1/1</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>石原徹</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>立田素子</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td>2/1</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
+<td>築山優希</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td>4/0</td>
+<td>2/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
 </tr>
 <tr>
 <td>船引純</td>
@@ -822,6 +1318,17 @@ td.low { color:var(--warning); font-weight:600; }
 <td class="zero">0/0</td>
 </tr>
 <tr>
+<td>辰野早苗</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/7</td>
+<td class="zero">0%</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+<td class="zero">0/0</td>
+</tr>
+<tr>
 <td>道下明和</td>
 <td class="zero">0/7</td>
 <td class="zero">0%</td>
@@ -833,19 +1340,19 @@ td.low { color:var(--warning); font-weight:600; }
 <td class="zero">0/0</td>
 </tr>
 <tr>
-<td>関口大樹</td>
+<td>野尻幸樹実</td>
 <td>3/7</td>
 <td>43%</td>
-<td>3/7</td>
-<td>43%</td>
-<td class="zero">0/0</td>
-<td class="zero">0/0</td>
-<td class="zero">0/0</td>
-<td>3/3</td>
+<td>1/7</td>
+<td class="low">14%</td>
+<td>1/1</td>
+<td>7/4</td>
+<td>6/1</td>
+<td>3/1</td>
 </tr>
 </tbody></table></div>
-  <div class="alert danger"><span class="alert-icon">⚠️</span><div>完全未稼働（4週連続ゼロ）: 小川有紀、山田真由美、溝口和範、船引純、西口勇生、谷山真一、道下明和</div></div>
-<div class="alert warning"><span class="alert-icon">📉</span><div>急降下中: 中澤みどり、伊藤紘二、立田素子</div></div>
+  <div class="alert danger"><span class="alert-icon">⚠️</span><div>完全未稼働（4週連続ゼロ）: 中澤みどり、中澤健治、吉岡寿治、土屋貴裕、山田真由美、島田英敏、河又美智、浜畑悦子</div></div>
+<div class="alert warning"><span class="alert-icon">📉</span><div>急降下中: 伊藤紘二、吉田比奈、築山優希</div></div>
 </div></div>
 </div>
 

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>目標設定・学習ルートレポート｜乾様</title>
+<style>
+  @page {
+    size: A4;
+    margin: 15mm 18mm;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+    color: #2d2d2d;
+    line-height: 1.8;
+    background: #f8f9fa;
+    padding: 20px;
+  }
+  .report {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+    padding: 40px 40px 35px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e94560, #f5a623, #4ecdc4);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .header .logo {
+    font-size: 13px;
+    letter-spacing: 3px;
+    opacity: 0.7;
+    font-weight: 300;
+  }
+  .header .date {
+    font-size: 13px;
+    opacity: 0.6;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    opacity: 0.75;
+    font-weight: 300;
+  }
+
+  /* 本文 */
+  .content {
+    padding: 40px;
+  }
+
+  /* セクション */
+  .section {
+    margin-bottom: 36px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e94560;
+    display: inline-block;
+  }
+  .section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #e94560;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .section-title-wrap {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+  }
+  .section-title-wrap .title-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  /* カード */
+  .info-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border-left: 4px solid #4ecdc4;
+  }
+  .info-card.highlight {
+    border-left-color: #e94560;
+    background: #fef7f8;
+  }
+  .info-card h4 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .info-card p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+
+  /* 目標テーブル */
+  .goal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+  .goal-table th {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .goal-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: top;
+  }
+  .goal-table tr:nth-child(even) {
+    background: #fafafa;
+  }
+  .goal-table .period {
+    font-weight: 700;
+    color: #e94560;
+    white-space: nowrap;
+    width: 100px;
+  }
+
+  /* ステップ */
+  .step-flow {
+    margin: 20px 0;
+  }
+  .step-item {
+    display: flex;
+    margin-bottom: 0;
+    position: relative;
+  }
+  .step-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  .step-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .step-dot.s1 { background: #e94560; }
+  .step-dot.s2 { background: #f5a623; }
+  .step-dot.s3 { background: #4ecdc4; }
+  .step-dot.s4 { background: #1a1a2e; }
+  .step-line {
+    width: 2px;
+    flex-grow: 1;
+    background: #ddd;
+    min-height: 20px;
+  }
+  .step-content {
+    padding: 4px 0 28px;
+  }
+  .step-content h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 6px;
+  }
+  .step-content p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+  }
+  .step-content .tag {
+    display: inline-block;
+    background: #eef;
+    color: #1a1a2e;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* 学習ルート */
+  .course-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: box-shadow 0.2s;
+  }
+  .course-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .course-order {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e94560;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .course-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 6px;
+  }
+  .course-card p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+  }
+  .course-card .search-tip {
+    display: inline-block;
+    background: #f0f4ff;
+    color: #0f3460;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  /* 補足 */
+  .note-box {
+    background: #fffbeb;
+    border: 1px solid #f5a623;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .note-box .note-title {
+    font-weight: 700;
+    color: #c48600;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  /* アクション */
+  .action-list {
+    list-style: none;
+    margin: 12px 0;
+  }
+  .action-list li {
+    padding: 10px 16px;
+    background: #f0faf8;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    position: relative;
+    padding-left: 36px;
+  }
+  .action-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 14px;
+    color: #4ecdc4;
+    font-weight: 700;
+  }
+
+  /* フッター */
+  .footer {
+    padding: 24px 40px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+  }
+  .footer .name {
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+
+  /* 区切り */
+  .divider {
+    height: 1px;
+    background: #eee;
+    margin: 32px 0;
+  }
+
+  /* メッセージボックス */
+  .message-box {
+    background: linear-gradient(135deg, #f0faf8, #eef6ff);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #2d2d2d;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .report { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="report">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">SHIFT AI</div>
+      <div class="date">2026年4月3日</div>
+    </div>
+    <h1>目標設定・学習ルート レポート</h1>
+    <div class="subtitle">乾様 ― マンツーマン面談レポート</div>
+  </div>
+
+  <div class="content">
+
+    <!-- 1. ご提出いただいた目標の確認 -->
+    <div class="section">
+      <div class="section-title-wrap">
+        <span class="section-number">1</span>
+        <span class="title-text">ご提出いただいた目標の確認</span>
+      </div>
+
+      <p style="font-size:14px; color:#555; margin-bottom:16px;">
+        マイページのワーク・キャリア診断BOTの結果から、乾様の目標を整理しました。
+      </p>
+
+      <div class="info-card highlight">
+        <h4>目指す姿</h4>
+        <p>資産型コンテンツを活用し、自由な時間とそれを楽しめるだけの収益を確保する</p>
+      </div>
+
+      <table class="goal-table">
+        <tr>
+          <th>時期</th>
+          <th>目標</th>
+          <th>コーチからのコメント</th>
+        </tr>
+        <tr>
+          <td class="period">1ヶ月後</td>
+          <td>AIを一通り理解し、筋道を立てられるようにする</td>
+          <td>最初の一歩としてとても良い目標です。まず全体像を掴むことで、その後の学習効率が格段に上がります。</td>
+        </tr>
+        <tr>
+          <td class="period">3ヶ月後</td>
+          <td>収益を立てられるようになっている</td>
+          <td>方向性は問題ありません。より具体的に「何で・いくら」稼ぐかを明確にすると、行動計画が立てやすくなります。（次のセクションで整理します）</td>
+        </tr>
+        <tr>
+          <td class="period">1年後</td>
+          <td>月20万円以上を安定して稼げるようにする</td>
+          <td>十分に達成可能な目標です。そのために必要なキャリアパスと学習ステップを以下にご提案します。</td>
+        </tr>
+      </table>
+
+      <div class="info-card">
+        <h4>現在の学習可能時間（ワーク①より）</h4>
+        <p>1日3時間 ／ 週21時間 ／ 月90時間</p>
+      </div>
+      <p style="font-size:14px; color:#555;">
+        月90時間の学習時間は、かなり恵まれた環境です。<br>
+        この時間を最大限に活かすために、効率的な学習ルートをご案内します。
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 2. 目標の再定義 -->
+    <div class="section">
+      <div class="section-title-wrap">
+        <span class="section-number">2</span>
+        <span class="title-text">目標の再定義 ― キャリアパスのご提案</span>
+      </div>
+
+      <p style="font-size:14px; color:#555; margin-bottom:20px;">
+        「月20万円を安定して稼ぐ」ために、<strong>何を・どの順番で</strong>取り組むかを整理しました。<br>
+        キャリア診断の結果も踏まえ、以下のステップをご提案します。
+      </p>
+
+      <div class="info-card highlight">
+        <h4>提案キャリアパス</h4>
+        <p>AIライター → コンテンツ制作（動画・note等） → 資産型収益の確立</p>
+      </div>
+
+      <div class="message-box">
+        <strong>なぜAIライターから始めるのか？</strong><br><br>
+        AIライターのスキル（＝言語化力）は、すべてのAI活用の土台です。<br>
+        プロンプトを書く力、文章を構成する力、相手に伝わる表現を選ぶ力 ―<br>
+        これらは動画編集、YouTube台本、noteコンテンツ、SNS運用など、<br>
+        今後どの方向に進んでも必ず活きてきます。<br><br>
+        まずライターとしての基盤を固めることで、<br>
+        資産型コンテンツへの展開がスムーズになります。
+      </div>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-marker">
+            <div class="step-dot s1">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h4>AIライティングの基礎習得（1〜2週間）</h4>
+            <p>
+              AIツールを使った文章作成の基本を学びます。<br>
+              プロンプトの書き方、記事構成の作り方、SEOの基礎知識を身につけます。
+            </p>
+            <span class="tag">目安：学習時間 20〜30時間</span>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-marker">
+            <div class="step-dot s2">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h4>実績づくり ― ブログ・noteでアウトプット（2〜4週間）</h4>
+            <p>
+              学んだスキルを使って、実際に記事を書きます。<br>
+              アフィリエイトブログやnoteで作品を公開し、ポートフォリオを作ります。<br>
+              この段階で月1〜3万円の収益を目指します。
+            </p>
+            <span class="tag">3ヶ月目標「収益化」の土台</span>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-marker">
+            <div class="step-dot s3">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h4>案件獲得 ― クラウドソーシングに挑戦（1〜3ヶ月）</h4>
+            <p>
+              クラウドワークス・ランサーズなどでAIライティング案件に応募します。<br>
+              実績と応募文の質が採用率を大きく左右します。<br>
+              月5〜10万円の安定収入を目指します。
+            </p>
+            <span class="tag">案件獲得の応募文の書き方も講座にあります</span>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-marker">
+            <div class="step-dot s4">4</div>
+          </div>
+          <div class="step-content">
+            <h4>資産型コンテンツへの展開（3ヶ月〜1年）</h4>
+            <p>
+              ライティング力を土台に、動画編集・YouTube・noteなど<br>
+              <strong>資産型コンテンツ</strong>（一度作れば継続的に収益が入る仕組み）を構築します。<br>
+              クライアントワーク＋資産型収益の両輪で、月20万円以上の安定収入を目指します。
+            </p>
+            <span class="tag">1年後目標「月20万円安定」の達成ルート</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 3. 学習ルート -->
+    <div class="section">
+      <div class="section-title-wrap">
+        <span class="section-number">3</span>
+        <span class="title-text">学習ルートのご案内</span>
+      </div>
+
+      <p style="font-size:14px; color:#555; margin-bottom:20px;">
+        会員サイトの講義ライブラリから、以下の順番で学習を進めてください。<br>
+        <strong>検索機能</strong>を使うと、テーマごとにピンポイントで講座を探せます。
+      </p>
+
+      <div class="note-box">
+        <div class="note-title">講座の探し方</div>
+        会員サイトの「サーチ」ボタンを押すと、講義ライブラリの検索画面が表示されます。<br>
+        キーワード（例：「ライティング」）を入力すると、関連する講座が一覧で表示されます。<br>
+        各講座には<strong>チャプター</strong>と<strong>「この動画で学べること」</strong>が記載されていますので、<br>
+        内容を確認してから視聴するのがおすすめです。
+      </div>
+
+      <h3 style="font-size:15px; font-weight:700; color:#1a1a2e; margin: 24px 0 14px;">推奨学習順序</h3>
+
+      <div class="course-card">
+        <div class="course-order">STEP 1 ― まずここから</div>
+        <h4>AIライター Version 2 ― 準備編</h4>
+        <p>AIライティングの全体像と始め方を理解できます。最初に見るべき講座です。</p>
+        <span class="search-tip">検索ワード：「ライティング」→ 準備編</span>
+      </div>
+
+      <div class="course-card">
+        <div class="course-order">STEP 2</div>
+        <h4>AIライター Version 2 ― 記事作成</h4>
+        <p>AIを使った実際の記事作成手法を学びます。SEO記事の構成やプロンプトの具体例が含まれています。</p>
+        <span class="search-tip">検索ワード：「ライティング」→ 記事作成</span>
+      </div>
+
+      <div class="course-card">
+        <div class="course-order">STEP 3</div>
+        <h4>AIライター Version 2 ― 案件獲得</h4>
+        <p>クラウドソーシングでの案件応募方法、採用される応募文の書き方を学びます。</p>
+        <span class="search-tip">検索ワード：「ライティング」→ 案件獲得</span>
+      </div>
+
+      <div class="course-card">
+        <div class="course-order">STEP 4 ― 応用</div>
+        <h4>プロンプト調整法・note活用術</h4>
+        <p>
+          「思い通りの文章が出力されない」を解決するプロンプト調整と、<br>
+          noteを使ったアウトプット習慣化のコツを学べます。
+        </p>
+        <span class="search-tip">検索ワード：「プロンプト」「note」</span>
+      </div>
+
+      <div class="course-card">
+        <div class="course-order">将来の展開として</div>
+        <h4>AI画像生成・動画編集の講座</h4>
+        <p>
+          ライティングの基盤が整ったら、画像生成（Midjourney等）や動画編集にも挑戦できます。<br>
+          記事のアイキャッチ画像やSNS動画を自作できるようになると、仕事の幅が一気に広がります。
+        </p>
+        <span class="search-tip">検索ワード：「画像生成」「動画」</span>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">動画講座の視聴について</div>
+        動画講座には字幕が付いていないものもございます。<br>
+        視聴しづらいコンテンツがありましたら、お気軽にお知らせください。<br>
+        テキストで要点をまとめた資料をお作りするなど、別の方法でサポートいたします。
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 4. まず取り組んでいただきたいこと -->
+    <div class="section">
+      <div class="section-title-wrap">
+        <span class="section-number">4</span>
+        <span class="title-text">まず取り組んでいただきたいこと</span>
+      </div>
+
+      <ul class="action-list">
+        <li>会員サイトで「ライティング」と検索し、<strong>準備編</strong>から視聴を始める</li>
+        <li>準備編が終わったら<strong>記事作成</strong>に進み、実際にAIで記事を1本書いてみる</li>
+        <li>日報をDiscordに投稿する（学んだこと・やったことを短くでOK）</li>
+        <li>わからないことがあればDiscordの「何でも相談室」でテキスト質問する</li>
+      </ul>
+
+      <div class="message-box">
+        学習のペースは乾様のリズムで大丈夫です。<br>
+        1日3時間の学習時間があれば、1週間〜2週間で準備編は完了できると思います。<br><br>
+        まとまった時間を毎日とるのも大変だと思いますので、<br>
+        隙間時間をうまく活用して、無理なく学習を進めていただければと思います。<br><br>
+        何かご質問がありましたら、いつでもLINEからお気軽にメッセージをお送りください。<br>
+        一緒に目標達成に向けて進んでいきましょう。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    <span class="name">SHIFT AI｜マンツーマン面談担当：野村冴香</span><br>
+    ご質問・ご相談はLINEまたはDiscordからお気軽にどうぞ
+  </div>
+
+</div>
+</body>
+</html>
