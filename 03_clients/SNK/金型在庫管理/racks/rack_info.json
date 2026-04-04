@@ -1,0 +1,32 @@
+[
+  {
+    "name": "D_旧ラック_",
+    "total": 60,
+    "occupied": 59
+  },
+  {
+    "name": "D_新ラック_",
+    "total": 36,
+    "occupied": 33
+  },
+  {
+    "name": "F_北側ラック_",
+    "total": 48,
+    "occupied": 42
+  },
+  {
+    "name": "F_南側ラック_",
+    "total": 36,
+    "occupied": 23
+  },
+  {
+    "name": "G_北側ラック_",
+    "total": 36,
+    "occupied": 6
+  },
+  {
+    "name": "型整備",
+    "total": 0,
+    "occupied": 0
+  }
+]

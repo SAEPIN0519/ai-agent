@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>金型在庫管理システム 操作マニュアル</title>
+    <style>
+        @page { size: A4; margin: 15mm; }
+        @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            body { font-size: 11pt; }
+        }
+        body {
+            font-family: 'Meiryo', 'Segoe UI', sans-serif;
+            max-width: 800px; margin: 0 auto; padding: 20px;
+            color: #1a1a1a; line-height: 1.7;
+        }
+        h1 { text-align: center; font-size: 24pt; border-bottom: 3px solid #2563eb; padding-bottom: 10px; margin-bottom: 30px; }
+        h2 { font-size: 16pt; color: #2563eb; border-left: 5px solid #2563eb; padding-left: 12px; margin-top: 40px; }
+        h3 { font-size: 13pt; color: #1e3a5f; margin-top: 25px; }
+        .cover { text-align: center; padding: 80px 0; }
+        .cover h1 { font-size: 28pt; border: none; }
+        .cover .subtitle { font-size: 14pt; color: #666; margin-top: 10px; }
+        .cover .date { font-size: 12pt; color: #999; margin-top: 40px; }
+        .cover .dept { font-size: 14pt; margin-top: 10px; }
+        .step-box {
+            background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
+            padding: 16px; margin: 15px 0;
+        }
+        .step-num {
+            display: inline-block; background: #2563eb; color: white;
+            width: 28px; height: 28px; line-height: 28px; text-align: center;
+            border-radius: 50%; font-weight: bold; margin-right: 8px;
+        }
+        .step-title { font-weight: bold; font-size: 12pt; }
+        .screenshot-placeholder {
+            background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px;
+            padding: 40px; text-align: center; color: #94a3b8; margin: 12px 0;
+            min-height: 200px; display: flex; align-items: center; justify-content: center;
+            font-size: 11pt;
+        }
+        .screenshot-placeholder img { max-width: 100%; border-radius: 6px; }
+        .tip-box {
+            background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px;
+            border-radius: 0 8px 8px 0; margin: 12px 0;
+        }
+        .tip-box::before { content: "💡 "; font-size: 14pt; }
+        .warn-box {
+            background: #fee2e2; border-left: 4px solid #dc2626; padding: 12px 16px;
+            border-radius: 0 8px 8px 0; margin: 12px 0;
+        }
+        .warn-box::before { content: "⚠ "; font-size: 14pt; }
+        table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+        th, td { border: 1px solid #d1d5db; padding: 8px 12px; text-align: left; font-size: 10pt; }
+        th { background: #2563eb; color: white; }
+        .color-sample { display: inline-block; width: 16px; height: 16px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
+        .green { background: #dcfce7; border: 1px solid #16a34a; }
+        .red { background: #fee2e2; border: 1px solid #dc2626; }
+        .blue { background: #2563eb; }
+        .yellow { background: #fef3c7; border: 1px solid #f59e0b; }
+        ol, ul { padding-left: 24px; }
+        li { margin-bottom: 6px; }
+        .toc { background: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .toc a { text-decoration: none; color: #2563eb; }
+        .toc li { margin-bottom: 4px; }
+        .btn-sample {
+            display: inline-block; padding: 6px 16px; border-radius: 8px;
+            font-weight: bold; font-size: 10pt; color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== 表紙 ===== -->
+<div class="cover">
+    <h1>金型在庫管理システム<br>操作マニュアル</h1>
+    <p class="subtitle">ラック配置図から入出庫を管理するWebアプリ</p>
+    <p class="date">2026年4月 作成</p>
+    <p class="dept">技術部</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 目次 ===== -->
+<h2>目次</h2>
+<div class="toc">
+    <ol>
+        <li><a href="#overview">システム概要</a></li>
+        <li><a href="#open">アプリの開き方</a></li>
+        <li><a href="#screen">画面の見方</a></li>
+        <li><a href="#receive">入庫登録のやり方</a></li>
+        <li><a href="#receive2">2個置きの入庫</a></li>
+        <li><a href="#manual">手動入力（インゴット・パレット等）</a></li>
+        <li><a href="#ship">出庫のやり方</a></li>
+        <li><a href="#ship2">2個入りの一部出庫</a></li>
+        <li><a href="#search">金型の検索</a></li>
+        <li><a href="#split">途中で2分割にする</a></li>
+        <li><a href="#faq">よくある質問</a></li>
+    </ol>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 1. システム概要 ===== -->
+<h2 id="overview">1. システム概要</h2>
+
+<p>金型在庫管理システムは、技術部のラック（D旧・D新・F北・F南・G北）に保管されている金型の位置を管理するためのWebアプリです。</p>
+
+<h3>できること</h3>
+<table>
+    <tr><th>機能</th><th>内容</th></tr>
+    <tr><td>入庫登録</td><td>金型をラックの空いてる場所に登録する</td></tr>
+    <tr><td>出庫</td><td>金型をラックから取り出した記録をつける</td></tr>
+    <tr><td>検索</td><td>受付Noで金型がどこにあるか検索する</td></tr>
+    <tr><td>2個置き</td><td>小さい金型は1つの場所に2個まで登録できる</td></tr>
+    <tr><td>手動入力</td><td>インゴット・パレットなど金型以外も登録できる</td></tr>
+</table>
+
+<h3>配置図の色の意味</h3>
+<table>
+    <tr><th>色</th><th>意味</th></tr>
+    <tr><td><span class="color-sample green"></span> 緑</td><td>空き（ここに入庫できる）</td></tr>
+    <tr><td><span class="color-sample red"></span> 赤</td><td>使用中（金型が入っている）</td></tr>
+    <tr><td><span class="color-sample blue"></span> 青</td><td>選択中（今選んでいる場所）</td></tr>
+    <tr><td><span class="color-sample yellow"></span> 黄</td><td>2個目の入力待ち</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ===== 2. アプリの開き方 ===== -->
+<h2 id="open">2. アプリの開き方</h2>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">共有フォルダを開く</span>
+    <p>エクスプローラーで以下を開く：</p>
+    <p style="background:#e2e8f0;padding:8px 12px;border-radius:6px;font-family:monospace;">
+        \\192.168.1.233\技術部\新製品進捗管理\※技術管理用　新規・更新進捗表※
+    </p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">「金型在庫管理.html」をダブルクリック</span>
+    <p>ブラウザ（Edge）で開きます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/01_top.png" alt="トップ画面">
+</div>
+
+<div class="tip-box">
+    デスクトップにショートカットを作っておくと便利です。ファイルを右クリック→「ショートカットの作成」
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 3. 画面の見方 ===== -->
+<h2 id="screen">3. 画面の見方</h2>
+
+<p>画面上部に4つのタブがあります。</p>
+
+<table>
+    <tr><th>タブ</th><th>用途</th></tr>
+    <tr><td><b>入庫</b></td><td>金型をラックに入れる時に使う</td></tr>
+    <tr><td><b>出庫・検索</b></td><td>金型を取り出す時、金型を探す時に使う</td></tr>
+    <tr><td><b>ダッシュボード</b></td><td>各ラックの使用率を確認</td></tr>
+    <tr><td><b>棚卸</b></td><td>定期的な在庫確認に使う</td></tr>
+</table>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/01_top.png" alt="タブ">
+</div>
+
+<h3>配置図の見方</h3>
+
+<p>ラックを選択すると、扉ごとの配置図が表示されます。</p>
+
+<table>
+    <tr><th>列</th><th>意味</th></tr>
+    <tr><td>段</td><td>3段目（上）〜 1段目手前（下）</td></tr>
+    <tr><td>左 / 中央 / 右</td><td>扉を開けた時の位置</td></tr>
+</table>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/04_rack_map.png" alt="配置図">
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 4. 入庫登録のやり方 ===== -->
+<h2 id="receive">4. 入庫登録のやり方</h2>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">「入庫」タブを開く</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">受付Noを入力する</span>
+    <p>「更新型（受付No）」が選択された状態で、更新型一覧表の管理番号を入力します。</p>
+    <p>→ 品番・品名・更新型No・客先が自動で表示されます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/02_uketsuke_input.png" alt="受付No入力">
+</div>
+
+<div class="step-box">
+    <span class="step-num">3</span>
+    <span class="step-title">ラックを選択する</span>
+    <p>旧Dラック・新Dラック・F北側・F南側・G北側から選びます。</p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">4</span>
+    <span class="step-title">空いている場所（緑）をタップする</span>
+    <p>配置図が表示されるので、<span class="color-sample green"></span>緑色の「空き」をタップします。</p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">5</span>
+    <span class="step-title">「1個」を選択する</span>
+    <p>「この場所にいくつ置く？」と聞かれるので「1個」を選びます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/05_count_modal.png" alt="個数選択">
+</div>
+
+<div class="step-box">
+    <span class="step-num">6</span>
+    <span class="step-title">「入庫登録する」ボタンを押す</span>
+    <p>選んだ場所が青くハイライトされ、画面上部に選択中の場所が表示されます。<br>
+    「入庫登録する」ボタンを押して完了です。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/07_receive_done.png" alt="入庫完了">
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 5. 2個置きの入庫 ===== -->
+<h2 id="receive2">5. 2個置きの入庫</h2>
+
+<p>小さい金型は1つの場所に2個まで登録できます。</p>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">1個目の受付Noを入力する</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">空いている場所をタップ →「2個」を選択</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">3</span>
+    <span class="step-title">「入庫登録する」を押す → 1個目が入庫される</span>
+    <p>自動的に画面が上にスクロールし、<span class="color-sample yellow"></span>黄色の帯で「2個目を入力してね」と表示されます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/13_waiting_item2.png" alt="2個目待ち">
+</div>
+
+<div class="step-box">
+    <span class="step-num">4</span>
+    <span class="step-title">2個目の受付Noを入力する</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">5</span>
+    <span class="step-title">もう一度「入庫登録する」を押す → 2個目が入庫される</span>
+    <p>セルが上下に分割され、2つの金型が表示されます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/09_split_cell.png" alt="2個入りセル">
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 6. 手動入力 ===== -->
+<h2 id="manual">6. 手動入力（インゴット・パレット等）</h2>
+
+<p>更新型一覧に登録されていないもの（インゴット・パレット・部品など）を置く場合に使います。</p>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">「その他（手動入力）」ボタンをタップ</span>
+    <p>入力欄が切り替わります。</p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">品名を入力する（必須）</span>
+    <p>例: 「NA11 インゴット」「パレット」など、何を置くかわかるように入力します。</p>
+    <p>品番・備考は任意です。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/08_manual_input.png" alt="手動入力">
+</div>
+
+<div class="step-box">
+    <span class="step-num">3</span>
+    <span class="step-title">あとは通常の入庫と同じ</span>
+    <p>ラック選択 → 空き場所タップ → 入庫登録する</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 7. 出庫のやり方 ===== -->
+<h2 id="ship">7. 出庫のやり方</h2>
+
+<h3>方法A: 配置図からタップして出庫</h3>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">「入庫」タブのまま、使用中のセル（赤）をタップ</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">メニューから「出庫する（取り出す）」を選択</span>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/10_slot_menu.png" alt="出庫メニュー">
+</div>
+
+<h3>方法B: 受付Noで検索して出庫</h3>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">「出庫・検索」タブを開く</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">受付Noを入力して「検索」ボタンを押す</span>
+    <p>保管場所が表示されます。</p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">3</span>
+    <span class="step-title">「出庫する」ボタンを押す</span>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 8. 2個入りの一部出庫 ===== -->
+<h2 id="ship2">8. 2個入りの一部出庫</h2>
+
+<p>2個入っているセルから1個だけ出庫できます。</p>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">2個入りのセルをタップ</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">出庫したい方を選択</span>
+    <p>メニューに以下が表示されます：</p>
+    <ul>
+        <li><span class="btn-sample" style="background:#22c55e;">2個目を入庫する</span> ← 2個目が空きの場合</li>
+        <li><span class="btn-sample" style="background:#ef4444;">1個目を出庫（品番）</span></li>
+        <li><span class="btn-sample" style="background:#f87171;">2個目を出庫（品番）</span></li>
+        <li><span class="btn-sample" style="background:#b91c1c;">両方出庫</span></li>
+    </ul>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/12_split_menu.png" alt="2個入り出庫メニュー">
+</div>
+
+<div class="tip-box">
+    1個だけ出庫すると、残った方が自動的に通常の1個表示に戻ります。
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 9. 金型の検索 ===== -->
+<h2 id="search">9. 金型の検索</h2>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">「出庫・検索」タブを開く</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">受付Noを入力して「検索」を押す</span>
+    <p>その金型がどのラックのどの位置にあるか表示されます。</p>
+</div>
+
+<div class="screenshot-placeholder">
+    <img src="manual_screenshots/11_ship_tab.png" alt="検索画面">
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 10. 途中で2分割にする ===== -->
+<h2 id="split">10. 途中で2分割にする</h2>
+
+<p>1個だけ入っているセルに、後からもう1個追加したい場合。</p>
+
+<div class="step-box">
+    <span class="step-num">1</span>
+    <span class="step-title">使用中のセル（赤）をタップ</span>
+</div>
+
+<div class="step-box">
+    <span class="step-num">2</span>
+    <span class="step-title">「2分割にする（もう1個追加）」を選択</span>
+    <p>セルが分割されて、2個目の入力待ちになります。</p>
+</div>
+
+<div class="step-box">
+    <span class="step-num">3</span>
+    <span class="step-title">2個目の受付Noを入力 →「入庫登録する」を押す</span>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ===== 11. よくある質問 ===== -->
+<h2 id="faq">11. よくある質問</h2>
+
+<h3>Q. 間違えて入庫してしまった</h3>
+<p>→ そのセルをタップして「出庫する」を選べば取り消せます。</p>
+
+<h3>Q. データは他のPCにも反映される？</h3>
+<p>→ 現在はPC内のブラウザに保存されるため、他のPCには反映されません。共有フォルダ上のファイルを使えば、最後に保存した状態が反映されます。</p>
+
+<h3>Q. 新しい金型が追加された場合は？</h3>
+<p>→ 更新型一覧表にデータを追加すれば、翌朝の自動更新で反映されます（毎朝7:50に更新）。</p>
+
+<h3>Q. 受付Noがわからない</h3>
+<p>→ 「その他（手動入力）」モードで品名を直接入力して登録できます。</p>
+
+<h3>Q. ブラウザを閉じてもデータは消えない？</h3>
+<p>→ ブラウザのローカルストレージに保存されるため、同じPCの同じブラウザで開けばデータは残ります。ただしブラウザのデータ消去を行うと消えます。</p>
+
+<hr style="margin-top: 40px;">
+<p style="text-align:center; color:#999; font-size:9pt;">
+    金型在庫管理システム 操作マニュアル v1.0 — 2026年4月 技術部
+</p>
+
+<!-- ===== 印刷ボタン ===== -->
+<div class="no-print" style="text-align:center; margin:30px 0;">
+    <button onclick="window.print()" style="background:#2563eb;color:white;padding:12px 32px;border:none;border-radius:10px;font-size:14pt;font-weight:bold;cursor:pointer;">
+        PDF保存 / 印刷する
+    </button>
+    <p style="color:#999;font-size:10pt;margin-top:8px;">※ スクショは各枠をクリックして画像を貼り替えてね</p>
+</div>
+
+</body>
+</html>

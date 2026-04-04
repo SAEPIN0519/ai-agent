@@ -148,6 +148,44 @@ python3 09_system/slack_weekly_post.py --schedule
 
 ---
 
+## 週次業務フロー（改定版 2026-03-31）
+
+### 全体スケジュール
+
+| 曜日・時間 | 内容 | コマンド |
+|---|---|---|
+| 日曜 21:00 | HTMLレポート生成 + git push + 冴香にLINE通知 | `python3 weekly_member_analysis.py --combined --generate-only` |
+| 月曜（冴香の指示後） | Slackに週次レポート投稿 | `python3 weekly_member_analysis.py --combined --slack-only` |
+| 月曜 10:00 | Discord用 週間MVP投稿文を生成 + 冴香にLINE通知 | （後述のDiscord MVP生成スクリプト） |
+| 月曜（冴香の指示後） | DiscordにMVP投稿 | 冴香がDiscordに手動投稿 or Bot投稿 |
+
+### 日曜 21:00 — HTMLレポート生成
+1. Google Sheetsから最新データ取得
+2. PRO / PREMIUM / 合算 / チャンネルログ分析の4つのHTMLを生成
+3. git push（GitHub Pagesに反映）
+4. 冴香のLINEにGitHub PagesのURLを送信して確認依頼
+
+### 月曜 10:00 — Discord週間MVP投稿文の生成
+以下のランキングを自動生成し、冴香のLINEに送信する:
+
+**投稿内容:**
+- 稼働時間 TOP3（同率は同じメダル）
+- 日報提出 TOP3（7回以上＝毎日提出で1位扱い）
+- FB会参加 TOP3（同率は同じメダル）
+
+**ルール:**
+- 氏名は `DB_All-Members` の `Discord ID`（col[6]）を使い `<@ID>` メンション形式にする
+- 氏名の表記揺れ対策として全角/半角スペースをstripする
+- PRO/PREMIUM両方に所属するメンバーは重複カウントしない
+- 冒頭に `@PRO`（ロールメンション）を付ける（ロールID確認後）
+- 冴香が確認・修正してからDiscordに投稿する
+
+### 通知手段について
+- LINE Notifyは2025年3月末でサービス終了済み
+- 代替手段を冴香と相談して決定する（LINE Messaging API / Discord DM / メール）
+
+---
+
 ## ステップ5：HTMLレポート生成（4月以降追加）
 
 週報テキスト（MD）に加えて、HTMLビジュアルレポートも自動生成する。
@@ -200,5 +238,5 @@ client.files_upload_v2(
 ---
 
 発令日: 2026-03-29
-更新日: 2026-03-29（HTML自動生成・Windows連携追加）
+更新日: 2026-03-31（週次フロー改定・Discord MVP投稿追加・Slack投稿前確認フロー導入）
 発令者: SAEPIN（COO）

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ラック QRコード生成・印刷</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-break { page-break-after: always; }
+            body { background: white; }
+            .qr-card { break-inside: avoid; border: 2px solid #333 !important; }
+        }
+        body { font-family: 'Segoe UI', 'Meiryo', sans-serif; background: #f1f5f9; }
+        .qr-card {
+            background: white; border-radius: 16px; padding: 24px;
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6">
+
+<!-- ========== 設定パネル ========== -->
+<div class="max-w-3xl mx-auto no-print">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">ラック QRコード生成</h1>
+
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+        <h2 class="font-bold text-lg mb-4">スプレッドシートURLを入力</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            各ラックのExcelファイルをGoogle Drive / SharePointにアップロードして、共有URLを貼り付けてね
+        </p>
+
+        <div class="space-y-3" id="urlInputs">
+            <!-- 動的に生成 -->
+        </div>
+
+        <div class="flex gap-3 mt-5">
+            <button onclick="generateAllQR()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-lg flex-1">
+                QRコード生成
+            </button>
+            <button onclick="window.print()" id="printBtn" class="bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold text-lg hidden">
+                印刷する
+            </button>
+        </div>
+    </div>
+
+    <!-- プリセット -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+        <h2 class="font-bold text-lg mb-3">URLなしでも使えるモード</h2>
+        <p class="text-sm text-gray-500 mb-3">
+            URLがまだない場合、ラック識別用QR（RACK:D1 等）を生成できるよ。<br>
+            金型在庫管理アプリのQRスキャン機能で読み取れる形式だよ。
+        </p>
+        <button onclick="generateRackIdQR()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold">
+            ラック識別QRを生成（URL不要）
+        </button>
+    </div>
+</div>
+
+<!-- ========== QRコード表示エリア ========== -->
+<div class="max-w-4xl mx-auto mt-8">
+    <div id="qrOutput" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 動的に生成 -->
+    </div>
+</div>
+
+<script>
+const RACKS = [
+    { name: '旧Dラック', description: 'D(旧)ラック ⑤④③②①番扉', color: '#2563eb',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQAU6nSBkpu3SaS739a-OlVyAQPieZNR7hdQxj5Y5q0zl6k?e=JUEGrC' },
+    { name: '新Dラック', description: 'D(新)ラック ③②①番扉', color: '#3b82f6',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQDvVcBi3WnjR6fnTWxbK2VmAQe5dHhHwgtlFFhgQaeLFcQ?e=xxk6pb' },
+    { name: 'F北側ラック', description: 'F(北側)ラック ⑦⑥⑤番扉', color: '#16a34a',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQAogUr3i0PkTYilQYf8iNykAYf8FcDuyfeicsGUG20a0L0?e=RYoNzs' },
+    { name: 'F南側ラック', description: 'F(南側)ラック ③②①番扉', color: '#22c55e',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQD-INhs_sYhR6nZ3VYWWMCXARamD8WB98qS1DoxDDFQ_Jo?e=TyUQGk' },
+    { name: 'G北側ラック', description: 'G(北側)ラック ④③②番扉', color: '#ea580c',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQAvjUjdZT4NRJTDiWeIrAFxAWSvwGx0441NimIQWewQSG8?e=CCk4O2' },
+    { name: '型整備', description: '型整備ラック', color: '#6b7280',
+      url: 'https://shinnihon.sharepoint.com/:x:/s/msteams_0c471c/IQBHDFZVbTSwTaQ0aqwfzRQmATJc3ZeOnOsJtiYpcNjrmVs?e=vVh9Ks' },
+];
+
+// URL入力フォーム生成
+function initInputs() {
+    const container = document.getElementById('urlInputs');
+    // ローカルストレージから復元（なければプリセットURLを使用）
+    const saved = JSON.parse(localStorage.getItem('rackUrls') || '{}');
+
+    container.innerHTML = RACKS.map(rack => `
+        <div class="flex items-center gap-3">
+            <span class="font-bold text-lg w-20" style="color: ${rack.color}">${rack.name}</span>
+            <input type="text" id="url-${rack.name}"
+                   value="${saved[rack.name] || rack.url || ''}"
+                   placeholder="https://..."
+                   class="flex-1 border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+        </div>
+    `).join('');
+}
+
+// URL保存
+function saveUrls() {
+    const urls = {};
+    RACKS.forEach(rack => {
+        urls[rack.name] = document.getElementById(`url-${rack.name}`).value.trim();
+    });
+    localStorage.setItem('rackUrls', JSON.stringify(urls));
+    return urls;
+}
+
+// QRコード画像URL生成（Google Charts API）
+function qrImageUrl(data, size = 400) {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(data)}&margin=10`;
+}
+
+// URL付きQRコード生成
+function generateAllQR() {
+    const urls = saveUrls();
+    const output = document.getElementById('qrOutput');
+    let hasAny = false;
+
+    output.innerHTML = RACKS.map(rack => {
+        const url = urls[rack.name];
+        if (!url) return '';
+        hasAny = true;
+        return createQRCard(rack, url, url);
+    }).join('');
+
+    if (!hasAny) {
+        output.innerHTML = '<p class="text-gray-400 col-span-3 text-center py-8">URLを1つ以上入力してね</p>';
+        return;
+    }
+
+    document.getElementById('printBtn').classList.remove('hidden');
+}
+
+// ラック識別QR生成（URL不要モード）
+function generateRackIdQR() {
+    const output = document.getElementById('qrOutput');
+
+    output.innerHTML = RACKS.map(rack => {
+        const data = `RACK:${rack.name}`;
+        return createQRCard(rack, data, `識別コード: ${data}`);
+    }).join('');
+
+    document.getElementById('printBtn').classList.remove('hidden');
+}
+
+// QRカード HTML
+function createQRCard(rack, qrData, subtitle) {
+    return `
+        <div class="qr-card">
+            <div class="inline-block px-4 py-2 rounded-full text-white font-black text-2xl mb-3"
+                 style="background: ${rack.color}">
+                ${rack.name}
+            </div>
+            <p class="text-sm text-gray-500 mb-3">${rack.description}</p>
+            <img src="${qrImageUrl(qrData)}"
+                 alt="QR: ${rack.name}"
+                 class="mx-auto w-48 h-48 mb-3"
+                 onerror="this.src='https://chart.googleapis.com/chart?cht=qr&chs=400x400&chl=${encodeURIComponent(qrData)}'">
+            <p class="text-xs text-gray-400 break-all">${subtitle}</p>
+            <a href="${qrImageUrl(qrData, 600)}" download="QR_${rack.name}.png"
+               class="inline-block mt-2 text-sm text-blue-600 font-semibold no-print">
+                画像ダウンロード
+            </a>
+        </div>
+    `;
+}
+
+// 初期化
+initInputs();
+</script>
+</body>
+</html>
