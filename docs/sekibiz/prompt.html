@@ -536,10 +536,10 @@ function generatePrompts() {
   // ボーナス
   var p4 = 'あなたは店舗経営のコーチです。\n私は今日の講座で以下のアイデアが出ました。\n1日に集客作業に使える時間は〇〇分です。\nITスキルは〇〇です。\n\nどれから手をつけるべきか、優先順位をつけてください。\n\n【出てきたアイデア】\n★ FELOの回答から気になったものをここにコピペしてください\n・\n・\n・\n\nスマホで見やすいように、各アイデアに対して「優先度・理由・所要時間・効果が出る目安」を箇条書きで教えてください。\n\nそのうえで「最初の1週間の月〜日のスケジュール」を作成してください。';
 
-  // 表示用HTML（入力値をハイライト）
-  document.getElementById('prompt1').innerHTML = escapeHtml(p1).replace(new RegExp(escapeRegex(shopname) + '|' + escapeRegex(type) + '|' + escapeRegex(location) + '|' + escapeRegex(hours) + '|' + escapeRegex(busy) + '|' + escapeRegex(quiet) + '|' + escapeRegex(target) + '|' + escapeRegex(targetPain) + '|' + escapeRegex(sns) + '|' + escapeRegex(freq) + '|' + escapeRegex(content) + '|' + escapeRegex(offline) + '|' + escapeRegex(strength) + '|' + escapeRegex(weakness), 'g', function(m) { return '<span class="filled">' + m + '</span>'; });
+  // 表示用（シンプルにテキスト表示）
+  document.getElementById('prompt1').textContent = p1;
   document.getElementById('prompt2').textContent = p2;
-  document.getElementById('prompt3').innerHTML = escapeHtml(p3).replace(new RegExp(escapeRegex(pain), 'g'), '<span class="filled">' + escapeHtml(pain) + '</span>');
+  document.getElementById('prompt3').textContent = p3;
   document.getElementById('prompt4').textContent = p4;
 
   // プレーンテキストを保存
